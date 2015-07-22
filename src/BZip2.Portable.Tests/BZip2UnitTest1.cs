@@ -523,7 +523,7 @@ namespace Ionic.BZip2.Tests
         [TestMethod]
         public void BZ_StreamCopy()
         {
-            var src = new MemoryStream(Encoding.ASCII.GetBytes("Hello"));
+            var src = new MemoryStream(System.Text.Encoding.ASCII.GetBytes("Hello"));
 
             var ms = new MemoryStream();
 

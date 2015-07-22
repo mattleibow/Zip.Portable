@@ -216,17 +216,28 @@ namespace Ionic.BZip2
         ///     constructors that accept a bool value.
         ///   </para>
         /// </remarks>
-        public override void Close()
+        public void Close()
         {
             if (output != null)
             {
                 Stream o = this.output;
                 Finish();
                 if (!leaveOpen)
-                    o.Close();
+                    o.Dispose();
             }
         }
 
+        /// <summary>
+        ///   Dispose the stream.
+        /// </summary>
+        /// <param name="disposing">
+        ///   indicates whether the Dispose method was invoked by user code.
+        /// </param>
+        protected override void Dispose(bool disposing)
+        {
+            Close();
+            base.Dispose(disposing);
+        }
 
         /// <summary>
         ///   Flush the stream.
@@ -512,14 +523,7 @@ namespace Ionic.BZip2
                 //lock(outputLock)
                 {
                     int tid = System.Threading.Thread.CurrentThread.GetHashCode();
-#if !SILVERLIGHT && !NETCF
-                    Console.ForegroundColor = (ConsoleColor) (tid % 8 + 10);
-#endif
-                    Console.Write("{0:000} PBOS ", tid);
-                    Console.WriteLine(format, varParams);
-#if !SILVERLIGHT && !NETCF
-                    Console.ResetColor();
-#endif
+                    System.Diagnostics.Debug.WriteLine("{0:000} PBOS {1}", tid, string.Format(format, varParams));
                 }
             }
         }

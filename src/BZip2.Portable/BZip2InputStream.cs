@@ -406,12 +406,13 @@ namespace Ionic.BZip2
         /// </param>
         protected override void Dispose(bool disposing)
         {
+            Close();
             try
             {
                 if (!_disposed)
                 {
                     if (disposing && (this.input != null))
-                        this.input.Close();
+                        this.input.Dispose();
                     _disposed = true;
                 }
             }
@@ -551,7 +552,7 @@ namespace Ionic.BZip2
         /// <summary>
         ///   Close the stream.
         /// </summary>
-        public override void Close()
+        public void Close()
         {
             Stream inShadow = this.input;
             if (inShadow != null)
@@ -559,7 +560,7 @@ namespace Ionic.BZip2
                 try
                 {
                     if (!this._leaveOpen)
-                        inShadow.Close();
+                        inShadow.Dispose();
                 }
                 finally
                 {

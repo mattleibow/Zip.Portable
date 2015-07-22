@@ -421,7 +421,7 @@ namespace Ionic.BZip2
         ///     constructors that accept a bool value.
         ///   </para>
         /// </remarks>
-        public override void Close()
+        public void Close()
         {
             if (this.pendingException != null)
             {
@@ -450,7 +450,26 @@ namespace Ionic.BZip2
             }
 
             if (!leaveOpen)
-                o.Close();
+                o.Dispose();
+        }
+
+        /// <summary>Dispose the object</summary> 
+        /// <remarks> 
+        ///   <para> 
+        ///     Because ParallelBZip2OutputStream is IDisposable, the 
+        ///     application must call this method when finished using the instance. 
+        ///   </para> 
+        ///   <para> 
+        ///     This method is generally called implicitly upon exit from 
+        ///     a <c>using</c> scope in C# (<c>Using</c> in VB). 
+        ///   </para> 
+        /// </remarks> 
+        protected override void Dispose(bool disposing)
+        { 
+            base.Dispose(disposing); 
+
+            TraceOutput(TraceBits.Write, "Dispose  {0:X8}", this.GetHashCode()); 
+            Close(); 
         }
 
 
@@ -982,14 +1001,7 @@ namespace Ionic.BZip2
                 lock(outputLock)
                 {
                     int tid = Thread.CurrentThread.GetHashCode();
-#if !SILVERLIGHT
-                    Console.ForegroundColor = (ConsoleColor) (tid % 8 + 10);
-#endif
-                    Console.Write("{0:000} PBOS ", tid);
-                    Console.WriteLine(format, varParams);
-#if !SILVERLIGHT
-                    Console.ResetColor();
-#endif
+                    System.Diagnostics.Debug.WriteLine("{0:000} PBOS {1}", tid, string.Format(format, varParams));
                 }
             }
         }

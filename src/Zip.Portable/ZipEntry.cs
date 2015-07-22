@@ -673,107 +673,6 @@ namespace Ionic.Zip
             }
         }
 
-        /// <summary>
-        ///   The file attributes for the entry.
-        /// </summary>
-        ///
-        /// <remarks>
-        ///
-        /// <para>
-        ///   The <see cref="System.IO.FileAttributes">attributes</see> in NTFS include
-        ///   ReadOnly, Archive, Hidden, System, and Indexed.  When adding a
-        ///   <c>ZipEntry</c> to a ZipFile, these attributes are set implicitly when
-        ///   adding an entry from the filesystem.  When adding an entry from a stream
-        ///   or string, the Attributes are not set implicitly.  Regardless of the way
-        ///   an entry was added to a <c>ZipFile</c>, you can set the attributes
-        ///   explicitly if you like.
-        /// </para>
-        ///
-        /// <para>
-        ///   When reading a <c>ZipEntry</c> from a <c>ZipFile</c>, the attributes are
-        ///   set according to the data stored in the <c>ZipFile</c>. If you extract the
-        ///   entry from the archive to a filesystem file, DotNetZip will set the
-        ///   attributes on the resulting file accordingly.
-        /// </para>
-        ///
-        /// <para>
-        ///   The attributes can be set explicitly by the application.  For example the
-        ///   application may wish to set the <c>FileAttributes.ReadOnly</c> bit for all
-        ///   entries added to an archive, so that on unpack, this attribute will be set
-        ///   on the extracted file.  Any changes you make to this property are made
-        ///   permanent only when you call a <c>Save()</c> method on the <c>ZipFile</c>
-        ///   instance that contains the ZipEntry.
-        /// </para>
-        ///
-        /// <para>
-        ///   For example, an application may wish to zip up a directory and set the
-        ///   ReadOnly bit on every file in the archive, so that upon later extraction,
-        ///   the resulting files will be marked as ReadOnly.  Not every extraction tool
-        ///   respects these attributes, but if you unpack with DotNetZip, as for
-        ///   example in a self-extracting archive, then the attributes will be set as
-        ///   they are stored in the <c>ZipFile</c>.
-        /// </para>
-        ///
-        /// <para>
-        ///   These attributes may not be interesting or useful if the resulting archive
-        ///   is extracted on a non-Windows platform.  How these attributes get used
-        ///   upon extraction depends on the platform and tool used.
-        /// </para>
-        ///
-        /// <para>
-        ///   This property is only partially supported in the Silverlight version
-        ///   of the library: applications can read attributes on entries within
-        ///   ZipFiles. But extracting entries within Silverlight will not set the
-        ///   attributes on the extracted files.
-        /// </para>
-        ///
-        /// </remarks>
-        public System.IO.FileAttributes Attributes
-        {
-            // workitem 7071
-            get { return (System.IO.FileAttributes)_ExternalFileAttrs; }
-            set
-            {
-                _ExternalFileAttrs = (int)value;
-                // Since the application is explicitly setting the attributes, overwriting
-                // whatever was there, we will explicitly set the Version made by field.
-                // workitem 7926 - "version made by" OS should be zero for compat with WinZip
-                _VersionMadeBy = (0 << 8) + 45;  // v4.5 of the spec
-                _metadataChanged = true;
-            }
-        }
-
-
-        /// <summary>
-        ///   The name of the filesystem file, referred to by the ZipEntry.
-        /// </summary>
-        ///
-        /// <remarks>
-        ///  <para>
-        ///    This property specifies the thing-to-be-zipped on disk, and is set only
-        ///    when the <c>ZipEntry</c> is being created from a filesystem file.  If the
-        ///    <c>ZipFile</c> is instantiated by reading an existing .zip archive, then
-        ///    the LocalFileName will be <c>null</c> (<c>Nothing</c> in VB).
-        ///  </para>
-        ///
-        ///  <para>
-        ///    When it is set, the value of this property may be different than <see
-        ///    cref="FileName"/>, which is the path used in the archive itself.  If you
-        ///    call <c>Zip.AddFile("foop.txt", AlternativeDirectory)</c>, then the path
-        ///    used for the <c>ZipEntry</c> within the zip archive will be different
-        ///    than this path.
-        ///  </para>
-        ///
-        ///  <para>
-        ///   If the entry is being added from a stream, then this is null (Nothing in VB).
-        ///  </para>
-        ///
-        /// </remarks>
-        /// <seealso cref="FileName"/>
-        internal string LocalFileName
-        {
-            get { return _LocalFileName; }
-        }
 
         /// <summary>
         ///   The name of the file contained in the ZipEntry.
@@ -2095,73 +1994,6 @@ namespace Ionic.Zip
 
 
 
-        /// <summary>
-        ///   Set to indicate whether to use UTF-8 encoding for filenames and comments.
-        /// </summary>
-        ///
-        /// <remarks>
-        ///
-        /// <para>
-        ///   If this flag is set, the comment and filename for the entry will be
-        ///   encoded with UTF-8, as described in <see
-        ///   href="http://www.pkware.com/documents/casestudies/APPNOTE.TXT">the Zip
-        ///   specification</see>, if necessary. "Necessary" means, the filename or
-        ///   entry comment (if any) cannot be reflexively encoded and decoded using the
-        ///   default code page, IBM437.
-        /// </para>
-        ///
-        /// <para>
-        ///   Setting this flag to true is equivalent to setting <see
-        ///   cref="ProvisionalAlternateEncoding"/> to <c>System.Text.Encoding.UTF8</c>.
-        /// </para>
-        ///
-        /// <para>
-        ///   This flag has no effect or relation to the text encoding used within the
-        ///   file itself.
-        /// </para>
-        ///
-        /// </remarks>
-        [Obsolete("Beginning with v1.9.1.6 of DotNetZip, this property is obsolete.  It will be removed in a future version of the library. Your applications should  use AlternateEncoding and AlternateEncodingUsage instead.")]
-        public bool UseUnicodeAsNecessary
-        {
-            get
-            {
-                return (AlternateEncoding == System.Text.Encoding.GetEncoding("UTF-8")) &&
-                    (AlternateEncodingUsage == ZipOption.AsNecessary);
-            }
-            set
-            {
-                if (value)
-                {
-                    AlternateEncoding = System.Text.Encoding.GetEncoding("UTF-8");
-                    AlternateEncodingUsage = ZipOption.AsNecessary;
-
-                }
-                else
-                {
-                    AlternateEncoding = Ionic.Zip.ZipFile.DefaultEncoding;
-                    AlternateEncodingUsage = ZipOption.Never;
-                }
-            }
-        }
-
-        /// <summary>
-        ///   The text encoding to use for the FileName and Comment on this ZipEntry,
-        ///   when the default encoding is insufficient.
-        /// </summary>
-        ///
-        /// <remarks>
-        ///
-        /// <para>
-        ///   Don't use this property.  See <see cref='AlternateEncoding'/>.
-        /// </para>
-        ///
-        /// </remarks>
-        [Obsolete("This property is obsolete since v1.9.1.6. Use AlternateEncoding and AlternateEncodingUsage instead.", true)]
-        public System.Text.Encoding ProvisionalAlternateEncoding
-        {
-            get; set;
-        }
 
         /// <summary>
         ///   Specifies the alternate text encoding used by this ZipEntry
@@ -2302,10 +2134,6 @@ namespace Ionic.Zip
             return Create(nameInArchive, ZipEntrySource.None, null, null);
         }
 
-        internal static ZipEntry CreateFromFile(String filename, string nameInArchive)
-        {
-            return Create(nameInArchive, ZipEntrySource.FileSystem, filename, null);
-        }
 
         internal static ZipEntry CreateForStream(String entryName, Stream s)
         {
@@ -2361,64 +2189,11 @@ namespace Ionic.Zip
             else if (source == ZipEntrySource.None)
             {
                 // make this a valid value, for later.
-                entry._Source = ZipEntrySource.FileSystem;
+                entry._Source = ZipEntrySource.Stream;
             }
             else
             {
-                String filename = (arg1 as String);   // must not be null
-
-                if (String.IsNullOrEmpty(filename))
-                    throw new Ionic.Zip.ZipException("The filename must be non-null and non-empty.");
-
-                try
-                {
-                    // The named file may or may not exist at this time.  For
-                    // example, when adding a directory by name.  We test existence
-                    // when necessary: when saving the ZipFile, or when getting the
-                    // attributes, and so on.
-
-#if NETCF
-                    // workitem 6878
-                    // Ionic.Zip.SharedUtilities.AdjustTime_Win32ToDotNet
-                    entry._Mtime = File.GetLastWriteTime(filename).ToUniversalTime();
-                    entry._Ctime = File.GetCreationTime(filename).ToUniversalTime();
-                    entry._Atime = File.GetLastAccessTime(filename).ToUniversalTime();
-
-                    // workitem 7071
-                    // can only get attributes of files that exist.
-                    if (File.Exists(filename) || Directory.Exists(filename))
-                        entry._ExternalFileAttrs = (int)NetCfFile.GetAttributes(filename);
-
-#elif SILVERLIGHT
-                    entry._Mtime =
-                        entry._Ctime =
-                        entry._Atime = System.DateTime.UtcNow;
-                    entry._ExternalFileAttrs = (int)0;
-#else
-                    // workitem 6878??
-                    entry._Mtime = File.GetLastWriteTime(filename).ToUniversalTime();
-                    entry._Ctime = File.GetCreationTime(filename).ToUniversalTime();
-                    entry._Atime = File.GetLastAccessTime(filename).ToUniversalTime();
-
-                    // workitem 7071
-                    // can only get attributes on files that exist.
-                    if (File.Exists(filename) || Directory.Exists(filename))
-                        entry._ExternalFileAttrs = (int)File.GetAttributes(filename);
-
-#endif
-                    entry._ntfsTimesAreSet = true;
-
-                    entry._LocalFileName = Path.GetFullPath(filename); // workitem 8813
-
-                }
-                catch (System.IO.PathTooLongException ptle)
-                {
-                    // workitem 14035
-                    var msg = String.Format("The path is too long, filename={0}",
-                                            filename);
-                    throw new ZipException(msg, ptle);
-                }
-
+                throw new ArgumentException("ZipEntrySource must be a valid value.", "source");
             }
 
             entry._LastModified = entry._Mtime;
@@ -2553,7 +2328,7 @@ namespace Ionic.Zip
                     {
                         var zf = _container.ZipFile;
                         zf.Reset(false);
-                        _archiveStream = zf.StreamForDiskNumber(_diskNumber);
+                        _archiveStream = zf.ReadStream;
                     }
                     else
                     {
@@ -2688,7 +2463,6 @@ namespace Ionic.Zip
         private bool _emitNtfsTimes = true;
         private bool _emitUnixTimes;  // by default, false
         private bool _TrimVolumeFromFullyQualifiedPaths = true;  // by default, trim them.
-        internal string _LocalFileName;
         private string _FileNameInArchive;
         internal Int16 _VersionNeeded;
         internal Int16 _BitField;

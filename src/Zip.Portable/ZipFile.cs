@@ -122,11 +122,6 @@ namespace Ionic.Zip
     /// </para>
     ///
     /// </remarks>
-    [Interop.GuidAttribute("ebc25cf6-9120-4283-b972-0e5520d00005")]
-    [Interop.ComVisible(true)]
-#if !NETCF
-    [Interop.ClassInterface(Interop.ClassInterfaceType.AutoDispatch)]
-#endif
     public partial class ZipFile :
     System.Collections.IEnumerable,
     System.Collections.Generic.IEnumerable<ZipEntry>,
@@ -233,30 +228,6 @@ namespace Ionic.Zip
 
 
 
-        /// <summary>
-        ///   Indicates whether NTFS Reparse Points, like junctions, should be
-        ///   traversed during calls to <c>AddDirectory()</c>.
-        /// </summary>
-        ///
-        /// <remarks>
-        ///   By default, calls to AddDirectory() will traverse NTFS reparse
-        ///   points, like mounted volumes, and directory junctions.  An example
-        ///   of a junction is the "My Music" directory in Windows Vista.  In some
-        ///   cases you may not want DotNetZip to traverse those directories.  In
-        ///   that case, set this property to false.
-        /// </remarks>
-        ///
-        /// <example>
-        /// <code lang="C#">
-        /// using (var zip = new ZipFile())
-        /// {
-        ///     zip.AddDirectoryWillTraverseReparsePoints = false;
-        ///     zip.AddDirectory(dirToZip,"fodder");
-        ///     zip.Save(zipFileToCreate);
-        /// }
-        /// </code>
-        /// </example>
-        public bool AddDirectoryWillTraverseReparsePoints { get; set; }
 
 
         /// <summary>
@@ -407,35 +378,6 @@ namespace Ionic.Zip
         }
 
 
-        /// <summary>
-        ///   The name of the <c>ZipFile</c>, on disk.
-        /// </summary>
-        ///
-        /// <remarks>
-        ///
-        /// <para>
-        ///   When the <c>ZipFile</c> instance was created by reading an archive using
-        ///   one of the <c>ZipFile.Read</c> methods, this property represents the name
-        ///   of the zip file that was read.  When the <c>ZipFile</c> instance was
-        ///   created by using the no-argument constructor, this value is <c>null</c>
-        ///   (<c>Nothing</c> in VB).
-        /// </para>
-        ///
-        /// <para>
-        ///   If you use the no-argument constructor, and you then explicitly set this
-        ///   property, when you call <see cref="ZipFile.Save()"/>, this name will
-        ///   specify the name of the zip file created.  Doing so is equivalent to
-        ///   calling <see cref="ZipFile.Save(String)"/>.  When instantiating a
-        ///   <c>ZipFile</c> by reading from a stream or byte array, the <c>Name</c>
-        ///   property remains <c>null</c>.  When saving to a stream, the <c>Name</c>
-        ///   property is implicitly set to <c>null</c>.
-        /// </para>
-        /// </remarks>
-        public string Name
-        {
-            get { return _name; }
-            set { _name = value; }
-        }
 
 
         /// <summary>
@@ -839,144 +781,6 @@ namespace Ionic.Zip
         }
 
 
-        /// <summary>
-        ///   Indicates whether to encode entry filenames and entry comments using Unicode
-        ///   (UTF-8).
-        /// </summary>
-        ///
-        /// <remarks>
-        /// <para>
-        ///   <see href="http://www.pkware.com/documents/casestudies/APPNOTE.TXT">The
-        ///   PKWare zip specification</see> provides for encoding file names and file
-        ///   comments in either the IBM437 code page, or in UTF-8.  This flag selects
-        ///   the encoding according to that specification.  By default, this flag is
-        ///   false, and filenames and comments are encoded into the zip file in the
-        ///   IBM437 codepage.  Setting this flag to true will specify that filenames
-        ///   and comments that cannot be encoded with IBM437 will be encoded with
-        ///   UTF-8.
-        /// </para>
-        ///
-        /// <para>
-        ///   Zip files created with strict adherence to the PKWare specification with
-        ///   respect to UTF-8 encoding can contain entries with filenames containing
-        ///   any combination of Unicode characters, including the full range of
-        ///   characters from Chinese, Latin, Hebrew, Greek, Cyrillic, and many other
-        ///   alphabets.  However, because at this time, the UTF-8 portion of the PKWare
-        ///   specification is not broadly supported by other zip libraries and
-        ///   utilities, such zip files may not be readable by your favorite zip tool or
-        ///   archiver. In other words, interoperability will decrease if you set this
-        ///   flag to true.
-        /// </para>
-        ///
-        /// <para>
-        ///   In particular, Zip files created with strict adherence to the PKWare
-        ///   specification with respect to UTF-8 encoding will not work well with
-        ///   Explorer in Windows XP or Windows Vista, because Windows compressed
-        ///   folders, as far as I know, do not support UTF-8 in zip files.  Vista can
-        ///   read the zip files, but shows the filenames incorrectly. Unpacking from
-        ///   Windows Vista Explorer will result in filenames that have rubbish
-        ///   characters in place of the high-order UTF-8 bytes.
-        /// </para>
-        ///
-        /// <para>
-        ///   Also, zip files that use UTF-8 encoding will not work well with Java
-        ///   applications that use the java.util.zip classes, as of v5.0 of the Java
-        ///   runtime. The Java runtime does not correctly implement the PKWare
-        ///   specification in this regard.
-        /// </para>
-        ///
-        /// <para>
-        ///   As a result, we have the unfortunate situation that "correct" behavior by
-        ///   the DotNetZip library with regard to Unicode encoding of filenames during
-        ///   zip creation will result in zip files that are readable by strictly
-        ///   compliant and current tools (for example the most recent release of the
-        ///   commercial WinZip tool); but these zip files will not be readable by
-        ///   various other tools or libraries, including Windows Explorer.
-        /// </para>
-        ///
-        /// <para>
-        ///   The DotNetZip library can read and write zip files with UTF8-encoded
-        ///   entries, according to the PKware spec.  If you use DotNetZip for both
-        ///   creating and reading the zip file, and you use UTF-8, there will be no
-        ///   loss of information in the filenames. For example, using a self-extractor
-        ///   created by this library will allow you to unpack files correctly with no
-        ///   loss of information in the filenames.
-        /// </para>
-        ///
-        /// <para>
-        ///   If you do not set this flag, it will remain false.  If this flag is false,
-        ///   your <c>ZipFile</c> will encode all filenames and comments using the
-        ///   IBM437 codepage.  This can cause "loss of information" on some filenames,
-        ///   but the resulting zipfile will be more interoperable with other
-        ///   utilities. As an example of the loss of information, diacritics can be
-        ///   lost.  The o-tilde character will be down-coded to plain o.  The c with a
-        ///   cedilla (Unicode 0xE7) used in Portugese will be downcoded to a c.
-        ///   Likewise, the O-stroke character (Unicode 248), used in Danish and
-        ///   Norwegian, will be down-coded to plain o. Chinese characters cannot be
-        ///   represented in codepage IBM437; when using the default encoding, Chinese
-        ///   characters in filenames will be represented as ?. These are all examples
-        ///   of "information loss".
-        /// </para>
-        ///
-        /// <para>
-        ///   The loss of information associated to the use of the IBM437 encoding is
-        ///   inconvenient, and can also lead to runtime errors. For example, using
-        ///   IBM437, any sequence of 4 Chinese characters will be encoded as ????.  If
-        ///   your application creates a <c>ZipFile</c>, then adds two files, each with
-        ///   names of four Chinese characters each, this will result in a duplicate
-        ///   filename exception.  In the case where you add a single file with a name
-        ///   containing four Chinese characters, calling Extract() on the entry that
-        ///   has question marks in the filename will result in an exception, because
-        ///   the question mark is not legal for use within filenames on Windows.  These
-        ///   are just a few examples of the problems associated to loss of information.
-        /// </para>
-        ///
-        /// <para>
-        ///   This flag is independent of the encoding of the content within the entries
-        ///   in the zip file. Think of the zip file as a container - it supports an
-        ///   encoding.  Within the container are other "containers" - the file entries
-        ///   themselves.  The encoding within those entries is independent of the
-        ///   encoding of the zip archive container for those entries.
-        /// </para>
-        ///
-        /// <para>
-        ///   Rather than specify the encoding in a binary fashion using this flag, an
-        ///   application can specify an arbitrary encoding via the <see
-        ///   cref="ProvisionalAlternateEncoding"/> property.  Setting the encoding
-        ///   explicitly when creating zip archives will result in non-compliant zip
-        ///   files that, curiously, are fairly interoperable.  The challenge is, the
-        ///   PKWare specification does not provide for a way to specify that an entry
-        ///   in a zip archive uses a code page that is neither IBM437 nor UTF-8.
-        ///   Therefore if you set the encoding explicitly when creating a zip archive,
-        ///   you must take care upon reading the zip archive to use the same code page.
-        ///   If you get it wrong, the behavior is undefined and may result in incorrect
-        ///   filenames, exceptions, stomach upset, hair loss, and acne.
-        /// </para>
-        /// </remarks>
-        /// <seealso cref="ProvisionalAlternateEncoding"/>
-        [Obsolete("Beginning with v1.9.1.6 of DotNetZip, this property is obsolete.  It will be removed in a future version of the library. Your applications should  use AlternateEncoding and AlternateEncodingUsage instead.")]
-        public bool UseUnicodeAsNecessary
-        {
-            get
-            {
-                return (_alternateEncoding == System.Text.Encoding.GetEncoding("UTF-8")) &&
-                    (_alternateEncodingUsage == ZipOption.AsNecessary);
-            }
-            set
-            {
-                if (value)
-                {
-                    _alternateEncoding = System.Text.Encoding.GetEncoding("UTF-8");
-                    _alternateEncodingUsage = ZipOption.AsNecessary;
-
-                }
-                else
-                {
-                    _alternateEncoding = Ionic.Zip.ZipFile.DefaultEncoding;
-                    _alternateEncodingUsage = ZipOption.Never;
-                }
-            }
-        }
 
 
         /// <summary>
@@ -1174,164 +978,6 @@ namespace Ionic.Zip
         }
 
 
-        /// <summary>
-        ///   The text encoding to use when writing new entries to the <c>ZipFile</c>,
-        ///   for those entries that cannot be encoded with the default (IBM437)
-        ///   encoding; or, the text encoding that was used when reading the entries
-        ///   from the <c>ZipFile</c>.
-        /// </summary>
-        ///
-        /// <remarks>
-        /// <para>
-        ///   In <see href="http://www.pkware.com/documents/casestudies/APPNOTE.TXT">its
-        ///   zip specification</see>, PKWare describes two options for encoding
-        ///   filenames and comments: using IBM437 or UTF-8.  But, some archiving tools
-        ///   or libraries do not follow the specification, and instead encode
-        ///   characters using the system default code page.  For example, WinRAR when
-        ///   run on a machine in Shanghai may encode filenames with the Big-5 Chinese
-        ///   (950) code page.  This behavior is contrary to the Zip specification, but
-        ///   it occurs anyway.
-        /// </para>
-        ///
-        /// <para>
-        ///   When using DotNetZip to write zip archives that will be read by one of
-        ///   these other archivers, set this property to specify the code page to use
-        ///   when encoding the <see cref="ZipEntry.FileName"/> and <see
-        ///   cref="ZipEntry.Comment"/> for each <c>ZipEntry</c> in the zip file, for
-        ///   values that cannot be encoded with the default codepage for zip files,
-        ///   IBM437.  This is why this property is "provisional".  In all cases, IBM437
-        ///   is used where possible, in other words, where no loss of data would
-        ///   result. It is possible, therefore, to have a given entry with a
-        ///   <c>Comment</c> encoded in IBM437 and a <c>FileName</c> encoded with the
-        ///   specified "provisional" codepage.
-        /// </para>
-        ///
-        /// <para>
-        ///   Be aware that a zip file created after you've explicitly set the <see
-        ///   cref="ProvisionalAlternateEncoding" /> property to a value other than
-        ///   IBM437 may not be compliant to the PKWare specification, and may not be
-        ///   readable by compliant archivers.  On the other hand, many (most?)
-        ///   archivers are non-compliant and can read zip files created in arbitrary
-        ///   code pages.  The trick is to use or specify the proper codepage when
-        ///   reading the zip.
-        /// </para>
-        ///
-        /// <para>
-        ///   When creating a zip archive using this library, it is possible to change
-        ///   the value of <see cref="ProvisionalAlternateEncoding" /> between each
-        ///   entry you add, and between adding entries and the call to
-        ///   <c>Save()</c>. Don't do this. It will likely result in a zipfile that is
-        ///   not readable.  For best interoperability, either leave <see
-        ///   cref="ProvisionalAlternateEncoding" /> alone, or specify it only once,
-        ///   before adding any entries to the <c>ZipFile</c> instance.  There is one
-        ///   exception to this recommendation, described later.
-        /// </para>
-        ///
-        /// <para>
-        ///   When using an arbitrary, non-UTF8 code page for encoding, there is no
-        ///   standard way for the creator application - whether DotNetZip, WinZip,
-        ///   WinRar, or something else - to formally specify in the zip file which
-        ///   codepage has been used for the entries. As a result, readers of zip files
-        ///   are not able to inspect the zip file and determine the codepage that was
-        ///   used for the entries contained within it.  It is left to the application
-        ///   or user to determine the necessary codepage when reading zip files encoded
-        ///   this way.  In other words, if you explicitly specify the codepage when you
-        ///   create the zipfile, you must explicitly specify the same codepage when
-        ///   reading the zipfile.
-        /// </para>
-        ///
-        /// <para>
-        ///   The way you specify the code page to use when reading a zip file varies
-        ///   depending on the tool or library you use to read the zip.  In DotNetZip,
-        ///   you use a ZipFile.Read() method that accepts an encoding parameter.  It
-        ///   isn't possible with Windows Explorer, as far as I know, to specify an
-        ///   explicit codepage to use when reading a zip.  If you use an incorrect
-        ///   codepage when reading a zipfile, you will get entries with filenames that
-        ///   are incorrect, and the incorrect filenames may even contain characters
-        ///   that are not legal for use within filenames in Windows. Extracting entries
-        ///   with illegal characters in the filenames will lead to exceptions. It's too
-        ///   bad, but this is just the way things are with code pages in zip
-        ///   files. Caveat Emptor.
-        /// </para>
-        ///
-        /// <para>
-        ///   Example: Suppose you create a zipfile that contains entries with
-        ///   filenames that have Danish characters.  If you use <see
-        ///   cref="ProvisionalAlternateEncoding" /> equal to "iso-8859-1" (cp 28591),
-        ///   the filenames will be correctly encoded in the zip.  But, to read that
-        ///   zipfile correctly, you have to specify the same codepage at the time you
-        ///   read it. If try to read that zip file with Windows Explorer or another
-        ///   application that is not flexible with respect to the codepage used to
-        ///   decode filenames in zipfiles, you will get a filename like "Inf°.txt".
-        /// </para>
-        ///
-        /// <para>
-        ///   When using DotNetZip to read a zip archive, and the zip archive uses an
-        ///   arbitrary code page, you must specify the encoding to use before or when
-        ///   the <c>Zipfile</c> is READ.  This means you must use a <c>ZipFile.Read()</c>
-        ///   method that allows you to specify a System.Text.Encoding parameter.  Setting
-        ///   the ProvisionalAlternateEncoding property after your application has read in
-        ///   the zip archive will not affect the entry names of entries that have already
-        ///   been read in.
-        /// </para>
-        ///
-        /// <para>
-        ///   And now, the exception to the rule described above.  One strategy for
-        ///   specifying the code page for a given zip file is to describe the code page
-        ///   in a human-readable form in the Zip comment. For example, the comment may
-        ///   read "Entries in this archive are encoded in the Big5 code page".  For
-        ///   maximum interoperability, the zip comment in this case should be encoded
-        ///   in the default, IBM437 code page.  In this case, the zip comment is
-        ///   encoded using a different page than the filenames.  To do this, Specify
-        ///   <c>ProvisionalAlternateEncoding</c> to your desired region-specific code
-        ///   page, once before adding any entries, and then reset
-        ///   <c>ProvisionalAlternateEncoding</c> to IBM437 before setting the <see
-        ///   cref="Comment"/> property and calling Save().
-        /// </para>
-        /// </remarks>
-        ///
-        /// <example>
-        /// This example shows how to read a zip file using the Big-5 Chinese code page
-        /// (950), and extract each entry in the zip file.  For this code to work as
-        /// desired, the <c>Zipfile</c> must have been created using the big5 code page
-        /// (CP950). This is typical, for example, when using WinRar on a machine with
-        /// CP950 set as the default code page.  In that case, the names of entries
-        /// within the Zip archive will be stored in that code page, and reading the zip
-        /// archive must be done using that code page.  If the application did not use
-        /// the correct code page in <c>ZipFile.Read()</c>, then names of entries within the
-        /// zip archive would not be correctly retrieved.
-        /// <code>
-        /// using (var zip = ZipFile.Read(zipFileName, System.Text.Encoding.GetEncoding("big5")))
-        /// {
-        ///     // retrieve and extract an entry using a name encoded with CP950
-        ///     zip[MyDesiredEntry].Extract("unpack");
-        /// }
-        /// </code>
-        ///
-        /// <code lang="VB">
-        /// Using zip As ZipFile = ZipFile.Read(ZipToExtract, System.Text.Encoding.GetEncoding("big5"))
-        ///     ' retrieve and extract an entry using a name encoded with CP950
-        ///     zip(MyDesiredEntry).Extract("unpack")
-        /// End Using
-        /// </code>
-        /// </example>
-        ///
-        /// <seealso cref="Ionic.Zip.ZipFile.DefaultEncoding">DefaultEncoding</seealso>
-        [Obsolete("use AlternateEncoding instead.")]
-        public System.Text.Encoding ProvisionalAlternateEncoding
-        {
-            get
-            {
-                if (_alternateEncodingUsage == ZipOption.AsNecessary)
-                    return _alternateEncoding;
-                return null;
-            }
-            set
-            {
-                _alternateEncoding = value;
-                _alternateEncodingUsage = ZipOption.AsNecessary;
-            }
-        }
 
 
         /// <summary>
@@ -1464,70 +1110,6 @@ namespace Ionic.Zip
 
 
 
-        /// <summary>
-        ///   Gets or sets the name for the folder to store the temporary file
-        ///   this library writes when saving a zip archive.
-        /// </summary>
-        ///
-        /// <remarks>
-        /// <para>
-        ///   This library will create a temporary file when saving a Zip archive to a
-        ///   file.  This file is written when calling one of the <c>Save()</c> methods
-        ///   that does not save to a stream, or one of the <c>SaveSelfExtractor()</c>
-        ///   methods.
-        /// </para>
-        ///
-        /// <para>
-        ///   By default, the library will create the temporary file in the directory
-        ///   specified for the file itself, via the <see cref="Name"/> property or via
-        ///   the <see cref="ZipFile.Save(String)"/> method.
-        /// </para>
-        ///
-        /// <para>
-        ///   Setting this property allows applications to override this default
-        ///   behavior, so that the library will create the temporary file in the
-        ///   specified folder. For example, to have the library create the temporary
-        ///   file in the current working directory, regardless where the <c>ZipFile</c>
-        ///   is saved, specfy ".".  To revert to the default behavior, set this
-        ///   property to <c>null</c> (<c>Nothing</c> in VB).
-        /// </para>
-        ///
-        /// <para>
-        ///   When setting the property to a non-null value, the folder specified must
-        ///   exist; if it does not an exception is thrown.  The application should have
-        ///   write and delete permissions on the folder.  The permissions are not
-        ///   explicitly checked ahead of time; if the application does not have the
-        ///   appropriate rights, an exception will be thrown at the time <c>Save()</c>
-        ///   is called.
-        /// </para>
-        ///
-        /// <para>
-        ///   There is no temporary file created when reading a zip archive.  When
-        ///   saving to a Stream, there is no temporary file created.  For example, if
-        ///   the application is an ASP.NET application and calls <c>Save()</c>
-        ///   specifying the <c>Response.OutputStream</c> as the output stream, there is
-        ///   no temporary file created.
-        /// </para>
-        /// </remarks>
-        ///
-        /// <exception cref="System.IO.FileNotFoundException">
-        /// Thrown when setting the property if the directory does not exist.
-        /// </exception>
-        ///
-        public String TempFileFolder
-        {
-            get { return _TempFileFolder; }
-
-            set
-            {
-                _TempFileFolder = value;
-                if (value == null) return;
-
-                if (!Directory.Exists(value))
-                    throw new FileNotFoundException(String.Format("That directory ({0}) does not exist.", value));
-
-            }
-        }
 
         /// <summary>
         /// Sets the password to be used on the <c>ZipFile</c> instance.
@@ -2014,122 +1596,6 @@ namespace Ionic.Zip
         }
 
 
-        /// <summary>
-        /// The maximum size of an output segment, when saving a split Zip file.
-        /// </summary>
-        /// <remarks>
-        ///   <para>
-        ///     Set this to a non-zero value before calling <see cref="Save()"/> or <see
-        ///     cref="Save(String)"/> to specify that the ZipFile should be saved as a
-        ///     split archive, also sometimes called a spanned archive. Some also
-        ///     call them multi-file archives.
-        ///   </para>
-        ///
-        ///   <para>
-        ///     A split zip archive is saved in a set of discrete filesystem files,
-        ///     rather than in a single file. This is handy when transmitting the
-        ///     archive in email or some other mechanism that has a limit to the size of
-        ///     each file.  The first file in a split archive will be named
-        ///     <c>basename.z01</c>, the second will be named <c>basename.z02</c>, and
-        ///     so on. The final file is named <c>basename.zip</c>. According to the zip
-        ///     specification from PKWare, the minimum value is 65536, for a 64k segment
-        ///     size. The maximum number of segments allows in a split archive is 99.
-        ///   </para>
-        ///
-        ///   <para>
-        ///     The value of this property determines the maximum size of a split
-        ///     segment when writing a split archive.  For example, suppose you have a
-        ///     <c>ZipFile</c> that would save to a single file of 200k. If you set the
-        ///     <c>MaxOutputSegmentSize</c> to 65536 before calling <c>Save()</c>, you
-        ///     will get four distinct output files. On the other hand if you set this
-        ///     property to 256k, then you will get a single-file archive for that
-        ///     <c>ZipFile</c>.
-        ///   </para>
-        ///
-        ///   <para>
-        ///     The size of each split output file will be as large as possible, up to
-        ///     the maximum size set here. The zip specification requires that some data
-        ///     fields in a zip archive may not span a split boundary, and an output
-        ///     segment may be smaller than the maximum if necessary to avoid that
-        ///     problem. Also, obviously the final segment of the archive may be smaller
-        ///     than the maximum segment size. Segments will never be larger than the
-        ///     value set with this property.
-        ///   </para>
-        ///
-        ///   <para>
-        ///     You can save a split Zip file only when saving to a regular filesystem
-        ///     file. It's not possible to save a split zip file as a self-extracting
-        ///     archive, nor is it possible to save a split zip file to a stream. When
-        ///     saving to a SFX or to a Stream, this property is ignored.
-        ///   </para>
-        ///
-        ///   <para>
-        ///     About interoperability: Split or spanned zip files produced by DotNetZip
-        ///     can be read by WinZip or PKZip, and vice-versa. Segmented zip files may
-        ///     not be readable by other tools, if those other tools don't support zip
-        ///     spanning or splitting.  When in doubt, test.  I don't believe Windows
-        ///     Explorer can extract a split archive.
-        ///   </para>
-        ///
-        ///   <para>
-        ///     This property has no effect when reading a split archive. You can read
-        ///     a split archive in the normal way with DotNetZip.
-        ///   </para>
-        ///
-        ///   <para>
-        ///     When saving a zip file, if you want a regular zip file rather than a
-        ///     split zip file, don't set this property, or set it to Zero.
-        ///   </para>
-        ///
-        ///   <para>
-        ///     If you read a split archive, with <see cref="ZipFile.Read(string)"/> and
-        ///     then subsequently call <c>ZipFile.Save()</c>, unless you set this
-        ///     property before calling <c>Save()</c>, you will get a normal,
-        ///     single-file archive.
-        ///   </para>
-        /// </remarks>
-        ///
-        /// <seealso cref="NumberOfSegmentsForMostRecentSave"/>
-        public Int32 MaxOutputSegmentSize
-        {
-            get
-            {
-                return _maxOutputSegmentSize;
-            }
-            set
-            {
-                if (value < 65536 && value != 0)
-                    throw new ZipException("The minimum acceptable segment size is 65536.");
-                _maxOutputSegmentSize = value;
-            }
-        }
-
-
-        /// <summary>
-        ///   Returns the number of segments used in the most recent Save() operation.
-        /// </summary>
-        /// <remarks>
-        ///   <para>
-        ///     This is normally zero, unless you have set the <see
-        ///     cref="MaxOutputSegmentSize"/> property.  If you have set <see
-        ///     cref="MaxOutputSegmentSize"/>, and then you save a file, after the call to
-        ///     Save() completes, you can read this value to learn the number of segments that
-        ///     were created.
-        ///   </para>
-        ///   <para>
-        ///     If you call Save("Archive.zip"), and it creates 5 segments, then you
-        ///     will have filesystem files named Archive.z01, Archive.z02, Archive.z03,
-        ///     Archive.z04, and Archive.zip, and the value of this property will be 5.
-        ///   </para>
-        /// </remarks>
-        /// <seealso cref="MaxOutputSegmentSize"/>
-        public Int32 NumberOfSegmentsForMostRecentSave
-        {
-            get
-            {
-                return unchecked((Int32)_numberOfSegmentsForMostRecentSave + 1);
-            }
-        }
 
 
 #if !NETCF
@@ -2301,7 +1767,7 @@ namespace Ionic.Zip
         /// <returns>a string representation of the instance.</returns>
         public override String ToString()
         {
-            return String.Format("ZipFile::{0}", Name);
+            return String.Format("ZipFile::{0}", "(stream)");
         }
 
 
@@ -2311,17 +1777,6 @@ namespace Ionic.Zip
         }
 
 
-        internal Stream StreamForDiskNumber(uint diskNumber)
-        {
-            if (diskNumber + 1 == this._diskNumberWithCd ||
-                (diskNumber == 0 && this._diskNumberWithCd == 0))
-            {
-                //return (this.ReadStream as FileStream);
-                return this.ReadStream;
-            }
-            return ZipSegmentedStream.ForReading(this._readName ?? this._name,
-                                                 diskNumber, _diskNumberWithCd);
-        }
 
 
 
@@ -2335,9 +1790,6 @@ namespace Ionic.Zip
                 using (ZipFile x = new ZipFile())
                 {
                     // workitem 10735
-                    x._readName = x._name = whileSaving
-                        ? (this._readName ?? this._name)
-                        : this._name;
                     x.AlternateEncoding = this.AlternateEncoding;
                     x.AlternateEncodingUsage = this.AlternateEncodingUsage;
                     ReadIntoInstance(x);
@@ -2364,159 +1816,6 @@ namespace Ionic.Zip
 
         #region Constructors
 
-        /// <summary>
-        ///   Creates a new <c>ZipFile</c> instance, using the specified filename.
-        /// </summary>
-        ///
-        /// <remarks>
-        /// <para>
-        ///   Applications can use this constructor to create a new ZipFile for writing,
-        ///   or to slurp in an existing zip archive for read and update purposes.
-        /// </para>
-        ///
-        /// <para>
-        ///   To create a new zip archive, an application can call this constructor,
-        ///   passing the name of a file that does not exist.  The name may be a fully
-        ///   qualified path. Then the application can add directories or files to the
-        ///   <c>ZipFile</c> via <c>AddDirectory()</c>, <c>AddFile()</c>, <c>AddItem()</c>
-        ///   and then write the zip archive to the disk by calling <c>Save()</c>. The
-        ///   zip file is not actually opened and written to the disk until the
-        ///   application calls <c>ZipFile.Save()</c>.  At that point the new zip file
-        ///   with the given name is created.
-        /// </para>
-        ///
-        /// <para>
-        ///   If you won't know the name of the <c>Zipfile</c> until the time you call
-        ///   <c>ZipFile.Save()</c>, or if you plan to save to a stream (which has no
-        ///   name), then you should use the no-argument constructor.
-        /// </para>
-        ///
-        /// <para>
-        ///   The application can also call this constructor to read an existing zip
-        ///   archive.  passing the name of a valid zip file that does exist. But, it's
-        ///   better form to use the static <see cref="ZipFile.Read(String)"/> method,
-        ///   passing the name of the zip file, because using <c>ZipFile.Read()</c> in
-        ///   your code communicates very clearly what you are doing.  In either case,
-        ///   the file is then read into the <c>ZipFile</c> instance.  The app can then
-        ///   enumerate the entries or can modify the zip file, for example adding
-        ///   entries, removing entries, changing comments, and so on.
-        /// </para>
-        ///
-        /// <para>
-        ///   One advantage to this parameterized constructor: it allows applications to
-        ///   use the same code to add items to a zip archive, regardless of whether the
-        ///   zip file exists.
-        /// </para>
-        ///
-        /// <para>
-        ///   Instances of the <c>ZipFile</c> class are not multi-thread safe.  You may
-        ///   not party on a single instance with multiple threads.  You may have
-        ///   multiple threads that each use a distinct <c>ZipFile</c> instance, or you
-        ///   can synchronize multi-thread access to a single instance.
-        /// </para>
-        ///
-        /// <para>
-        ///   By the way, since DotNetZip is so easy to use, don't you think <see
-        ///   href="http://cheeso.members.winisp.net/DotNetZipDonate.aspx">you should
-        ///   donate $5 or $10</see>?
-        /// </para>
-        ///
-        /// </remarks>
-        ///
-        /// <exception cref="Ionic.Zip.ZipException">
-        /// Thrown if name refers to an existing file that is not a valid zip file.
-        /// </exception>
-        ///
-        /// <example>
-        /// This example shows how to create a zipfile, and add a few files into it.
-        /// <code>
-        /// String ZipFileToCreate = "archive1.zip";
-        /// String DirectoryToZip  = "c:\\reports";
-        /// using (ZipFile zip = new ZipFile())
-        /// {
-        ///   // Store all files found in the top level directory, into the zip archive.
-        ///   String[] filenames = System.IO.Directory.GetFiles(DirectoryToZip);
-        ///   zip.AddFiles(filenames, "files");
-        ///   zip.Save(ZipFileToCreate);
-        /// }
-        /// </code>
-        ///
-        /// <code lang="VB">
-        /// Dim ZipFileToCreate As String = "archive1.zip"
-        /// Dim DirectoryToZip As String = "c:\reports"
-        /// Using zip As ZipFile = New ZipFile()
-        ///     Dim filenames As String() = System.IO.Directory.GetFiles(DirectoryToZip)
-        ///     zip.AddFiles(filenames, "files")
-        ///     zip.Save(ZipFileToCreate)
-        /// End Using
-        /// </code>
-        /// </example>
-        ///
-        /// <param name="fileName">The filename to use for the new zip archive.</param>
-        ///
-        public ZipFile(string fileName)
-        {
-            try
-            {
-                _InitInstance(fileName, null);
-            }
-            catch (Exception e1)
-            {
-                throw new ZipException(String.Format("Could not read {0} as a zip file", fileName), e1);
-            }
-        }
-
-
-        /// <summary>
-        ///   Creates a new <c>ZipFile</c> instance, using the specified name for the
-        ///   filename, and the specified Encoding.
-        /// </summary>
-        ///
-        /// <remarks>
-        /// <para>
-        ///   See the documentation on the <see cref="ZipFile(String)">ZipFile
-        ///   constructor that accepts a single string argument</see> for basic
-        ///   information on all the <c>ZipFile</c> constructors.
-        /// </para>
-        ///
-        /// <para>
-        ///   The Encoding is used as the default alternate encoding for entries with
-        ///   filenames or comments that cannot be encoded with the IBM437 code page.
-        ///   This is equivalent to setting the <see
-        ///   cref="ProvisionalAlternateEncoding"/> property on the <c>ZipFile</c>
-        ///   instance after construction.
-        /// </para>
-        ///
-        /// <para>
-        ///   Instances of the <c>ZipFile</c> class are not multi-thread safe.  You may
-        ///   not party on a single instance with multiple threads.  You may have
-        ///   multiple threads that each use a distinct <c>ZipFile</c> instance, or you
-        ///   can synchronize multi-thread access to a single instance.
-        /// </para>
-        ///
-        /// </remarks>
-        ///
-        /// <exception cref="Ionic.Zip.ZipException">
-        /// Thrown if name refers to an existing file that is not a valid zip file.
-        /// </exception>
-        ///
-        /// <param name="fileName">The filename to use for the new zip archive.</param>
-        /// <param name="encoding">The Encoding is used as the default alternate
-        /// encoding for entries with filenames or comments that cannot be encoded
-        /// with the IBM437 code page. </param>
-        public ZipFile(string fileName, System.Text.Encoding encoding)
-        {
-            try
-            {
-                AlternateEncoding = encoding;
-                AlternateEncodingUsage = ZipOption.Always;
-                _InitInstance(fileName, null);
-            }
-            catch (Exception e1)
-            {
-                throw new ZipException(String.Format("{0} is not a valid zip file", fileName), e1);
-            }
-        }
 
 
 
@@ -2606,196 +1905,6 @@ namespace Ionic.Zip
         }
 
 
-        /// <summary>
-        ///   Creates a new <c>ZipFile</c> instance, using the specified name for the
-        ///   filename, and the specified status message writer.
-        /// </summary>
-        ///
-        /// <remarks>
-        /// <para>
-        ///   See the documentation on the <see cref="ZipFile(String)">ZipFile
-        ///   constructor that accepts a single string argument</see> for basic
-        ///   information on all the <c>ZipFile</c> constructors.
-        /// </para>
-        ///
-        /// <para>
-        ///   This version of the constructor allows the caller to pass in a TextWriter,
-        ///   to which verbose messages will be written during extraction or creation of
-        ///   the zip archive.  A console application may wish to pass
-        ///   System.Console.Out to get messages on the Console. A graphical or headless
-        ///   application may wish to capture the messages in a different
-        ///   <c>TextWriter</c>, for example, a <c>StringWriter</c>, and then display
-        ///   the messages in a TextBox, or generate an audit log of ZipFile operations.
-        /// </para>
-        ///
-        /// <para>
-        ///   To encrypt the data for the files added to the <c>ZipFile</c> instance,
-        ///   set the Password property after creating the <c>ZipFile</c> instance.
-        /// </para>
-        ///
-        /// <para>
-        ///   Instances of the <c>ZipFile</c> class are not multi-thread safe.  You may
-        ///   not party on a single instance with multiple threads.  You may have
-        ///   multiple threads that each use a distinct <c>ZipFile</c> instance, or you
-        ///   can synchronize multi-thread access to a single instance.
-        /// </para>
-        ///
-        /// </remarks>
-        ///
-        /// <exception cref="Ionic.Zip.ZipException">
-        /// Thrown if name refers to an existing file that is not a valid zip file.
-        /// </exception>
-        ///
-        /// <example>
-        /// <code>
-        /// using (ZipFile zip = new ZipFile("Backup.zip", Console.Out))
-        /// {
-        ///   // Store all files found in the top level directory, into the zip archive.
-        ///   // note: this code does not recurse subdirectories!
-        ///   // Status messages will be written to Console.Out
-        ///   String[] filenames = System.IO.Directory.GetFiles(DirectoryToZip);
-        ///   zip.AddFiles(filenames);
-        ///   zip.Save();
-        /// }
-        /// </code>
-        ///
-        /// <code lang="VB">
-        /// Using zip As New ZipFile("Backup.zip", Console.Out)
-        ///     ' Store all files found in the top level directory, into the zip archive.
-        ///     ' note: this code does not recurse subdirectories!
-        ///     ' Status messages will be written to Console.Out
-        ///     Dim filenames As String() = System.IO.Directory.GetFiles(DirectoryToZip)
-        ///     zip.AddFiles(filenames)
-        ///     zip.Save()
-        /// End Using
-        /// </code>
-        /// </example>
-        ///
-        /// <param name="fileName">The filename to use for the new zip archive.</param>
-        /// <param name="statusMessageWriter">A TextWriter to use for writing
-        /// verbose status messages.</param>
-        public ZipFile(string fileName, TextWriter statusMessageWriter)
-        {
-            try
-            {
-                _InitInstance(fileName, statusMessageWriter);
-            }
-            catch (Exception e1)
-            {
-                throw new ZipException(String.Format("{0} is not a valid zip file", fileName), e1);
-            }
-        }
-
-
-        /// <summary>
-        ///   Creates a new <c>ZipFile</c> instance, using the specified name for the
-        ///   filename, the specified status message writer, and the specified Encoding.
-        /// </summary>
-        ///
-        /// <remarks>
-        /// <para>
-        ///   This constructor works like the <see cref="ZipFile(String)">ZipFile
-        ///   constructor that accepts a single string argument.</see> See that
-        ///   reference for detail on what this constructor does.
-        /// </para>
-        ///
-        /// <para>
-        ///   This version of the constructor allows the caller to pass in a
-        ///   <c>TextWriter</c>, and an Encoding.  The <c>TextWriter</c> will collect
-        ///   verbose messages that are generated by the library during extraction or
-        ///   creation of the zip archive.  A console application may wish to pass
-        ///   <c>System.Console.Out</c> to get messages on the Console. A graphical or
-        ///   headless application may wish to capture the messages in a different
-        ///   <c>TextWriter</c>, for example, a <c>StringWriter</c>, and then display
-        ///   the messages in a <c>TextBox</c>, or generate an audit log of
-        ///   <c>ZipFile</c> operations.
-        /// </para>
-        ///
-        /// <para>
-        ///   The <c>Encoding</c> is used as the default alternate encoding for entries
-        ///   with filenames or comments that cannot be encoded with the IBM437 code
-        ///   page.  This is a equivalent to setting the <see
-        ///   cref="ProvisionalAlternateEncoding"/> property on the <c>ZipFile</c>
-        ///   instance after construction.
-        /// </para>
-        ///
-        /// <para>
-        ///   To encrypt the data for the files added to the <c>ZipFile</c> instance,
-        ///   set the <c>Password</c> property after creating the <c>ZipFile</c>
-        ///   instance.
-        /// </para>
-        ///
-        /// <para>
-        ///   Instances of the <c>ZipFile</c> class are not multi-thread safe.  You may
-        ///   not party on a single instance with multiple threads.  You may have
-        ///   multiple threads that each use a distinct <c>ZipFile</c> instance, or you
-        ///   can synchronize multi-thread access to a single instance.
-        /// </para>
-        ///
-        /// </remarks>
-        ///
-        /// <exception cref="Ionic.Zip.ZipException">
-        /// Thrown if <c>fileName</c> refers to an existing file that is not a valid zip file.
-        /// </exception>
-        ///
-        /// <param name="fileName">The filename to use for the new zip archive.</param>
-        /// <param name="statusMessageWriter">A TextWriter to use for writing verbose
-        /// status messages.</param>
-        /// <param name="encoding">
-        /// The Encoding is used as the default alternate encoding for entries with
-        /// filenames or comments that cannot be encoded with the IBM437 code page.
-        /// </param>
-        public ZipFile(string fileName, TextWriter statusMessageWriter,
-                       System.Text.Encoding encoding)
-        {
-            try
-            {
-                AlternateEncoding = encoding;
-                AlternateEncodingUsage = ZipOption.Always;
-                _InitInstance(fileName, statusMessageWriter);
-            }
-            catch (Exception e1)
-            {
-                throw new ZipException(String.Format("{0} is not a valid zip file", fileName), e1);
-            }
-        }
-
-
-
-
-        /// <summary>
-        ///   Initialize a <c>ZipFile</c> instance by reading in a zip file.
-        /// </summary>
-        ///
-        /// <remarks>
-        ///
-        /// <para>
-        ///   This method is primarily useful from COM Automation environments, when
-        ///   reading or extracting zip files. In COM, it is not possible to invoke
-        ///   parameterized constructors for a class. A COM Automation application can
-        ///   update a zip file by using the <see cref="ZipFile()">default (no argument)
-        ///   constructor</see>, then calling <c>Initialize()</c> to read the contents
-        ///   of an on-disk zip archive into the <c>ZipFile</c> instance.
-        /// </para>
-        ///
-        /// <para>
-        ///   .NET applications are encouraged to use the <c>ZipFile.Read()</c> methods
-        ///   for better clarity.
-        /// </para>
-        ///
-        /// </remarks>
-        /// <param name="fileName">the name of the existing zip file to read in.</param>
-        public void Initialize(string fileName)
-        {
-            try
-            {
-                _InitInstance(fileName, null);
-            }
-            catch (Exception e1)
-            {
-                throw new ZipException(String.Format("{0} is not a valid zip file", fileName), e1);
-            }
-        }
 
 
 
@@ -2812,10 +1921,8 @@ namespace Ionic.Zip
         private void _InitInstance(string zipFileName, TextWriter statusMessageWriter)
         {
             // create a new zipfile
-            _name = zipFileName;
             _StatusMessageTextWriter = statusMessageWriter;
             _contentsChanged = true;
-            AddDirectoryWillTraverseReparsePoints = true;  // workitem 8617
             CompressionLevel = Ionic.Zlib.CompressionLevel.Default;
 #if !NETCF
             ParallelDeflateThreshold = 512 * 1024;
@@ -2823,14 +1930,6 @@ namespace Ionic.Zip
             // workitem 7685, 9868
             _initEntriesDictionary();
 
-            if (File.Exists(_name))
-            {
-                if (FullScan)
-                    ReadIntoInstance_Orig(this);
-                else
-                    ReadIntoInstance(this);
-                this._fileAlreadyExists = true;
-            }
 
             return;
         }
@@ -3187,7 +2286,7 @@ namespace Ionic.Zip
                 StringComparison sc = (CaseSensitiveRetrieval) ? StringComparison.Ordinal : StringComparison.OrdinalIgnoreCase;
 
                 coll.Sort((x, y) => { return String.Compare(x.FileName, y.FileName, sc); });
-                return coll.AsReadOnly();
+                return new System.Collections.ObjectModel.ReadOnlyCollection<ZipEntry>(coll);
             }
         }
 
@@ -3477,31 +2576,6 @@ namespace Ionic.Zip
                 if (disposeManagedResources)
                 {
                     // dispose managed resources
-                    if (_ReadStreamIsOurs)
-                    {
-                        if (_readstream != null)
-                        {
-                            // workitem 7704
-#if NETCF
-                            _readstream.Close();
-#else
-                            _readstream.Dispose();
-#endif
-                            _readstream = null;
-                        }
-                    }
-                    // only dispose the writestream if there is a backing file
-                    if ((_temporaryFileName != null) && (_name != null))
-                        if (_writestream != null)
-                        {
-                            // workitem 7704
-#if NETCF
-                            _writestream.Close();
-#else
-                            _writestream.Dispose();
-#endif
-                            _writestream = null;
-                        }
 
 #if !NETCF
                     // workitem 10030
@@ -3524,17 +2598,6 @@ namespace Ionic.Zip
         {
             get
             {
-                if (_readstream == null)
-                {
-                    if (_readName != null || _name !=null)
-                    {
-                        _readstream = File.Open(_readName ?? _name,
-                                                FileMode.Open,
-                                                FileAccess.Read,
-                                                FileShare.Read | FileShare.Write);
-                        _ReadStreamIsOurs = true;
-                    }
-                }
                 return _readstream;
             }
         }
@@ -3546,18 +2609,6 @@ namespace Ionic.Zip
             // workitem 9763
             get
             {
-                if (_writestream != null) return _writestream;
-                if (_name == null) return _writestream;
-
-                if (_maxOutputSegmentSize != 0)
-                {
-                    _writestream = ZipSegmentedStream.ForWriting(this._name, _maxOutputSegmentSize);
-                    return _writestream;
-                }
-
-                SharedUtilities.CreateAndOpenUniqueTempFile(TempFileFolder ?? Path.GetDirectoryName(_name),
-                                                            out _writestream,
-                                                            out _temporaryFileName);
                 return _writestream;
             }
             set
@@ -3577,15 +2628,11 @@ namespace Ionic.Zip
         private UInt16 _versionMadeBy;
         private UInt16 _versionNeededToExtract;
         private UInt32 _diskNumberWithCd;
-        private Int32 _maxOutputSegmentSize;
-        private UInt32 _numberOfSegmentsForMostRecentSave;
         private ZipErrorAction _zipErrorAction;
         private bool _disposed;
         //private System.Collections.Generic.List<ZipEntry> _entries;
         private System.Collections.Generic.Dictionary<String, ZipEntry> _entries;
         private List<ZipEntry> _zipEntriesAsList;
-        private string _name;
-        private string _readName;
         private string _Comment;
         internal string _Password;
         private bool _emitNtfsTimes = true;
@@ -3593,11 +2640,8 @@ namespace Ionic.Zip
         private Ionic.Zlib.CompressionStrategy _Strategy = Ionic.Zlib.CompressionStrategy.Default;
         private Ionic.Zip.CompressionMethod _compressionMethod = Ionic.Zip.CompressionMethod.Deflate;
         private bool _fileAlreadyExists;
-        private string _temporaryFileName;
         private bool _contentsChanged;
         private bool _hasBeenSaved;
-        private String _TempFileFolder;
-        private bool _ReadStreamIsOurs = true;
         private object LOCK = new object();
         private bool _saveOperationCanceled;
         private bool _extractOperationCanceled;
@@ -3622,9 +2666,6 @@ namespace Ionic.Zip
 #endif
 
         internal Zip64Option _zip64 = Zip64Option.Default;
-#pragma warning disable 649
-        private bool _SavingSfx;
-#pragma warning restore 649
 
         /// <summary>
         ///   Default size of the buffer used for IO.

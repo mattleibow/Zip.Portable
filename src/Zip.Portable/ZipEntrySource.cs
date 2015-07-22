@@ -32,17 +32,17 @@ namespace Ionic.Zip
         /// </summary>
         None = 0,
 
-        /// <summary>
-        /// The entry was instantiated by calling AddFile() or another method that 
-        /// added an entry from the filesystem.
-        /// </summary>
-        FileSystem,
+        ///// <summary>
+        ///// The entry was instantiated by calling AddFile() or another method that 
+        ///// added an entry from the filesystem.
+        ///// </summary>
+        //FileSystem,
 
         /// <summary>
         /// The entry was instantiated via <see cref="Ionic.Zip.ZipFile.AddEntry(string,string)"/> or
         /// <see cref="Ionic.Zip.ZipFile.AddEntry(string,System.IO.Stream)"/> .
         /// </summary>
-        Stream,
+        Stream = 2,
 
         /// <summary>
         /// The ZipEntry was instantiated by reading a zipfile.

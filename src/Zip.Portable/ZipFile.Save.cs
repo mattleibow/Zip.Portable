@@ -35,38 +35,6 @@ namespace Ionic.Zip
     public partial class ZipFile
     {
 
-        /// <summary>
-        ///   Delete file with retry on UnauthorizedAccessException.
-        /// </summary>
-        ///
-        /// <remarks>
-        ///   <para>
-        ///     When calling File.Delete() on a file that has been "recently"
-        ///     created, the call sometimes fails with
-        ///     UnauthorizedAccessException. This method simply retries the Delete 3
-        ///     times with a sleep between tries.
-        ///   </para>
-        /// </remarks>
-        ///
-        /// <param name='filename'>the name of the file to be deleted</param>
-        private void DeleteFileWithRetry(string filename)
-        {
-            bool done = false;
-            int nRetries = 3;
-            for (int i=0; i < nRetries && !done; i++)
-            {
-                try
-                {
-                    File.Delete(filename);
-                    done = true;
-                }
-                catch (System.UnauthorizedAccessException)
-                {
-                    Console.WriteLine("************************************************** Retry delete.");
-                    System.Threading.Thread.Sleep(200+i*200);
-                }
-            }
-        }
 
 
         /// <summary>
@@ -128,18 +96,13 @@ namespace Ionic.Zip
         ///
         public void Save()
         {
-            try
-            {
                 bool thisSaveUsedZip64 = false;
                 _saveOperationCanceled = false;
-                _numberOfSegmentsForMostRecentSave = 0;
                 OnSaveStarted();
 
                 if (WriteStream == null)
                     throw new BadStateException("You haven't specified where to save the zip.");
 
-                if (_name != null && _name.EndsWith(".exe") && !_SavingSfx)
-                    throw new BadStateException("You specified an EXE for a plain zip file.");
 
                 // check if modified, before saving.
                 if (!_contentsChanged)
@@ -184,11 +147,8 @@ namespace Ionic.Zip
                 if (_saveOperationCanceled)
                     return;
 
-                var zss = WriteStream as ZipSegmentedStream;
 
-                _numberOfSegmentsForMostRecentSave = (zss!=null)
-                    ? zss.CurrentSegment
-                    : 1;
+                const uint _numberOfSegmentsForMostRecentSave = 1;
 
                 bool directoryNeededZip64 =
                     ZipOutput.WriteCentralDirectoryStructure
@@ -208,114 +168,10 @@ namespace Ionic.Zip
                 _OutputUsesZip64 = new Nullable<bool>(thisSaveUsedZip64);
 
 
-                // do the rename as necessary
-                if (_name != null &&
-                    (_temporaryFileName!=null || zss != null))
-                {
-                    // _temporaryFileName may remain null if we are writing to a stream.
-                    // only close the stream if there is a file behind it.
-#if NETCF
-                    WriteStream.Close();
-#else
-                    WriteStream.Dispose();
-#endif
-                    if (_saveOperationCanceled)
-                        return;
-
-                    if (_fileAlreadyExists && this._readstream != null)
-                    {
-                        // This means we opened and read a zip file.
-                        // If we are now saving to the same file, we need to close the
-                        // orig file, first.
-                        this._readstream.Close();
-                        this._readstream = null;
-                        // the archiveStream for each entry needs to be null
-                        foreach (var e in c)
-                        {
-                            var zss1 = e._archiveStream as ZipSegmentedStream;
-                            if (zss1 != null)
-                                zss1.Dispose();
-                            e._archiveStream = null;
-                        }
-                    }
-
-                    string tmpName = null;
-                    if (File.Exists(_name))
-                    {
-                        // the steps:
-                        //
-                        // 1. Delete tmpName
-                        // 2. move existing zip to tmpName
-                        // 3. rename (File.Move) working file to name of existing zip
-                        // 4. delete tmpName
-                        //
-                        // This series of steps avoids the exception,
-                        // System.IO.IOException:
-                        //   "Cannot create a file when that file already exists."
-                        //
-                        // Cannot just call File.Replace() here because
-                        // there is a possibility that the TEMP volume is different
-                        // that the volume for the final file (c:\ vs d:\).
-                        // So we need to do a Delete+Move pair.
-                        //
-                        // But, when doing the delete, Windows allows a process to
-                        // delete the file, even though it is held open by, say, a
-                        // virus scanner. It gets internally marked as "delete
-                        // pending". The file does not actually get removed from the
-                        // file system, it is still there after the File.Delete
-                        // call.
-                        //
-                        // Therefore, we need to move the existing zip, which may be
-                        // held open, to some other name. Then rename our working
-                        // file to the desired name, then delete (possibly delete
-                        // pending) the "other name".
-                        //
-                        // Ideally this would be transactional. It's possible that the
-                        // delete succeeds and the move fails. Lacking transactions, if
-                        // this kind of failure happens, we're hosed, and this logic will
-                        // throw on the next File.Move().
-                        //
-                        //File.Delete(_name);
-                        // workitem 10447
-                        tmpName = _name + "." + Path.GetRandomFileName();
-                        if (File.Exists(tmpName))
-                            DeleteFileWithRetry(tmpName);
-                        File.Move(_name, tmpName);
-                    }
-
-                    OnSaveEvent(ZipProgressEventType.Saving_BeforeRenameTempArchive);
-                    File.Move((zss != null) ? zss.CurrentTempName : _temporaryFileName,
-                              _name);
-
-                    OnSaveEvent(ZipProgressEventType.Saving_AfterRenameTempArchive);
-
-                    if (tmpName != null)
-                    {
-                        try
-                        {
-                            // not critical
-                            if (File.Exists(tmpName))
-                                File.Delete(tmpName);
-                        }
-                        catch
-                        {
-                            // don't care about exceptions here.
-                        }
-
-                    }
-                    _fileAlreadyExists = true;
-                }
 
                 NotifyEntriesSaveComplete(c);
                 OnSaveCompleted();
                 _JustSaved = true;
-            }
-
-            // workitem 5043
-            finally
-            {
-                CleanupAfterSaveOperation();
-            }
 
             return;
         }
@@ -331,138 +187,6 @@ namespace Ionic.Zip
         }
 
 
-        private void RemoveTempFile()
-        {
-            try
-            {
-                if (File.Exists(_temporaryFileName))
-                {
-                    File.Delete(_temporaryFileName);
-                }
-            }
-            catch (IOException ex1)
-            {
-                if (Verbose)
-                    StatusMessageTextWriter.WriteLine("ZipFile::Save: could not delete temp file: {0}.", ex1.Message);
-            }
-        }
-
-
-        private void CleanupAfterSaveOperation()
-        {
-            if (_name != null)
-            {
-                // close the stream if there is a file behind it.
-                if (_writestream != null)
-                {
-                    try
-                    {
-                        _writestream.Dispose();
-                    }
-                    catch (System.IO.IOException) { }
-                }
-                _writestream = null;
-
-                if (_temporaryFileName != null)
-                {
-                    RemoveTempFile();
-                    _temporaryFileName = null;
-                }
-            }
-        }
-
-
-        /// <summary>
-        /// Save the file to a new zipfile, with the given name.
-        /// </summary>
-        ///
-        /// <remarks>
-        /// <para>
-        /// This method allows the application to explicitly specify the name of the zip
-        /// file when saving. Use this when creating a new zip file, or when
-        /// updating a zip archive.
-        /// </para>
-        ///
-        /// <para>
-        /// An application can also save a zip archive in several places by calling this
-        /// method multiple times in succession, with different filenames.
-        /// </para>
-        ///
-        /// <para>
-        /// The <c>ZipFile</c> instance is written to storage, typically a zip file in a
-        /// filesystem, only when the caller calls <c>Save</c>.  The Save operation writes
-        /// the zip content to a temporary file, and then renames the temporary file
-        /// to the desired name. If necessary, this method will delete a pre-existing file
-        /// before the rename.
-        /// </para>
-        ///
-        /// </remarks>
-        ///
-        /// <exception cref="System.ArgumentException">
-        /// Thrown if you specify a directory for the filename.
-        /// </exception>
-        ///
-        /// <param name="fileName">
-        /// The name of the zip archive to save to. Existing files will
-        /// be overwritten with great prejudice.
-        /// </param>
-        ///
-        /// <example>
-        /// This example shows how to create and Save a zip file.
-        /// <code>
-        /// using (ZipFile zip = new ZipFile())
-        /// {
-        ///   zip.AddDirectory(@"c:\reports\January");
-        ///   zip.Save("January.zip");
-        /// }
-        /// </code>
-        ///
-        /// <code lang="VB">
-        /// Using zip As New ZipFile()
-        ///   zip.AddDirectory("c:\reports\January")
-        ///   zip.Save("January.zip")
-        /// End Using
-        /// </code>
-        ///
-        /// </example>
-        ///
-        /// <example>
-        /// This example shows how to update a zip file.
-        /// <code>
-        /// using (ZipFile zip = ZipFile.Read("ExistingArchive.zip"))
-        /// {
-        ///   zip.AddFile("NewData.csv");
-        ///   zip.Save("UpdatedArchive.zip");
-        /// }
-        /// </code>
-        ///
-        /// <code lang="VB">
-        /// Using zip As ZipFile = ZipFile.Read("ExistingArchive.zip")
-        ///   zip.AddFile("NewData.csv")
-        ///   zip.Save("UpdatedArchive.zip")
-        /// End Using
-        /// </code>
-        ///
-        /// </example>
-        public void Save(String fileName)
-        {
-            // Check for the case where we are re-saving a zip archive
-            // that was originally instantiated with a stream.  In that case,
-            // the _name will be null. If so, we set _writestream to null,
-            // which insures that we'll cons up a new WriteStream (with a filesystem
-            // file backing it) in the Save() method.
-            if (_name == null)
-                _writestream = null;
-
-            else _readName = _name; // workitem 13915
-
-            _name = fileName;
-            if (Directory.Exists(_name))
-                throw new ZipException("Bad Directory", new System.ArgumentException("That name specifies an existing directory. Please specify a filename.", "fileName"));
-            _contentsChanged = true;
-            _fileAlreadyExists = File.Exists(_name);
-            Save();
-        }
 
 
         /// <summary>
@@ -561,8 +285,6 @@ namespace Ionic.Zip
             if (!outputStream.CanWrite)
                 throw new ArgumentException("Must be a writable stream.", "outputStream");
 
-            // if we had a filename to save to, we are now obliterating it.
-            _name = null;
 
             _writestream = new CountingStream(outputStream);
 
@@ -585,9 +307,6 @@ namespace Ionic.Zip
                                                           String comment,
                                                           ZipContainer container)
         {
-            var zss = s as ZipSegmentedStream;
-            if (zss != null)
-                zss.ContiguousWrite = true;
 
             // write to a memory stream in order to keep the
             // CDR contiguous
@@ -628,10 +347,6 @@ namespace Ionic.Zip
             long Finish = (output != null) ? output.ComputedPosition : s.Position;  // BytesWritten
             long Start = Finish - aLength;
 
-            // need to know which segment the EOCD record starts in
-            UInt32 startSegment = (zss != null)
-                ? zss.CurrentSegment
-                : 0;
 
             Int64 SizeOfCentralDirectory = Finish - Start;
 
@@ -650,70 +365,17 @@ namespace Ionic.Zip
             {
                 if (zip64 == Zip64Option.Never)
                 {
-#if NETCF
                     throw new ZipException("The archive requires a ZIP64 Central Directory. Consider enabling ZIP64 extensions.");
-#else
-                    System.Diagnostics.StackFrame sf = new System.Diagnostics.StackFrame(1);
-                    if (sf.GetMethod().DeclaringType == typeof(ZipFile))
-                        throw new ZipException("The archive requires a ZIP64 Central Directory. Consider setting the ZipFile.UseZip64WhenSaving property.");
-                    else
-                        throw new ZipException("The archive requires a ZIP64 Central Directory. Consider setting the ZipOutputStream.EnableZip64 property.");
-#endif
-
                 }
 
                 var a = GenZip64EndOfCentralDirectory(Start, Finish, countOfEntries, numSegments);
                 a2 = GenCentralDirectoryFooter(Start, Finish, zip64, countOfEntries, comment, container);
-                if (startSegment != 0)
-                {
-                    UInt32 thisSegment = zss.ComputeSegment(a.Length + a2.Length);
-                    int i = 16;
-                    // number of this disk
-                    Array.Copy(BitConverter.GetBytes(thisSegment), 0, a, i, 4);
-                    i += 4;
-                    // number of the disk with the start of the central directory
-                    //Array.Copy(BitConverter.GetBytes(startSegment), 0, a, i, 4);
-                    Array.Copy(BitConverter.GetBytes(thisSegment), 0, a, i, 4);
-
-                    i = 60;
-                    // offset 60
-                    // number of the disk with the start of the zip64 eocd
-                    Array.Copy(BitConverter.GetBytes(thisSegment), 0, a, i, 4);
-                    i += 4;
-                    i += 8;
-
-                    // offset 72
-                    // total number of disks
-                    Array.Copy(BitConverter.GetBytes(thisSegment), 0, a, i, 4);
-                }
                 s.Write(a, 0, a.Length);
             }
             else
                 a2 = GenCentralDirectoryFooter(Start, Finish, zip64, countOfEntries, comment, container);
 
-
-            // now, the regular footer
-            if (startSegment != 0)
-            {
-                // The assumption is the central directory is never split across
-                // segment boundaries.
-
-                UInt16 thisSegment = (UInt16) zss.ComputeSegment(a2.Length);
-                int i = 4;
-                // number of this disk
-                Array.Copy(BitConverter.GetBytes(thisSegment), 0, a2, i, 2);
-                i += 2;
-                // number of the disk with the start of the central directory
-                //Array.Copy(BitConverter.GetBytes((UInt16)startSegment), 0, a2, i, 2);
-                Array.Copy(BitConverter.GetBytes(thisSegment), 0, a2, i, 2);
-                i += 2;
-            }
-
             s.Write(a2, 0, a2.Length);
-
-            // reset the contiguous write property if necessary
-            if (zss != null)
-                zss.ContiguousWrite = false;
 
             return needZip64CentralDirectory;
         }

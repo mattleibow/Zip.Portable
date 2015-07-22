@@ -99,15 +99,6 @@ namespace Ionic.Zip
             throw new NotImplementedException();
         }
 
-        void IDisposable.Dispose()
-        {
-            Close();
-        }
-
-        public override void Close()
-        {
-            base.Close();
-        }
 
     }
 

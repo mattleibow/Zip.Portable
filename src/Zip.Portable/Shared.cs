@@ -36,24 +36,6 @@ namespace Ionic.Zip
         /// private null constructor
         //private SharedUtilities() { }
 
-        // workitem 8423
-        public static Int64 GetFileLength(string fileName)
-        {
-            if (!File.Exists(fileName))
-                throw new FileNotFoundException(fileName);
-
-            long fileLength;
-            FileShare fs = FileShare.ReadWrite;
-#if !NETCF
-            // FileShare.Delete is not defined for the Compact Framework
-            fs |= FileShare.Delete;
-#endif
-            using (var s = File.Open(fileName, FileMode.Open, FileAccess.Read, fs))
-            {
-                fileLength = s.Length;
-            }
-            return fileLength;
-        }
 
 
         [System.Diagnostics.Conditional("NETCF")]
@@ -504,78 +486,6 @@ namespace Ionic.Zip
         }
 
 
-        /// <summary>
-        ///   Create a pseudo-random filename, suitable for use as a temporary
-        ///   file, and open it.
-        /// </summary>
-        /// <remarks>
-        /// <para>
-        ///   The System.IO.Path.GetRandomFileName() method is not available on
-        ///   the Compact Framework, so this library provides its own substitute
-        ///   on NETCF.
-        /// </para>
-        /// <para>
-        ///   This method produces a filename of the form
-        ///   DotNetZip-xxxxxxxx.tmp, where xxxxxxxx is replaced by randomly
-        ///   chosen characters, and creates that file.
-        /// </para>
-        /// </remarks>
-        public static void CreateAndOpenUniqueTempFile(string dir,
-                                                       out Stream fs,
-                                                       out string filename)
-        {
-            // workitem 9763
-            // http://dotnet.org.za/markn/archive/2006/04/15/51594.aspx
-            // try 3 times:
-            for (int i = 0; i < 3; i++)
-            {
-                try
-                {
-                    filename = Path.Combine(dir, InternalGetTempFileName());
-                    fs = new FileStream(filename, FileMode.CreateNew);
-                    return;
-                }
-                catch (IOException)
-                {
-                    if (i == 2) throw;
-                }
-            }
-            throw new IOException();
-        }
-
-#if NETCF || SILVERLIGHT
-        public static string InternalGetTempFileName()
-        {
-            return "DotNetZip-" + GenerateRandomStringImpl(8,0) + ".tmp";
-        }
-
-        internal static string GenerateRandomStringImpl(int length, int delta)
-        {
-            bool WantMixedCase = (delta == 0);
-            System.Random rnd = new System.Random();
-
-            string result = "";
-            char[] a = new char[length];
-
-            for (int i = 0; i < length; i++)
-            {
-               // delta == 65 means uppercase
-               // delta == 97 means lowercase
-                if (WantMixedCase)
-                    delta = (rnd.Next(2) == 0) ? 65 : 97;
-                a[i] = (char)(rnd.Next(26) + delta);
-            }
-
-            result = new System.String(a);
-            return result;
-        }
-#else
-        public static string InternalGetTempFileName()
-        {
-            return "DotNetZip-" + Path.GetRandomFileName().Substring(0, 8) + ".tmp";
-        }
-
-#endif
 
 
         /// <summary>
@@ -589,9 +499,6 @@ namespace Ionic.Zip
         {
             int n = 0;
             bool done = false;
-#if !NETCF && !SILVERLIGHT
-            int retries = 0;
-#endif
             do
             {
                 try
@@ -599,39 +506,10 @@ namespace Ionic.Zip
                     n = s.Read(buffer, offset, count);
                     done = true;
                 }
-#if NETCF || SILVERLIGHT
                 catch (System.IO.IOException)
                 {
                     throw;
                 }
-#else
-                catch (System.IO.IOException ioexc1)
-                {
-                    // Check if we can call GetHRForException,
-                    // which makes unmanaged code calls.
-                    var p = new SecurityPermission(SecurityPermissionFlag.UnmanagedCode);
-                    if (p.IsUnrestricted())
-                    {
-                        uint hresult = _HRForException(ioexc1);
-                        if (hresult != 0x80070021)  // ERROR_LOCK_VIOLATION
-                            throw new System.IO.IOException(String.Format("Cannot read file {0}", FileName), ioexc1);
-                        retries++;
-                        if (retries > 10)
-                            throw new System.IO.IOException(String.Format("Cannot read file {0}, at offset 0x{1:X8} after 10 retries", FileName, offset), ioexc1);
-
-                        // max time waited on last retry = 250 + 10*550 = 5.75s
-                        // aggregate time waited after 10 retries: 250 + 55*550 = 30.5s
-                        System.Threading.Thread.Sleep(250 + retries * 550);
-                    }
-                    else
-                    {
-                        // The permission.Demand() failed. Therefore, we cannot call
-                        // GetHRForException, and cannot do the subtle handling of
-                        // ERROR_LOCK_VIOLATION.  Just bail.
-                        throw;
-                    }
-                }
-#endif
             }
             while (!done);
 
@@ -639,30 +517,6 @@ namespace Ionic.Zip
         }
 
 
-#if !NETCF
-        // workitem 8009
-        //
-        // This method must remain separate.
-        //
-        // Marshal.GetHRForException() is needed to do special exception handling for
-        // the read.  But, that method requires UnmanagedCode permissions, and is marked
-        // with LinkDemand for UnmanagedCode.  In an ASP.NET medium trust environment,
-        // where UnmanagedCode is restricted, will generate a SecurityException at the
-        // time of JIT of the method that calls a method that is marked with LinkDemand
-        // for UnmanagedCode. The SecurityException, if it is restricted, will occur
-        // when this method is JITed.
-        //
-        // The Marshal.GetHRForException() is factored out of ReadWithRetry in order to
-        // avoid the SecurityException at JIT compile time. Because _HRForException is
-        // called only when the UnmanagedCode is allowed.  This means .NET never
-        // JIT-compiles this method when UnmanagedCode is disallowed, and thus never
-        // generates the JIT-compile time exception.
-        //
-#endif
-        private static uint _HRForException(System.Exception ex1)
-        {
-            return unchecked((uint)System.Runtime.InteropServices.Marshal.GetHRForException(ex1));
-        }
 
     }
 

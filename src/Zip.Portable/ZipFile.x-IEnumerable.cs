@@ -27,18 +27,6 @@
 
 namespace Ionic.Zip
 {
-
-    // For some weird reason, the method with the DispId(-4) attribute, which is used as
-    // the _NewEnum() method, and which is required to get enumeration to work from COM
-    // environments like VBScript and Javascript (etc) must be the LAST MEMBER in the
-    // source.  In the event of Partial classes, it needs to be the last member defined
-    // in the last source module.  The source modules are ordered alphabetically by
-    // filename.  Not sure why this is true. In any case, we put the enumeration stuff
-    // here in this oddly-named module, for this reason.
-    //
-
-
-
     public partial class ZipFile
     {
 
@@ -128,27 +116,5 @@ namespace Ionic.Zip
         {
             return GetEnumerator();
         }
-
-
-        /// <summary>
-        /// An IEnumerator, for use of a ZipFile in a foreach construct.
-        /// </summary>
-        ///
-        /// <remarks>
-        /// This method is included for COM support.  An application generally does not call
-        /// this method directly.  It is called implicitly by COM clients when enumerating
-        /// the entries in the ZipFile instance.  In VBScript, this is done with a <c>For Each</c>
-        /// statement.  In Javascript, this is done with <c>new Enumerator(zipfile)</c>.
-        /// </remarks>
-        ///
-        /// <returns>
-        /// The IEnumerator over the entries in the ZipFile.
-        /// </returns>
-        [System.Runtime.InteropServices.DispId(-4)]
-        public System.Collections.IEnumerator GetNewEnum()          // the name of this method is not significant
-        {
-            return GetEnumerator();
-        }
-
     }
 }

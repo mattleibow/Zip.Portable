@@ -35,7 +35,7 @@ namespace Ionic.Zip
         {
             get
             {
-                return (_name != null) ? _name : "(stream)";
+                return "(stream)";
             }
         }
 
@@ -684,18 +684,11 @@ namespace Ionic.Zip
             }
         }
 
-        private Int64 _lengthOfReadStream = -99;
         private Int64 LengthOfReadStream
         {
             get
             {
-                if (_lengthOfReadStream == -99)
-                {
-                    _lengthOfReadStream = (_ReadStreamIsOurs)
-                        ? SharedUtilities.GetFileLength(_name)
-                        : -1L;
-                }
-                return _lengthOfReadStream;
+                return -1L;
             }
         }
         #endregion
@@ -1205,7 +1198,7 @@ namespace Ionic.Zip
             {
                 lock (LOCK)
                 {
-                    var e = ZipErrorEventArgs.Saving(this.Name, entry, exc);
+                    var e = ZipErrorEventArgs.Saving(ArchiveNameForEvent, entry, exc);
                     ZipError(this, e);
                     if (e.Cancel)
                         _saveOperationCanceled = true;

@@ -81,6 +81,10 @@
       <Project>{eb303953-366f-438f-9958-d282b05ddcba}</Project>
       <Name>BZip2.Portable</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Zip.Portable.Platform.PCLStorage\Zip.Portable.Platform.PCLStorage.csproj">
+      <Project>{4dcd6b14-37f5-478e-9e06-fd4c7e16290a}</Project>
+      <Name>Zip.Portable.Platform.PCLStorage</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Zip.Portable\Zip.Portable.csproj">
       <Project>{d282fbaa-9061-4240-8e95-d69e13d71ad1}</Project>
       <Name>Zip.Portable</Name>

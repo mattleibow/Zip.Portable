@@ -5,11 +5,11 @@
     <MinimumVisualStudioVersion>10.0</MinimumVisualStudioVersion>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{D282FBAA-9061-4240-8E95-D69E13D71AD1}</ProjectGuid>
+    <ProjectGuid>{4DCD6B14-37F5-478E-9E06-FD4C7E16290A}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Ionic.Zip</RootNamespace>
-    <AssemblyName>Zip.Portable</AssemblyName>
+    <AssemblyName>Zip.Portable.Platform.PCLStorage</AssemblyName>
     <DefaultLanguage>en-US</DefaultLanguage>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{786C830F-07A1-408B-BD7F-6EE04809D6DB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
@@ -34,46 +34,37 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="EncryptionAlgorithm.cs" />
-    <Compile Include="Events.cs" />
-    <Compile Include="Exceptions.cs" />
-    <Compile Include="ExtractExistingFileAction.cs" />
-    <Compile Include="OffsetStream.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Shared.cs" />
-    <Compile Include="WinZipAes.cs" />
-    <Compile Include="ZipConstants.cs" />
-    <Compile Include="ZipCrypto.cs" />
-    <Compile Include="ZipDirEntry.cs" />
-    <Compile Include="ZipEntry.cs" />
-    <Compile Include="ZipEntry.Extract.cs" />
-    <Compile Include="ZipEntry.Read.cs" />
-    <Compile Include="ZipEntry.Write.cs" />
-    <Compile Include="ZipEntrySource.cs" />
-    <Compile Include="ZipErrorAction.cs" />
-    <Compile Include="ZipFile.AddUpdate.cs" />
-    <Compile Include="ZipFile.cs" />
-    <Compile Include="ZipFile.Events.cs" />
-    <Compile Include="ZipFile.Read.cs" />
-    <Compile Include="ZipFile.Save.cs" />
-    <Compile Include="ZipFile.x-IEnumerable.cs" />
-    <Compile Include="ZipInputStream.cs" />
-    <Compile Include="ZipOutputStream.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <Reference Include="Zlib.Portable, Version=1.11.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Zlib.Portable.1.11.0\lib\portable-net4+sl5+wp8+win8+wpa81+MonoTouch+MonoAndroid\Zlib.Portable.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="packages.config" />
-  </ItemGroup>
-  <ItemGroup>
+    <!-- A reference to the entire .NET Framework is automatically included -->
     <ProjectReference Include="..\BZip2.Portable\BZip2.Portable.csproj">
       <Project>{eb303953-366f-438f-9958-d282b05ddcba}</Project>
       <Name>BZip2.Portable</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Zip.Portable\Zip.Portable.csproj">
+      <Project>{d282fbaa-9061-4240-8e95-d69e13d71ad1}</Project>
+      <Name>Zip.Portable</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Extensions.ZipEntry.Extract.cs" />
+    <Compile Include="Extensions.ZipFile.Read.cs" />
+    <Compile Include="Extensions.ZipFile.Save.cs" />
+    <Compile Include="Extensions.ZipFile.Extract.cs" />
+    <Compile Include="Extensions.ZipFile.AddUpdate.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="PCLStorage, Version=1.0.2.0, Culture=neutral, PublicKeyToken=286fe515a2c35b64, processorArchitecture=MSIL">
+      <HintPath>..\packages\PCLStorage.1.0.2\lib\portable-net45+wp8+wpa81+win8+monoandroid+monotouch+Xamarin.iOS+Xamarin.Mac\PCLStorage.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="PCLStorage.Abstractions, Version=1.0.2.0, Culture=neutral, PublicKeyToken=286fe515a2c35b64, processorArchitecture=MSIL">
+      <HintPath>..\packages\PCLStorage.1.0.2\lib\portable-net45+wp8+wpa81+win8+monoandroid+monotouch+Xamarin.iOS+Xamarin.Mac\PCLStorage.Abstractions.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Extensions.ZipFile.cs" />
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

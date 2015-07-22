@@ -2798,11 +2798,7 @@ namespace Ionic.Zip
     }
 
 
-    enum AddOrUpdateAction
-    {
-        AddOnly = 0,
-        AddOrUpdate
-    }
+
 
 }
 

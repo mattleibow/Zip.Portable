@@ -2305,30 +2305,6 @@ namespace Ionic.Zip
         }
 
 
-        /// <summary>
-        /// Returns the version number on the DotNetZip assembly.
-        /// </summary>
-        ///
-        /// <remarks>
-        ///   <para>
-        ///     This property is exposed as a convenience.  Callers could also get the
-        ///     version value by retrieving GetName().Version on the
-        ///     System.Reflection.Assembly object pointing to the DotNetZip
-        ///     assembly. But sometimes it is not clear which assembly is being loaded.
-        ///     This property makes it clear.
-        ///   </para>
-        ///   <para>
-        ///     This static property is primarily useful for diagnostic purposes.
-        ///   </para>
-        /// </remarks>
-        public static System.Version LibraryVersion
-        {
-            get
-            {
-                return System.Reflection.Assembly.GetExecutingAssembly().GetName().Version;
-            }
-        }
-
         internal void NotifyEntryChanged()
         {
             _contentsChanged = true;

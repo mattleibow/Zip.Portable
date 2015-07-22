@@ -28,7 +28,6 @@
 
 using System;
 using System.IO;
-using Interop = System.Runtime.InteropServices;
 
 namespace Ionic.Zip
 {
@@ -37,11 +36,6 @@ namespace Ionic.Zip
     /// by enumerating the entries within a ZipFile, or by adding an entry to a ZipFile.
     /// </summary>
 
-    [Interop.GuidAttribute("ebc25cf6-9120-4283-b972-0e5520d00004")]
-    [Interop.ComVisible(true)]
-#if !NETCF
-    [Interop.ClassInterface(Interop.ClassInterfaceType.AutoDispatch)]  // AutoDual
-#endif
     public partial class ZipEntry
     {
         /// <summary>
@@ -2880,89 +2874,4 @@ namespace Ionic.Zip
         BZip2 = 12,
 #endif
     }
-
-
-#if NETCF
-    internal class NetCfFile
-    {
-        public static int SetTimes(string filename, DateTime ctime, DateTime atime, DateTime mtime)
-        {
-            IntPtr hFile  = (IntPtr) CreateFileCE(filename,
-                                                  (uint)0x40000000L, // (uint)FileAccess.Write,
-                                                  (uint)0x00000002L, // (uint)FileShare.Write,
-                                                  0,
-                                                  (uint) 3,  // == open existing
-                                                  (uint)0, // flagsAndAttributes
-                                                  0);
-
-            if((int)hFile == -1)
-            {
-                // workitem 7944: don't throw on failure to set file times
-                // throw new ZipException("CreateFileCE Failed");
-                return Interop.Marshal.GetLastWin32Error();
-            }
-
-            SetFileTime(hFile,
-                        BitConverter.GetBytes(ctime.ToFileTime()),
-                        BitConverter.GetBytes(atime.ToFileTime()),
-                        BitConverter.GetBytes(mtime.ToFileTime()));
-
-            CloseHandle(hFile);
-            return 0;
-        }
-
-
-        public static int SetLastWriteTime(string filename, DateTime mtime)
-        {
-            IntPtr hFile  = (IntPtr) CreateFileCE(filename,
-                                                  (uint)0x40000000L, // (uint)FileAccess.Write,
-                                                  (uint)0x00000002L, // (uint)FileShare.Write,
-                                                  0,
-                                                  (uint) 3,  // == open existing
-                                                  (uint)0, // flagsAndAttributes
-                                                  0);
-
-            if((int)hFile == -1)
-            {
-                // workitem 7944: don't throw on failure to set file time
-                // throw new ZipException(String.Format("CreateFileCE Failed ({0})",
-                //                                      Interop.Marshal.GetLastWin32Error()));
-                return Interop.Marshal.GetLastWin32Error();
-            }
-
-            SetFileTime(hFile, null, null,
-                        BitConverter.GetBytes(mtime.ToFileTime()));
-
-            CloseHandle(hFile);
-            return 0;
-        }
-
-
-        [Interop.DllImport("coredll.dll", EntryPoint="CreateFile", SetLastError=true)]
-        internal static extern int CreateFileCE(string lpFileName,
-                                                uint dwDesiredAccess,
-                                                uint dwShareMode,
-                                                int lpSecurityAttributes,
-                                                uint dwCreationDisposition,
-                                                uint dwFlagsAndAttributes,
-                                                int hTemplateFile);
-
-
-        [Interop.DllImport("coredll", EntryPoint="GetFileAttributes", SetLastError=true)]
-        internal static extern uint GetAttributes(string lpFileName);
-
-        [Interop.DllImport("coredll", EntryPoint="SetFileAttributes", SetLastError=true)]
-        internal static extern bool SetAttributes(string lpFileName, uint dwFileAttributes);
-
-        [Interop.DllImport("coredll", EntryPoint="SetFileTime", SetLastError=true)]
-        internal static extern bool SetFileTime(IntPtr hFile, byte[] lpCreationTime, byte[] lpLastAccessTime, byte[] lpLastWriteTime);
-
-        [Interop.DllImport("coredll.dll", SetLastError=true)]
-        internal static extern bool CloseHandle(IntPtr hObject);
-
-    }
-#endif
-
-
-
 }

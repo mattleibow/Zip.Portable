@@ -34,8 +34,7 @@ build:
 # tests
 test:
   assemblies:
-    - src\BZip2.Portable.Test\bin\$(configuration)\$(Signing)\BZip2.Portable.Test.dll
-    - src\Zip.Portable.Test\bin\$(configuration)\$(Signing)\Zip.Portable.Test.dll
+    - '**\*.Tests.dll'
 #  categories:
 #    - CI
 

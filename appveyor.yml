@@ -50,6 +50,6 @@ artifacts:
   - path: src\Zip.Portable.PlatformSupport\bin\$(configuration)\$(Signing)\
     name: Zip.Portable.PlatformSupport-$(configuration)-$(Signing)-$(APPVEYOR_BUILD_VERSION) 
     type: zip 
-  - path: src\Zip.Portable.Platfor.PCLStorage\bin\$(configuration)\$(Signing)\
-    name: Zip.Portable.Platfor.PCLStorage-$(configuration)-$(Signing)-$(APPVEYOR_BUILD_VERSION) 
+  - path: src\Zip.Portable.Platform.PCLStorage\bin\$(configuration)\$(Signing)\
+    name: Zip.Portable.Platform.PCLStorage-$(configuration)-$(Signing)-$(APPVEYOR_BUILD_VERSION) 
     type: zip 

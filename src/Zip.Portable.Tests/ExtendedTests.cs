@@ -167,7 +167,7 @@ namespace Ionic.Zip.Tests.Extended
             string dnzDir = CurrentDir;
             for (int i = 0; i < 3; i++)
                 dnzDir = Path.GetDirectoryName(dnzDir);
-            string unzip = Path.Combine(dnzDir, "Tools\\Unzip\\bin\\debug\\Unzip.exe");
+            string unzip = Path.Combine(dnzDir, "Tools", TestUtilities.GetBinDir("Unzip"), "Unzip.exe");
             Assert.IsTrue(File.Exists(unzip),
                           "The unzip.exe tool is not available.");
 
@@ -619,7 +619,7 @@ namespace Ionic.Zip.Tests.Extended
                 };
 
             string testBin = TestUtilities.GetTestBinDir(CurrentDir);
-            string testStringsFile = Path.Combine(testBin, "Resources\\TestStrings.txt");
+            string testStringsFile = Path.Combine(testBin, "Resources", "TestStrings.txt");
             var contentStrings = File.ReadAllLines(testStringsFile);
 
             int[] successfulEncodings = new int[contentStrings.Length];
@@ -1414,10 +1414,10 @@ namespace Ionic.Zip.Tests.Extended
 
             string[] filenames =
                 {
-                    Path.Combine(sourceDir, "Tools\\Zipit\\bin\\Debug\\Zipit.exe"),
-                    Path.Combine(sourceDir, "Zip.Portable\\bin\\Debug\\Zip.Portable.dll"),
-                    Path.Combine(sourceDir, "Zip.Portable\\bin\\Debug\\Zip.Portable.pdb"),
-                    Path.Combine(sourceDir, "Zip.Portable\\bin\\Debug\\Zip.Portable.xml"),
+                    Path.Combine(sourceDir, "Tools", TestUtilities.GetBinDir("Zipit"), "Zipit.exe"),
+                    Path.Combine(sourceDir, TestUtilities.GetBinDir("Zip.Portable"), "Zip.Portable.dll"),
+                    Path.Combine(sourceDir, TestUtilities.GetBinDir("Zip.Portable"), "Zip.Portable.pdb"),
+                    Path.Combine(sourceDir, TestUtilities.GetBinDir("Zip.Portable"), "Zip.Portable.xml"),
                     //Path.Combine(SourceDir, "AppNote.txt")
                 };
 
@@ -2044,7 +2044,7 @@ namespace Ionic.Zip.Tests.Extended
         {
             string testBin = TestUtilities.GetTestBinDir(CurrentDir);
 
-            string tifFile = Path.Combine(testBin, "Resources\\wi8647.tif");
+            string tifFile = Path.Combine(testBin, "Resources", "wi8647.tif");
             Assert.IsTrue(File.Exists(tifFile), "tif file does not exist ({0})", tifFile);
 
             byte[] chk1 = TestUtilities.ComputeChecksum(tifFile);

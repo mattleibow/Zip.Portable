@@ -280,8 +280,7 @@ namespace Ionic.Zip.Tests.Password
 
             TestContext.WriteLine("Current Dir: {0}", CurrentDir);
 
-            return  Path.Combine(SourceDir,
-                                 "Zip.Portable.Tests\\bin\\Debug\\zips\\" + shortFileName);
+            return  Path.Combine(SourceDir, TestUtilities.GetBinDir("Zip.Portable.Tests"), "zips", shortFileName);
         }
 
 
@@ -299,8 +298,8 @@ namespace Ionic.Zip.Tests.Password
 
             string[] filenames =
             {
-                Path.Combine(SourceDir, "Tools\\Zipit\\bin\\Debug\\Zipit.exe"),
-                Path.Combine(SourceDir, "Zip.Portable\\bin\\Debug\\Zip.Portable.xml"),
+                Path.Combine(SourceDir, "Tools", TestUtilities.GetBinDir("Zipit"), "Zipit.exe"),
+                Path.Combine(SourceDir, TestUtilities.GetBinDir("Zip.Portable"), "Zip.Portable.xml"),
             };
 
             string[] checksums =
@@ -357,8 +356,8 @@ namespace Ionic.Zip.Tests.Password
 
             string[] filenames =
             {
-                Path.Combine(SourceDir, "Tools\\Zipit\\bin\\Debug\\Zipit.exe"),
-                Path.Combine(SourceDir, "Zip.Portable\\bin\\Debug\\Zip.Portable.xml"),
+                Path.Combine(SourceDir, "Tools", TestUtilities.GetBinDir("Zipit"), "Zipit.exe"),
+                Path.Combine(SourceDir, TestUtilities.GetBinDir("Zip.Portable"), "Zip.Portable.xml"),
             };
 
             string[] passwords =
@@ -397,8 +396,8 @@ namespace Ionic.Zip.Tests.Password
 
             string[] filenames =
             {
-                Path.Combine(dnzDir, "Tools\\Zipit\\bin\\Debug\\Zipit.exe"),
-                Path.Combine(dnzDir, "Zip.Portable\\bin\\Debug\\Zip.Portable.xml"),
+                Path.Combine(dnzDir, "Tools", TestUtilities.GetBinDir("Zipit"), "Zipit.exe"),
+                Path.Combine(dnzDir, TestUtilities.GetBinDir("Zip.Portable"), "Zip.Portable.xml"),
             };
 
             string[] checksums =
@@ -418,7 +417,7 @@ namespace Ionic.Zip.Tests.Password
             Assert.AreEqual<int>(TestUtilities.CountEntries(zipFileToCreate), 2,
                     "wrong number of entries.");
 
-            string fileX = Path.Combine(dnzDir, "Tools\\Unzip\\bin\\debug\\unzip.exe");
+            string fileX = Path.Combine(dnzDir, "Tools", TestUtilities.GetBinDir("Unzip"), "unzip.exe");
             string checksumX = TestUtilities.GetCheckSumString(fileX);
             string password = TestUtilities.GenerateRandomPassword() + "!";
             using (ZipFile zip = ZipFileExtensions.Read(zipFileToCreate))
@@ -501,7 +500,7 @@ namespace Ionic.Zip.Tests.Password
                             }
                             while (zip[ix].IsDirectory);
                             TestContext.WriteLine("Selected entry: {0}", zip[ix].FileName);
-                            extractedFile = Path.Combine(extractDir, zip[ix].FileName.Replace("/","\\"));
+                            extractedFile = Path.Combine(extractDir, zip[ix].FileName.Replace('/', Path.DirectorySeparatorChar));
                             TestContext.WriteLine("name for extracted file: {0}", extractedFile);
                             Assert.IsFalse(File.Exists(extractedFile), "The file exists.");
                         }

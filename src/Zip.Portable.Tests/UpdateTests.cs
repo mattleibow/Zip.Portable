@@ -426,7 +426,7 @@ namespace Ionic.Zip.Tests.Update
                     {
                         var newname = (k == 0)
                             ? e.FileName + "-renamed"
-                            : "renamed_files\\" + e.FileName;
+                            : Path.Combine("renamed_files", e.FileName);
 
                         TestContext.WriteLine("  renaming {0} to {1}", e.FileName, newname);
                         e.FileName = newname;

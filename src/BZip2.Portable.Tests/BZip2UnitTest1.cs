@@ -183,15 +183,35 @@ namespace Ionic.BZip2.Tests
             return location;
         }
 
+        private static string GetBinDir(string startingPoint)
+        {
+#if DEBUG
+            var config = "Debug";
+#else
+            var config = "Release";
+#endif
+#if SIGNED
+            var signed = "Signed";
+#else
+            var signed = "Unsigned";
+#endif
+            return Path.Combine(startingPoint, "bin", config, signed);
+        }
+
         private static string GetTestBinDir(string startingPoint)
         {
-            return GetTestDependentDir(startingPoint, "BZip2.Portable.Tests\\bin\\Debug");
+            return GetTestDependentDir(startingPoint, GetBinDir("BZip2.Portable.Tests"));
+        }
+
+        private static string GetToolsBinDir(string startingPoint)
+        {
+            return GetTestDependentDir(startingPoint, GetBinDir(Path.Combine("Tools", "BZip2")));
         }
 
         private string GetContentFile(string fileName)
         {
             string testBin = GetTestBinDir(CurrentDir);
-            string path = Path.Combine(testBin, String.Format("Resources\\{0}", fileName));
+            string path = Path.Combine(testBin, Path.Combine("Resources", fileName));
             Assert.IsTrue(File.Exists(path), "file ({0}) does not exist", path);
             return path;
         }
@@ -312,7 +332,7 @@ namespace Ionic.BZip2.Tests
             }
         }
 
-        #endregion
+#endregion
 
 
         [TestMethod]
@@ -448,7 +468,7 @@ namespace Ionic.BZip2.Tests
         [ExpectedException(typeof(IOException))]
         public void BZ_Error_1()
         {
-            var bzbin = GetTestDependentDir(CurrentDir, "Tools\\BZip2\\bin\\Debug");
+            var bzbin = GetToolsBinDir(CurrentDir);
             var dnzBzip2exe = Path.Combine(bzbin, "bzip2.exe");
             string decompressedFname = "ThisWillNotWork.txt";
             using (Stream input = File.OpenRead(dnzBzip2exe),
@@ -472,7 +492,7 @@ namespace Ionic.BZip2.Tests
         [TestMethod]
         public void BZ_Utility()
         {
-            var bzbin = GetTestDependentDir(CurrentDir, "Tools\\BZip2\\bin\\Debug");
+            var bzbin = GetToolsBinDir(CurrentDir);
             var dnzBzip2exe = Path.Combine(bzbin, "bzip2.exe");
             Assert.IsTrue(File.Exists(dnzBzip2exe), "Bzip2.exe is missing {0}",
                           dnzBzip2exe);

@@ -260,9 +260,9 @@ namespace Ionic.Zip.Tests.Error
             // the list of filenames to add to the zip
             string[] fileNames =
                 {
-                    Path.Combine(sourceDir, "Tools\\Zipit\\bin\\Debug\\Zipit.exe"),
-                    Path.Combine(sourceDir, "Zip.Portable\\bin\\Debug\\Zip.Portable.xml"),
-                    Path.Combine(sourceDir, "Tools\\WinFormsApp\\Icon2.res"),
+                    Path.Combine(sourceDir, "Tools", TestUtilities.GetBinDir("Zipit"), "Zipit.exe"),
+                    Path.Combine(sourceDir, TestUtilities.GetBinDir("Zip.Portable"), "Zip.Portable.xml"),
+                    Path.Combine(sourceDir, "Tools", "WinFormsApp", "Icon2.res"),
                 };
 
             using (ZipFile zip = new ZipFile())
@@ -585,9 +585,9 @@ namespace Ionic.Zip.Tests.Error
             // the list of filenames to add to the zip
             string[] filenames =
             {
-                Path.Combine(sourceDir, "Tools\\Zipit\\bin\\Debug\\Zipit.exe"),
-                Path.Combine(sourceDir, "Zip.Portable\\bin\\Debug\\Zip.Portable.xml"),
-                Path.Combine(sourceDir, "Tools\\WinFormsApp\\Icon2.res"),
+                Path.Combine(sourceDir, "Tools", TestUtilities.GetBinDir("Zipit"), "Zipit.exe"),
+                Path.Combine(sourceDir, TestUtilities.GetBinDir("Zip.Portable"), "Zip.Portable.xml"),
+                Path.Combine(sourceDir, "Tools", "WinFormsApp", "Icon2.res"),
             };
 
             // passwords to use for those entries
@@ -647,10 +647,10 @@ namespace Ionic.Zip.Tests.Error
             // the list of filenames to add to the zip
             string[] filenames =
             {
-                Path.Combine(sourceDir, "Tools\\Zipit\\bin\\Debug\\Zipit.exe"),
-                Path.Combine(sourceDir, "Tools\\Unzip\\bin\\Debug\\Unzip.exe"),
-                Path.Combine(sourceDir, "Zip.Portable\\bin\\Debug\\Zip.Portable.xml"),
-                Path.Combine(sourceDir, "Tools\\WinFormsApp\\Icon2.res"),
+                Path.Combine(sourceDir, "Tools", TestUtilities.GetBinDir("Zipit"), "Zipit.exe"),
+                Path.Combine(sourceDir, "Tools", TestUtilities.GetBinDir("Unzip"), "Unzip.exe"),
+                Path.Combine(sourceDir, TestUtilities.GetBinDir("Zip.Portable"), "Zip.Portable.xml"),
+                Path.Combine(sourceDir, "Tools", "WinFormsApp", "Icon2.res"),
             };
 
             // create the zipfile, adding the files

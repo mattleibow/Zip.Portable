@@ -290,7 +290,7 @@ namespace Ionic.Zip.Tests.Utilities
                         sourceDir = Path.GetDirectoryName(sourceDir);
 
                     _zipit =
-                        Path.Combine(sourceDir, "Tools\\Zipit\\bin\\Debug\\Zipit.exe");
+                        Path.Combine(sourceDir, "Tools", TestUtilities.GetBinDir("Zipit"), "Zipit.exe");
 
                     _ZipitIsPresent = new Nullable<bool>(File.Exists(_zipit));
                 }
@@ -308,8 +308,8 @@ namespace Ionic.Zip.Tests.Utilities
                     if (_wzunzip == null || _wzzip == null)
                     {
                         progfiles = System.Environment.GetEnvironmentVariable("ProgramFiles(x86)");
-                        _wzunzip = Path.Combine(progfiles, "winzip\\wzunzip.exe");
-                        _wzzip = Path.Combine(progfiles, "winzip\\wzzip.exe");
+                        _wzunzip = Path.Combine(progfiles, "winzip", "wzunzip.exe");
+                        _wzzip = Path.Combine(progfiles, "winzip", "wzzip.exe");
                     }
                     _WinZipIsPresent = new Nullable<bool>(File.Exists(_wzunzip) && File.Exists(_wzzip));
                 }
@@ -327,7 +327,7 @@ namespace Ionic.Zip.Tests.Utilities
                     if (_sevenzip == null)
                     {
                         progfiles = System.Environment.GetEnvironmentVariable("ProgramFiles");
-                        _sevenzip = Path.Combine(progfiles, "7-zip\\7z.exe");
+                        _sevenzip = Path.Combine(progfiles, "7-zip", "7z.exe");
                     }
                     _SevenZipIsPresent = new Nullable<bool>(File.Exists(_sevenzip));
                 }
@@ -346,8 +346,8 @@ namespace Ionic.Zip.Tests.Utilities
                     if (_infozipzip == null)
                     {
                         progfiles = System.Environment.GetEnvironmentVariable("ProgramFiles(x86)");
-                        _infozipzip = Path.Combine(progfiles, "infozip.org\\zip.exe");
-                        _infozipunzip = Path.Combine(progfiles, "infozip.org\\unzip.exe");
+                        _infozipzip = Path.Combine(progfiles, "infozip.org", "zip.exe");
+                        _infozipunzip = Path.Combine(progfiles, "infozip.org", "unzip.exe");
                     }
                     _InfoZipIsPresent = new Nullable<bool>(File.Exists(_infozipzip) &&
                                                            File.Exists(_infozipunzip));

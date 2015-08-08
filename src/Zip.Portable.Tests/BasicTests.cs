@@ -1326,7 +1326,7 @@ namespace Ionic.Zip.Tests.Basic
 
             TestContext.WriteLine("Current Dir: {0}", CurrentDir);
 
-            string filename = Path.Combine(SourceDir, "Zip.Portable.Tests\\bin\\Debug\\zips\\" + fileName);
+            string filename = Path.Combine(SourceDir, TestUtilities.GetBinDir("Zip.Portable.Tests"), "zips", fileName);
 
             TestContext.WriteLine("Reading zip file: '{0}'", filename);
             using (ZipFile zip = ZipFileExtensions.Read(filename))

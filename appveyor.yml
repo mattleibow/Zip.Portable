@@ -1,13 +1,55 @@
-version: $(LibraryVersion).{build}
+# build variables
+os: Visual Studio 2015
 configuration: Release
 platform: Any CPU
+environment:
+  LibraryVersion: 0.9.2
+  matrix:
+    - SignAssembly: true
+      Signing: Signed
+	- SignAssembly: false
+      Signing: Unsigned
+  
+# versioning
+version: $(LibraryVersion).{build}
 assembly_info:
   patch: true
   file: '**\AssemblyInfo.*'
   assembly_version: $(LibraryVersion).0
   assembly_file_version: '{version}'
   assembly_informational_version: '{version}-{branch}'
-environment:
-  LibraryVersion: 0.9.2
-build:
-  verbosity: minimal
+
+# build
+matrix:
+  fast_finish: true
+branches:
+  only:
+    - master
+before_build:
+  - nuget restore src\Zip.Portable.sln
+build: 
+  project: src\Zip.Portable.sln 
+  verbosity: normal
+
+# tests
+test:
+  assemblies:
+    - src\BZip2.Portable.Test\bin\$(configuration)\$(Signing)\BZip2.Portable.Test.dll
+    - src\Zip.Portable.Test\bin\$(configuration)\$(Signing)\Zip.Portable.Test.dll
+#  categories:
+#    - CI
+
+# artifacts
+artifacts: 
+  - path: src\BZip2.Portable\bin\$(configuration)\$(Signing)\
+    name: BZip2.Portable-$(configuration)-$(Signing)\-$(APPVEYOR_BUILD_VERSION) 
+    type: zip 
+  - path: src\Zip.Portable\bin\$(configuration)\$(Signing)\
+    name: Zip.Portable-$(configuration)-$(Signing)\-$(APPVEYOR_BUILD_VERSION) 
+    type: zip 
+  - path: src\Zip.Portable.PlatformSupport\bin\$(configuration)\$(Signing)\
+    name: Zip.Portable.PlatformSupport-$(configuration)-$(Signing)\-$(APPVEYOR_BUILD_VERSION) 
+    type: zip 
+  - path: src\Zip.Portable.Platfor.PCLStorage\bin\$(configuration)\$(Signing)\
+    name: Zip.Portable.Platfor.PCLStorage-$(configuration)-$(Signing)\-$(APPVEYOR_BUILD_VERSION) 
+    type: zip 

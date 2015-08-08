@@ -710,12 +710,27 @@ namespace Ionic.Zip.Tests.Utilities
 
         internal static string GetTestBinDir(string startingPoint)
         {
-            return GetTestDependentDir(startingPoint, "Zip.Portable.Tests\\bin\\Debug");
+            return GetTestDependentDir(startingPoint, GetBinDir("Zip.Portable.Tests"));
         }
 
         internal static string GetTestSrcDir(string startingPoint)
         {
             return GetTestDependentDir(startingPoint, "Zip.Portable.Tests");
+        }
+
+        internal static string GetBinDir(string startingPoint)
+        {
+#if DEBUG
+            var config = "Debug";
+#else
+            var config = "Release";
+#endif
+#if SIGNED
+            var signed = "Signed";
+#else
+            var signed = "Unsigned";
+#endif
+            return Path.Combine(startingPoint, "bin", config, signed);
         }
 
         private static string GetTestDependentDir(string startingPoint, string subdir)
@@ -733,8 +748,8 @@ namespace Ionic.Zip.Tests.Utilities
             StartProgressMonitor(string progressChannel, string title, string initialStatus)
         {
             string testBin = TestUtilities.GetTestBinDir(cdir);
-            string progressMonitorTool = Path.Combine(testBin, "Resources\\UnitTestProgressMonitor.exe");
-            string requiredDll = Path.Combine(testBin, "Resources\\Ionic.CopyData.dll");
+            string progressMonitorTool = Path.Combine(testBin, "Resources", "UnitTestProgressMonitor.exe");
+            string requiredDll = Path.Combine(testBin, "Resources", "Ionic.CopyData.dll");
             Assert.IsTrue(File.Exists(progressMonitorTool), "progress monitor tool does not exist ({0})",  progressMonitorTool);
             Assert.IsTrue(File.Exists(requiredDll), "required DLL does not exist ({0})",  requiredDll);
 

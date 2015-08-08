@@ -42,14 +42,14 @@ test:
 # artifacts
 artifacts: 
   - path: src\BZip2.Portable\bin\$(configuration)\$(Signing)\
-    name: BZip2.Portable-$(configuration)-$(Signing)\-$(APPVEYOR_BUILD_VERSION) 
+    name: BZip2.Portable-$(configuration)-$(Signing)-$(APPVEYOR_BUILD_VERSION) 
     type: zip 
   - path: src\Zip.Portable\bin\$(configuration)\$(Signing)\
-    name: Zip.Portable-$(configuration)-$(Signing)\-$(APPVEYOR_BUILD_VERSION) 
+    name: Zip.Portable-$(configuration)-$(Signing)-$(APPVEYOR_BUILD_VERSION) 
     type: zip 
   - path: src\Zip.Portable.PlatformSupport\bin\$(configuration)\$(Signing)\
-    name: Zip.Portable.PlatformSupport-$(configuration)-$(Signing)\-$(APPVEYOR_BUILD_VERSION) 
+    name: Zip.Portable.PlatformSupport-$(configuration)-$(Signing)-$(APPVEYOR_BUILD_VERSION) 
     type: zip 
   - path: src\Zip.Portable.Platfor.PCLStorage\bin\$(configuration)\$(Signing)\
-    name: Zip.Portable.Platfor.PCLStorage-$(configuration)-$(Signing)\-$(APPVEYOR_BUILD_VERSION) 
+    name: Zip.Portable.Platfor.PCLStorage-$(configuration)-$(Signing)-$(APPVEYOR_BUILD_VERSION) 
     type: zip 

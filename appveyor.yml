@@ -7,7 +7,7 @@ environment:
   matrix:
     - SignAssembly: true
       Signing: Signed
-	- SignAssembly: false
+    - SignAssembly: false
       Signing: Unsigned
   
 # versioning

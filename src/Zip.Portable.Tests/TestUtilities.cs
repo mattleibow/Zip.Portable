@@ -736,7 +736,7 @@ namespace Ionic.Zip.Tests.Utilities
         private static string GetTestDependentDir(string startingPoint, string subdir)
         {
             var location = startingPoint;
-            for (int i = 0; i < 3; i++)
+            for (int i = 0; i < 4; i++)
                 location = Path.GetDirectoryName(location);
 
             location = Path.Combine(location, subdir);

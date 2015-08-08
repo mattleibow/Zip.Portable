@@ -442,7 +442,7 @@ namespace Ionic.Zip
 #endif
         }
 
-        int CheckExtractExistingFile(string baseDir, string targetFileName)
+        internal int CheckExtractExistingFile(string baseDir, string targetFileName)
         {
             int loop = 0;
             // returns: 0 == extract, 1 = don't, 2 = cancel
@@ -495,6 +495,8 @@ namespace Ionic.Zip
             int crcResult;
             var input = archiveStream;
 
+            try
+            {
                 // change for workitem 8098
                 input.Seek(FileDataPosition, SeekOrigin.Begin);
                 // workitem 10178
@@ -547,6 +549,10 @@ namespace Ionic.Zip
 
                     crcResult = s1.Crc;
                 }
+            }
+            finally
+            {
+            }
 
             return crcResult;
         }

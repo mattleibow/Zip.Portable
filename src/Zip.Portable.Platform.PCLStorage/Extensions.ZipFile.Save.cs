@@ -1,12 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using PCLStorage;
+using Ionic.Zip.PlatformSupport;
 
 namespace Ionic.Zip
 {
-    public partial class ZipFileExtensions
+    public static partial class ZipFileExtensions
     {
         /// <summary>
         /// Save the file to a new zipfile, with the given name.
@@ -80,24 +83,78 @@ namespace Ionic.Zip
         /// </code>
         ///
         /// </example>
-        public void Save(String fileName)
+        public static void Save(this ZipFile zipFile, String fileName)
         {
-            // Check for the case where we are re-saving a zip archive
-            // that was originally instantiated with a stream.  In that case,
-            // the _name will be null. If so, we set _writestream to null,
-            // which insures that we'll cons up a new WriteStream (with a filesystem
-            // file backing it) in the Save() method.
-            if (_name == null)
-                _writestream = null;
+            Save(zipFile, fileName, false);
+        }
 
-            else _readName = _name; // workitem 13915
+        public static void Save(this ZipFile zipFile, String fileName, bool overwriteExisting)
+        {
+            if (fileName == null)
+            {
+                throw new ArgumentNullException("fileName");
+            }
 
-            _name = fileName;
-            if (Directory.Exists(_name))
-                throw new ZipException("Bad Directory", new System.ArgumentException("That name specifies an existing directory. Please specify a filename.", "fileName"));
-            _contentsChanged = true;
-            _fileAlreadyExists = File.Exists(_name);
-            Save();
+            string fullPath = GetFullPath(fileName);
+
+            if (FileSystem.Current.GetFolderFromPathAsync(fullPath).ExecuteSync() != null)
+                throw new ZipException("Bad Directory", new ArgumentException("That name specifies an existing directory. Please specify a filename.", "fileName"));
+
+            var fullDirectoryName = Path.GetDirectoryName(fullPath);
+            var directoryName = Path.GetDirectoryName(fileName);
+            var folder = FileSystem.Current.GetFolderFromPathAsync(fullDirectoryName).ExecuteSync();
+            if (folder == null)
+                throw new ZipException("Bad Directory", new ArgumentException(string.Format("That folder ({0}) does not exist!", directoryName)));
+
+            // check up here so we may shortcut some IO operations in the future :)
+            var fileExists = folder.CheckExistsAsync(fullPath).ExecuteSync() == ExistenceCheckResult.FileExists;
+
+            // write to a temporary file so that we can read from the same zip when saving
+            var tmpName = Path.GetRandomFileName();
+
+            try
+            {
+                // extract
+                var tmpFile = folder.CreateFileAsync(tmpName, CreationCollisionOption.ReplaceExisting).ExecuteSync();
+                using (var tmpStream = tmpFile.OpenAsync(FileAccess.ReadAndWrite).ExecuteSync())
+                {
+                    zipFile.Save(tmpStream);
+                }
+
+                // if it wasn't canceled
+                if (!zipFile.IsSaveOperationCanceled())
+                {
+                    // disconnect from the stream
+                    zipFile.SetUnderlyingZipStream(null);
+                    // move the temporary file into position
+                    ZipEntryExtensions.MoveFileInPlace(fileExists, fullPath, tmpFile.Path);
+                    // and now set the read stream to be that of the new file
+                    var targetFile = FileSystem.Current.GetFileFromPathAsync(fullPath).ExecuteSync();
+                    var fileStream = targetFile.OpenAsync(FileAccess.Read).ExecuteSync();
+                    zipFile.SetUnderlyingZipStream(fileStream);
+                    zipFile.SetShouldDisposeReadStream(true);
+
+                    // so we can shortcut the existance checks
+                    tmpName = null;
+                }
+            }
+            finally
+            {
+                // An exception has occurred. If the file exists, check
+                // to see if it existed before we tried extracting.  If
+                // it did not, attempt to remove the target file. There
+                // is a small possibility that the existing file has
+                // been extracted successfully, overwriting a previously
+                // existing file, and an exception was thrown after that
+                // but before final completion (setting times, etc). In
+                // that case the file will remain, even though some
+                // error occurred.  Nothing to be done about it.
+                if (tmpName != null)
+                {
+                    var tmpFile = folder.GetFileAsync(tmpName).ExecuteSync();
+                    tmpFile.DeleteAsync();
+                }
+            }
         }
     }
 }

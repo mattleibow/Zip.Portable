@@ -110,7 +110,7 @@ namespace Ionic.Zip.Tests.Utilities
         {
             if (CurrentDir == null) CurrentDir = Directory.GetCurrentDirectory();
             TestUtilities.Initialize(out TopLevelDir);
-            _FilesToRemove.Add(TopLevelDir);
+            //_FilesToRemove.Add(TopLevelDir);
             Directory.SetCurrentDirectory(TopLevelDir);
         }
 
@@ -401,7 +401,7 @@ namespace Ionic.Zip.Tests.Utilities
                 while (Directory.Exists(extractDir + c)) c++;
                 extractDir += c;
 
-                using (ZipFile zip2 = ZipFile.Read(zipfile, options))
+                using (ZipFile zip2 = ZipFileExtensions.Read(zipfile, options))
                 {
                     zip2.Password = password;
                     if (extractProgress != null)

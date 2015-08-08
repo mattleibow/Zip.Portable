@@ -24,6 +24,7 @@
     <DefineConstants>TRACE;DEBUG;AESCRYPTO_todo;BZIP</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <DocumentationFile>bin\Debug\Zip.Portable.Platform.PCLStorage.xml</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -32,12 +33,32 @@
     <DefineConstants>TRACE;AESCRYPTO_todo;BZIP</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <DocumentationFile>bin\Release\Zip.Portable.Platform.PCLStorage.xml</DocumentationFile>
   </PropertyGroup>
+  <PropertyGroup Condition=" '$(SignAssembly)' == 'true' ">
+    <DefineConstants>$(DefineConstants);SIGNED</DefineConstants>
+  </PropertyGroup>
+  <ItemGroup Condition=" '$(SignAssembly)' == 'true' ">
+    <Reference Include="Zlib.Portable, Version=1.11.0.0, Culture=neutral, PublicKeyToken=431cba815f6a8b5b, processorArchitecture=MSIL">
+      <HintPath>..\packages\Zlib.Portable.Signed.1.11.0\lib\portable-net4+sl5+wp8+win8+wpa81+MonoTouch+MonoAndroid\Zlib.Portable.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup Condition=" '$(SignAssembly)' != 'true' ">
+    <Reference Include="Zlib.Portable, Version=1.11.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Zlib.Portable.1.11.0\lib\portable-net4+sl5+wp8+win8+wpa81+MonoTouch+MonoAndroid\Zlib.Portable.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+  </ItemGroup>
   <ItemGroup>
     <!-- A reference to the entire .NET Framework is automatically included -->
     <ProjectReference Include="..\BZip2.Portable\BZip2.Portable.csproj">
       <Project>{eb303953-366f-438f-9958-d282b05ddcba}</Project>
       <Name>BZip2.Portable</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Zip.Portable.PlatformSupport\Zip.Portable.PlatformSupport.csproj">
+      <Project>{df61ee8a-6586-4c4a-8d38-f0579e35e55d}</Project>
+      <Name>Zip.Portable.PlatformSupport</Name>
     </ProjectReference>
     <ProjectReference Include="..\Zip.Portable\Zip.Portable.csproj">
       <Project>{d282fbaa-9061-4240-8e95-d69e13d71ad1}</Project>
@@ -45,11 +66,17 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AsyncHelpers.cs" />
+    <Compile Include="Extensions.ZipEntry.cs" />
     <Compile Include="Extensions.ZipEntry.Extract.cs" />
+    <Compile Include="Extensions.ZipFile.AddUpdate.cs" />
+    <Compile Include="Extensions.ZipFile.Check.cs" />
+    <Compile Include="Extensions.ZipFile.Extract.cs" />
+    <Compile Include="Extensions.ZipFile.cs" />
     <Compile Include="Extensions.ZipFile.Read.cs" />
     <Compile Include="Extensions.ZipFile.Save.cs" />
-    <Compile Include="Extensions.ZipFile.Extract.cs" />
-    <Compile Include="Extensions.ZipFile.AddUpdate.cs" />
+    <Compile Include="Extensions.ZipInputStream.cs" />
+    <Compile Include="Extensions.ZipOutputStream.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -63,7 +90,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Extensions.ZipFile.cs" />
     <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\Portable\$(TargetFrameworkVersion)\Microsoft.Portable.CSharp.targets" />

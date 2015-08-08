@@ -33,6 +33,7 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Ionic.Zip;
 using Ionic.Zlib;
 using Ionic.Zip.Tests.Utilities;
+using Ionic.Zip.PlatformSupport;
 
 
 namespace Ionic.Zip.Tests.Streams
@@ -49,8 +50,10 @@ namespace Ionic.Zip.Tests.Streams
         {
             EncryptionAlgorithm.None,
             EncryptionAlgorithm.PkzipWeak,
+#if AESCRYPTO
             EncryptionAlgorithm.WinZipAes128,
             EncryptionAlgorithm.WinZipAes256,
+#endif
         };
 
 #if NOT
@@ -113,7 +116,9 @@ namespace Ionic.Zip.Tests.Streams
                 {
                     zipStream.CompressionLevel = Ionic.Zlib.CompressionLevel.None;
                     zipStream.Password = "mydummypassword";
+#if AESCRYPTO
                     zipStream.Encryption = EncryptionAlgorithm.WinZipAes256;
+#endif
                     zipStream.PutNextEntry("myentry.myext");
                     zipStream.Write(content, 0, content.Length);
                 }
@@ -166,7 +171,7 @@ namespace Ionic.Zip.Tests.Streams
                     };
 
                     // now extract the files and verify their contents
-                    using (ZipFile zip2 = ZipFile.Read(zipFileToCreate))
+                    using (ZipFile zip2 = ZipFileExtensions.Read(zipFileToCreate))
                     {
                         for (i = 0; i < 3; i++)
                         {
@@ -223,7 +228,7 @@ namespace Ionic.Zip.Tests.Streams
                     string entryName = String.Format("entry{0:D4}.txt", _rnd.Next(10000));
                     output.PutNextEntry(entryName);
                     string content = "This is the content for the entry.";
-                    byte[] buffer = Encoding.ASCII.GetBytes(content);
+                    byte[] buffer = System.Text.Encoding.ASCII.GetBytes(content);
                     output.Write(buffer, 0, buffer.Length);
                 }
             }
@@ -471,6 +476,7 @@ namespace Ionic.Zip.Tests.Streams
                                      Ionic.Zlib.CompressionLevel.Default);
         }
 
+#if AESCRYPTO
         [TestMethod, Timeout(2 * 60*60*1000)]
         public void ZOS_over65534_EncryptWinZip_CompressDefault_Z64AsNecessary()
         {
@@ -478,6 +484,7 @@ namespace Ionic.Zip.Tests.Streams
                                      EncryptionAlgorithm.WinZipAes256,
                                      Ionic.Zlib.CompressionLevel.Default);
         }
+#endif
 
         [TestMethod, Timeout(45 * 60*1000)]
         public void ZOS_over65534_EncryptNo_CompressDefault_Z64AsNecessary()
@@ -577,7 +584,7 @@ namespace Ionic.Zip.Tests.Streams
                                 for (int j=0; j < n; j++)
                                     content+= block;
 
-                                byte[] buffer = Encoding.ASCII.GetBytes(content);
+                                byte[] buffer = System.Text.Encoding.ASCII.GetBytes(content);
                                 output.Write(buffer, 0, buffer.Length);
                             }
                         }
@@ -654,7 +661,7 @@ namespace Ionic.Zip.Tests.Streams
                 using (var output = new ZipOutputStream(fs))
                 {
                     //output.PutNextEntry("entry1.txt");
-                    byte[] buffer = Encoding.ASCII.GetBytes("This is the content for entry #1.");
+                    byte[] buffer = System.Text.Encoding.ASCII.GetBytes("This is the content for entry #1.");
                     output.Write(buffer, 0, buffer.Length);
                 }
             }
@@ -689,7 +696,7 @@ namespace Ionic.Zip.Tests.Streams
                                 output.PutNextEntry("entry1.txt");
                                 if (k == 0)
                                 {
-                                    buffer = Encoding.ASCII.GetBytes("This is the content for entry #1.");
+                                    buffer = System.Text.Encoding.ASCII.GetBytes("This is the content for entry #1.");
                                     output.Write(buffer, 0, buffer.Length);
                                 }
 
@@ -697,7 +704,7 @@ namespace Ionic.Zip.Tests.Streams
                                 output.PutNextEntry("entry3.txt");
                                 if (k == 0)
                                 {
-                                    buffer = Encoding.ASCII.GetBytes("This is the content for entry #3.");
+                                    buffer = System.Text.Encoding.ASCII.GetBytes("This is the content for entry #3.");
                                     output.Write(buffer, 0, buffer.Length);
                                 }
                                 output.PutNextEntry("entry4.txt");  // a zero length entry
@@ -735,7 +742,7 @@ namespace Ionic.Zip.Tests.Streams
                         output.PutNextEntry("entry1/");
                         if (k == 0)
                         {
-                            buffer = Encoding.ASCII.GetBytes("This is the content for entry #1.");
+                            buffer = System.Text.Encoding.ASCII.GetBytes("This is the content for entry #1.");
                             // this should fail
                             output.Write(buffer, 0, buffer.Length);
                         }
@@ -744,7 +751,7 @@ namespace Ionic.Zip.Tests.Streams
                         output.PutNextEntry("entry3.txt");
                         if (k == 0)
                         {
-                            buffer = Encoding.ASCII.GetBytes("This is the content for entry #3.");
+                            buffer = System.Text.Encoding.ASCII.GetBytes("This is the content for entry #3.");
                             output.Write(buffer, 0, buffer.Length);
                         }
                         output.PutNextEntry("entry4.txt");  // this will be zero length
@@ -781,7 +788,7 @@ namespace Ionic.Zip.Tests.Streams
                                 output.PutNextEntry("entry1.txt");
                                 if (k == 0)
                                 {
-                                    buffer = Encoding.ASCII.GetBytes("This is the content for entry #1.");
+                                    buffer = System.Text.Encoding.ASCII.GetBytes("This is the content for entry #1.");
                                     output.Write(buffer, 0, buffer.Length);
                                 }
 
@@ -789,7 +796,7 @@ namespace Ionic.Zip.Tests.Streams
                                 output.PutNextEntry("entry3.txt");
                                 if (k == 0)
                                 {
-                                    buffer = Encoding.ASCII.GetBytes("This is the content for entry #3.");
+                                    buffer = System.Text.Encoding.ASCII.GetBytes("This is the content for entry #3.");
                                     output.Write(buffer, 0, buffer.Length);
                                 }
                                 output.PutNextEntry("entry4.txt");  // this will be zero length
@@ -946,7 +953,7 @@ namespace Ionic.Zip.Tests.Streams
                 return new ZipOutputStream(raw);
             }
 
-            return new ZipOutputStream(zipFileToCreate);
+            return ZipOutputStreamExtensions.Create(zipFileToCreate);
         }
 
 
@@ -1078,13 +1085,13 @@ namespace Ionic.Zip.Tests.Streams
                 TestContext.WriteLine("Creating zipfile {0}", zipFileToCreate);
                 if (j!=0)
                 {
-                    using (var zip = new ZipFile(zipFileToCreate))
+                    using (var zip = new ZipFile())
                     {
                         foreach (var file in files)
                         {
                             zip.AddEntry(Path.GetFileName(file), "This is the content for file " + file);
                         }
-                        zip.Save();
+                        zip.Save(zipFileToCreate);
                     }
 
                     Assert.AreEqual<int>(TestUtilities.CountEntries(zipFileToCreate),
@@ -1095,13 +1102,13 @@ namespace Ionic.Zip.Tests.Streams
                     TestContext.WriteLine("Updating zipfile {0}", zipFileToCreate);
                 }
 
-                using (var zip = new ZipFile(zipFileToCreate))
+                using (var zip = j == 0 ? new ZipFile() : ZipFileExtensions.Read(zipFileToCreate))
                 {
                     foreach (var file in files)
                     {
                         zip.UpdateEntry(Path.GetFileName(file), opener, closer);
                     }
-                    zip.Save();
+                    zip.Save(zipFileToCreate);
                 }
 
                 BasicVerifyZip(zipFileToCreate);
@@ -1318,7 +1325,7 @@ namespace Ionic.Zip.Tests.Streams
 
                             sw.Reset();
                             sw.Start();
-                            using (var output = new ZipOutputStream(zipFileToCreate))
+                            using (var output = ZipOutputStreamExtensions.Create(zipFileToCreate))
                             {
                                 if (k == 0)
                                     output.ParallelDeflateThreshold = -1L;   // never
@@ -1470,7 +1477,7 @@ namespace Ionic.Zip.Tests.Streams
                 }
 
                 // Create the zip archive via 7z.exe
-                this.Exec(sevenZip, String.Format("a {0} {1}", zipFileToCreate, dirToZip));
+                this.Exec(sevenZip, String.Format("a \"{0}\" \"{1}\"", zipFileToCreate, dirToZip));
 
                 // Verify the number of files in the zip
                 Assert.AreEqual<int>(TestUtilities.CountEntries(zipFileToCreate), files.Length,
@@ -1567,7 +1574,7 @@ namespace Ionic.Zip.Tests.Streams
 
                 // Create the zip archive via WinZip.exe
                 string pwdOption = String.IsNullOrEmpty(password) ? "" : "-s" + password;
-                string formatString = "-a -p {0} -yx {1} {2}\\*.*";
+                string formatString = "-a -p {0} -yx \"{1}\" \"{2}\\*.*\"";
                 string wzzipOut = this.Exec(wzzip, String.Format(formatString, pwdOption, zipFileToCreate, dirToZip));
 
                 // Verify the number of files in the zip
@@ -1806,7 +1813,7 @@ namespace Ionic.Zip.Tests.Streams
                                     return new ZipInputStream(raw);
                                 }
 
-                                return new ZipInputStream(zipFileToCreate);
+                                return ZipInputStreamExtensions.Create(zipFileToCreate);
                             }))();
 
                     using (input)
@@ -1897,7 +1904,7 @@ namespace Ionic.Zip.Tests.Streams
 
             string extractDir = "extract";
             // read/extract the generated zip
-            using (var zip = ZipFile.Read(zipFileToCreate))
+            using (var zip = ZipFileExtensions.Read(zipFileToCreate))
             {
                 foreach (var e in zip)
                 {
@@ -2013,6 +2020,214 @@ namespace Ionic.Zip.Tests.Streams
                 Assert.AreEqual<int>(filesToAdd.Length, filesUnzipped.Length,
                                      "Incorrect number of files extracted.");
 
+            }
+        }
+
+        [TestMethod]
+        public void SetUnderlyingZipStream_DoesNotDisposeExternalStreams()
+        {
+            // create a zip file stream
+            var zipStream = new MemoryStream();
+            var anotherStream = new MemoryStream();
+
+            using (var zip1 = new ZipFile())
+            {
+                // add something
+                zip1.AddEntry("entry", "entry content");
+                // save once
+                zip1.Save(zipStream);
+                zipStream.Flush();
+                zipStream.Seek(0, SeekOrigin.Begin);
+            }
+            using (var zip2 = new ZipFile())
+            {
+                // add something
+                zip2.AddEntry("entry", "entry content");
+                // save once
+                zip2.Save(anotherStream);
+                anotherStream.Flush();
+                anotherStream.Seek(0, SeekOrigin.Begin);
+            }
+
+            // make sure something saved
+            Assert.IsTrue(zipStream.Length > 0);
+            Assert.IsTrue(anotherStream.Length > 0);
+
+            // read in one stream
+            using (var zip3 = ZipFile.Read(zipStream))
+            {
+                // get the entry from the first stream
+                using (var readStream1 = new MemoryStream())
+                using (var sr1 = new StreamReader(readStream1))
+                {
+                    zip3["entry"].Extract(readStream1);
+                    readStream1.Seek(0, SeekOrigin.Begin);
+                    Assert.AreEqual<string>("entry content", sr1.ReadToEnd());
+                }
+
+                // swap the streams
+                zip3.SetUnderlyingZipStream(anotherStream);
+
+                // make sure nothing broke/disposed on the streams
+                zipStream.ReadByte();
+                anotherStream.ReadByte();
+
+                // now we destroy the first stream
+                zipStream.Dispose();
+
+                // read again, this time using the new stream
+                using (var readStream2 = new MemoryStream())
+                using (var sr2 = new StreamReader(readStream2))
+                {
+                    zip3["entry"].Extract(readStream2);
+                    readStream2.Seek(0, SeekOrigin.Begin);
+                    Assert.AreEqual<string>("entry content", sr2.ReadToEnd());
+                }
+
+                // dispose the final stream
+                anotherStream.Dispose();
+            }
+        }
+
+        [TestMethod]
+        [ExpectedException(typeof(BadCrcException))]
+        public void SetUnderlyingZipStream_ThrowsIfStreamsAreNotTheSame ()
+        {
+            // create a zip file stream
+            var zipStream = new MemoryStream();
+            var anotherStream = new MemoryStream();
+
+            using (var zip1 = new ZipFile())
+            {
+                // add something
+                zip1.AddEntry("entry", "entry content");
+                // save once
+                zip1.Save(zipStream);
+                zipStream.Flush();
+                zipStream.Seek(0, SeekOrigin.Begin);
+            }
+            using (var zip2 = new ZipFile())
+            {
+                // add something
+                zip2.AddEntry("entry", "changed content");
+                // save once
+                zip2.Save(anotherStream);
+                anotherStream.Flush();
+                anotherStream.Seek(0, SeekOrigin.Begin);
+            }
+
+            // make sure something saved
+            Assert.IsTrue(zipStream.Length > 0);
+            Assert.IsTrue(anotherStream.Length > 0);
+
+            // read in one stream
+            using (var zip3 = ZipFile.Read(zipStream))
+            {
+                // get the entry from the first stream
+                using (var readStream1 = new MemoryStream())
+                using (var sr1 = new StreamReader(readStream1))
+                {
+                    zip3["entry"].Extract(readStream1);
+                    readStream1.Seek(0, SeekOrigin.Begin);
+                    Assert.AreEqual<string>("entry content", sr1.ReadToEnd());
+                }
+
+                // swap the streams
+                zip3.SetUnderlyingZipStream(anotherStream);
+
+                // now we destroy the first stream
+                zipStream.Dispose();
+
+                // read again, this time using the new stream
+                zip3["entry"].Extract(Stream.Null);
+
+                // dispose the final stream
+                anotherStream.Dispose();
+            }
+        }
+
+        [TestMethod]
+        public void SetUnderlyingZipStream_DisposesStreams()
+        {
+            // create a zip file stream
+            var zipStream = new MemoryStream();
+            var anotherStream = new MemoryStream();
+
+            using (var zip1 = new ZipFile())
+            {
+                // add something
+                zip1.AddEntry("entry", "entry content");
+                // save once
+                zip1.Save(zipStream);
+                zipStream.Flush();
+                zipStream.Seek(0, SeekOrigin.Begin);
+            }
+            using (var zip2 = new ZipFile())
+            {
+                // add something
+                zip2.AddEntry("entry", "entry content");
+                // save once
+                zip2.Save(anotherStream);
+                anotherStream.Flush();
+                anotherStream.Seek(0, SeekOrigin.Begin);
+            }
+
+            // make sure something saved
+            Assert.IsTrue(zipStream.Length > 0);
+            Assert.IsTrue(anotherStream.Length > 0);
+
+            // read in one stream
+            using (var zip3 = ZipFile.Read(zipStream))
+            {
+                // we want to make sure that the stream is disposed when we swap it out
+                zip3.SetShouldDisposeReadStream(true);
+
+                // get the entry from the first stream
+                using (var readStream1 = new MemoryStream())
+                using (var sr1 = new StreamReader(readStream1))
+                {
+                    zip3["entry"].Extract(readStream1);
+                    readStream1.Seek(0, SeekOrigin.Begin);
+                    Assert.AreEqual<string>("entry content", sr1.ReadToEnd());
+                }
+
+                // swap the streams
+                zip3.SetUnderlyingZipStream(anotherStream);
+
+                try
+                {
+                    // make sure the stream was disposed
+                    zipStream.ReadByte();
+                    Assert.Fail("Should have disposed the first stream.");
+                }
+                catch (ObjectDisposedException)
+                {
+                    // expected
+                }
+                // make sure nothing broke/disposed on the stream
+                anotherStream.ReadByte();
+
+                // now we destroy the first stream
+                zipStream.Dispose();
+
+                // read again, this time using the new stream
+                using (var readStream2 = new MemoryStream())
+                using (var sr2 = new StreamReader(readStream2))
+                {
+                    zip3["entry"].Extract(readStream2);
+                    readStream2.Seek(0, SeekOrigin.Begin);
+                    Assert.AreEqual<string>("entry content", sr2.ReadToEnd());
+                }
+            }
+            try
+            {
+                // make sure the stream was disposed
+                anotherStream.ReadByte();
+                Assert.Fail("Should have disposed the second stream.");
+            }
+            catch (ObjectDisposedException)
+            {
+                // expected
             }
         }
 

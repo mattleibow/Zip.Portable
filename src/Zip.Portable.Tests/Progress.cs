@@ -105,11 +105,11 @@ namespace Ionic.Zip.Tests
                     StatusMessageWriter = new StringWriter(),
                     ReadProgress = ReadProgress1
             };
-            using (ZipFile zip = ZipFile.Read(zipFileToCreate, options))
+            using (ZipFile zip = ZipFileExtensions.Read(zipFileToCreate, options))
             {
                 // this should be fine
                 zip.RemoveEntry(zip[1]);
-                zip.Save();
+                zip.Save(zipFileToCreate);
             }
             TestContext.WriteLine(options.StatusMessageWriter.ToString());
             Assert.AreEqual<Int32>(count, TestUtilities.CountEntries(zipFileToCreate)+1);
@@ -144,11 +144,12 @@ namespace Ionic.Zip.Tests
             var files = TestUtilities.GenerateFilesFlat(dirToZip);
 
             var sw = new StringWriter();
-            using (ZipFile zip = new ZipFile(zipFileToCreate, sw))
+            using (ZipFile zip = new ZipFile())
             {
+                zip.StatusMessageTextWriter = sw;
                 zip.AddProgress += AddProgress1;
                 zip.AddFiles(files);
-                zip.Save();
+                zip.Save(zipFileToCreate);
             }
             TestContext.WriteLine(sw.ToString());
 

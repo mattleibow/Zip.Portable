@@ -1994,6 +1994,73 @@ namespace Ionic.Zip
 
 
 
+        /// <summary>
+        ///   Set to indicate whether to use UTF-8 encoding for filenames and comments.
+        /// </summary>
+        ///
+        /// <remarks>
+        ///
+        /// <para>
+        ///   If this flag is set, the comment and filename for the entry will be
+        ///   encoded with UTF-8, as described in <see
+        ///   href="http://www.pkware.com/documents/casestudies/APPNOTE.TXT">the Zip
+        ///   specification</see>, if necessary. "Necessary" means, the filename or
+        ///   entry comment (if any) cannot be reflexively encoded and decoded using the
+        ///   default code page, IBM437.
+        /// </para>
+        ///
+        /// <para>
+        ///   Setting this flag to true is equivalent to setting <see
+        ///   cref="ProvisionalAlternateEncoding"/> to <c>System.Text.Encoding.UTF8</c>.
+        /// </para>
+        ///
+        /// <para>
+        ///   This flag has no effect or relation to the text encoding used within the
+        ///   file itself.
+        /// </para>
+        ///
+        /// </remarks>
+        [Obsolete("Beginning with v1.9.1.6 of DotNetZip, this property is obsolete.  It will be removed in a future version of the library. Your applications should  use AlternateEncoding and AlternateEncodingUsage instead.")]
+        public bool UseUnicodeAsNecessary
+        {
+            get
+            {
+                return (AlternateEncoding == System.Text.Encoding.GetEncoding("UTF-8")) &&
+                    (AlternateEncodingUsage == ZipOption.AsNecessary);
+            }
+            set
+            {
+                if (value)
+                {
+                    AlternateEncoding = System.Text.Encoding.GetEncoding("UTF-8");
+                    AlternateEncodingUsage = ZipOption.AsNecessary;
+
+                }
+                else
+                {
+                    AlternateEncoding = Ionic.Zip.ZipFile.DefaultEncoding;
+                    AlternateEncodingUsage = ZipOption.Never;
+                }
+            }
+        }
+
+        /// <summary>
+        ///   The text encoding to use for the FileName and Comment on this ZipEntry,
+        ///   when the default encoding is insufficient.
+        /// </summary>
+        ///
+        /// <remarks>
+        ///
+        /// <para>
+        ///   Don't use this property.  See <see cref='AlternateEncoding'/>.
+        /// </para>
+        ///
+        /// </remarks>
+        [Obsolete("This property is obsolete since v1.9.1.6. Use AlternateEncoding and AlternateEncodingUsage instead.", true)]
+        public System.Text.Encoding ProvisionalAlternateEncoding
+        {
+            get; set;
+        }
 
         /// <summary>
         ///   Specifies the alternate text encoding used by this ZipEntry
@@ -2510,7 +2577,7 @@ namespace Ionic.Zip
         private Stream _sourceStream;
         private Nullable<Int64> _sourceStreamOriginalPosition;
         private bool _sourceWasJitProvided;
-        private bool _ioOperationCanceled;
+        internal bool _ioOperationCanceled;
         private bool _presumeZip64;
         private Nullable<bool> _entryRequiresZip64;
         private Nullable<bool> _OutputUsesZip64;

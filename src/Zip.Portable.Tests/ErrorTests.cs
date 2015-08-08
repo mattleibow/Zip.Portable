@@ -50,11 +50,11 @@ namespace Ionic.Zip.Tests.Error
         public void Error_AddFile_NonExistentFile()
         {
             string zipFileToCreate = Path.Combine(TopLevelDir, "Error_AddFile_NonExistentFile.zip");
-            using (Ionic.Zip.ZipFile zip = new Ionic.Zip.ZipFile(zipFileToCreate))
+            using (Ionic.Zip.ZipFile zip = new Ionic.Zip.ZipFile())
             {
                 zip.AddFile("ThisFileDoesNotExist.txt");
                 zip.Comment = "This is a Comment On the Archive";
-                zip.Save();
+                zip.Save(zipFileToCreate);
             }
         }
 
@@ -79,10 +79,10 @@ namespace Ionic.Zip.Tests.Error
         public void CreateZip_AddDirectory_BlankName()
         {
             string zipFileToCreate = Path.Combine(TopLevelDir, "CreateZip_AddDirectory_BlankName.zip");
-            using (ZipFile zip = new ZipFile(zipFileToCreate))
+            using (ZipFile zip = new ZipFile())
             {
                 zip.AddDirectoryByName("");
-                zip.Save();
+                zip.Save(zipFileToCreate);
             }
         }
 
@@ -126,11 +126,11 @@ namespace Ionic.Zip.Tests.Error
             Directory.SetCurrentDirectory(TopLevelDir);
             var filenames = Directory.GetFiles(resourceDir);
 
-            using (ZipFile zip = new ZipFile(zipFileToCreate))
+            using (ZipFile zip = new ZipFile())
             {
                 zip.AddFiles(filenames, "");
                 zip.Comment = "This is a Comment On the Archive";
-                zip.Save();
+                zip.Save(zipFileToCreate);
             }
 
             Assert.AreEqual<int>(TestUtilities.CountEntries(zipFileToCreate), filenames.Length,
@@ -141,7 +141,7 @@ namespace Ionic.Zip.Tests.Error
             // Unless flavor==3, in which case we overwrite silently.
             for (int k = 0; k < 2; k++)
             {
-                using (ZipFile zip = ZipFile.Read(zipFileToCreate))
+                using (ZipFile zip = ZipFileExtensions.Read(zipFileToCreate))
                 {
                     if (flavor > 10)
                         zip.ExtractProgress += OverwriteDecider;
@@ -214,23 +214,6 @@ namespace Ionic.Zip.Tests.Error
         }
 
 
-        [TestMethod]
-        public void Error_EmptySplitZip()
-        {
-            string zipFileToCreate = "zftc.zip";
-            using (var zip = new ZipFile())
-            {
-                zip.MaxOutputSegmentSize = 1024*1024;
-                zip.Save(zipFileToCreate);
-            }
-
-            string extractDir = "extract";
-            using (var zip = ZipFile.Read(zipFileToCreate))
-            {
-                zip.ExtractAll(extractDir);
-                Assert.IsTrue(zip.Entries.Count == 0);
-            }
-        }
 
 
 
@@ -240,7 +223,7 @@ namespace Ionic.Zip.Tests.Error
         {
             string filename = zipit;
             // try reading the invalid zipfile - this must fail.
-            using (ZipFile zip = ZipFile.Read(filename))
+            using (ZipFile zip = ZipFileExtensions.Read(filename))
             {
                 foreach (ZipEntry e in zip)
                 {
@@ -259,10 +242,10 @@ namespace Ionic.Zip.Tests.Error
             // try reading an empty, extant file as a zip file
             string zipFileToRead = Path.GetTempFileName();
             _FilesToRemove.Add(zipFileToRead);
-            using (ZipFile zip = new ZipFile(zipFileToRead))
+            using (ZipFile zip = ZipFileExtensions.Read(zipFileToRead))
             {
                 zip.AddEntry("EntryName1.txt", "This is the content");
-                zip.Save();
+                zip.Save(zipFileToRead);
             }
 
         }
@@ -278,7 +261,7 @@ namespace Ionic.Zip.Tests.Error
             string[] fileNames =
                 {
                     Path.Combine(sourceDir, "Tools\\Zipit\\bin\\Debug\\Zipit.exe"),
-                    Path.Combine(sourceDir, "Zip\\bin\\Debug\\Ionic.Zip.xml"),
+                    Path.Combine(sourceDir, "Zip.Portable\\bin\\Debug\\Zip.Portable.xml"),
                     Path.Combine(sourceDir, "Tools\\WinFormsApp\\Icon2.res"),
                 };
 
@@ -302,7 +285,7 @@ namespace Ionic.Zip.Tests.Error
             _FilesToRemove.Add(filePath);
             File.WriteAllText( filePath , "asdfasdf" );
             string outputDirectory = Path.GetTempPath();
-            using ( ZipFile zipFile = ZipFile.Read( filePath ) )
+            using ( ZipFile zipFile = ZipFileExtensions.Read( filePath ) )
             {
                 zipFile.ExtractAll( outputDirectory  );
             }
@@ -324,7 +307,7 @@ namespace Ionic.Zip.Tests.Error
             // Use ZipEntry.Extract with ZipInputStream.
             // This must fail.
             TestContext.WriteLine("Reading with ZipInputStream");
-            using (var zip = new ZipInputStream(zipFileToCreate))
+            using (var zip = ZipInputStreamExtensions.Create(zipFileToCreate))
             {
                 ZipEntry entry;
                 while ((entry = zip.GetNextEntry()) != null)
@@ -351,7 +334,7 @@ namespace Ionic.Zip.Tests.Error
             // Use OpenReader with ZipInputStream.
             // This must fail.
             TestContext.WriteLine("Reading with ZipInputStream");
-            using (var zip = new ZipInputStream(zipFileToCreate))
+            using (var zip = ZipInputStreamExtensions.Create(zipFileToCreate))
             {
                 ZipEntry entry;
                 while ((entry = zip.GetNextEntry()) != null)
@@ -423,9 +406,9 @@ namespace Ionic.Zip.Tests.Error
 
             try
             {
-                using (ZipFile zip = new ZipFile(zipFileToCreate))
+                using (ZipFile zip = new ZipFile())
                 {
-                    zip.TempFileFolder = tempFileFolder;
+                    // TODO: zip.TempFileFolder = tempFileFolder;
                     zip.CompressionLevel = Ionic.Zlib.CompressionLevel.None;
 
                     TestContext.WriteLine("Zipping {0} files...", filenames.Length);
@@ -447,7 +430,7 @@ namespace Ionic.Zip.Tests.Error
                         zip.UpdateFile(file, myName + '-' + toDay + "_done");
                     }
                     TestContext.WriteLine("\n");
-                    zip.Save();
+                    zip.Save(zipFileToCreate);
                     TestContext.WriteLine("Zip Completed '{0}'", zipFileToCreate);
                 }
             }
@@ -464,7 +447,7 @@ namespace Ionic.Zip.Tests.Error
 
 
         [TestMethod]
-        [ExpectedException(typeof(Ionic.Zip.BadStateException))]
+        [ExpectedException(typeof(System.ArgumentNullException))]
         public void Error_Save_NoFilename()
         {
             string testBin = TestUtilities.GetTestBinDir(CurrentDir);
@@ -477,7 +460,7 @@ namespace Ionic.Zip.Tests.Error
             using (ZipFile zip = new ZipFile())
             {
                 zip.AddFile(filename, "");
-                zip.Save(); // FAIL: don't know where to save!
+                zip.Save((string)null); // FAIL: don't know where to save!
             }
 
             // should never reach this
@@ -603,7 +586,7 @@ namespace Ionic.Zip.Tests.Error
             string[] filenames =
             {
                 Path.Combine(sourceDir, "Tools\\Zipit\\bin\\Debug\\Zipit.exe"),
-                Path.Combine(sourceDir, "Zip\\bin\\Debug\\Ionic.Zip.xml"),
+                Path.Combine(sourceDir, "Zip.Portable\\bin\\Debug\\Zip.Portable.xml"),
                 Path.Combine(sourceDir, "Tools\\WinFormsApp\\Icon2.res"),
             };
 
@@ -627,7 +610,7 @@ namespace Ionic.Zip.Tests.Error
             try
             {
                 // read the corrupted zip - this should fail in some way
-                using (ZipFile zip = ZipFile.Read(zipFileToCreate))
+                using (ZipFile zip = ZipFileExtensions.Read(zipFileToCreate))
                 {
                     for (j = 0; j < filenames.Length; j++)
                     {
@@ -666,7 +649,7 @@ namespace Ionic.Zip.Tests.Error
             {
                 Path.Combine(sourceDir, "Tools\\Zipit\\bin\\Debug\\Zipit.exe"),
                 Path.Combine(sourceDir, "Tools\\Unzip\\bin\\Debug\\Unzip.exe"),
-                Path.Combine(sourceDir, "Zip\\bin\\Debug\\Ionic.Zip.xml"),
+                Path.Combine(sourceDir, "Zip.Portable\\bin\\Debug\\Zip.Portable.xml"),
                 Path.Combine(sourceDir, "Tools\\WinFormsApp\\Icon2.res"),
             };
 
@@ -684,7 +667,7 @@ namespace Ionic.Zip.Tests.Error
             try
             {
                 // read the corrupted zip - this should fail in some way
-                using (ZipFile zip = new ZipFile(zipFileToCreate))
+                using (ZipFile zip = ZipFileExtensions.Read(zipFileToCreate))
                 {
                     foreach (var e in zip)
                     {
@@ -760,10 +743,10 @@ namespace Ionic.Zip.Tests.Error
 
             try
             {
-                using (ZipFile zip = ZipFile.Read(zipFileToRead))
+                using (ZipFile zip = ZipFileExtensions.Read(zipFileToRead))
                 {
                     zip.AddFile(fileToAdd, "");
-                    zip.Save();
+                    zip.Save(zipFileToRead);
                 }
             }
             catch (System.Exception exc1)
@@ -794,23 +777,23 @@ namespace Ionic.Zip.Tests.Error
 
             // Create the zip archive
             Directory.SetCurrentDirectory(TopLevelDir);
-            using (ZipFile zip1 = new ZipFile(zipFileToCreate))
+            using (ZipFile zip1 = new ZipFile())
             {
                 zip1.StatusMessageTextWriter = System.Console.Out;
                 string[] files = Directory.GetFiles(subdir);
                 zip1.AddFiles(files, "files");
-                zip1.Save();
+                zip1.Save(zipFileToCreate);
             }
 
 
             // this should fail - adding the same file twice
-            using (ZipFile zip2 = new ZipFile(zipFileToCreate))
+            using (ZipFile zip2 = ZipFileExtensions.Read(zipFileToCreate))
             {
                 zip2.StatusMessageTextWriter = System.Console.Out;
                 string[] files = Directory.GetFiles(subdir);
                 for (i = 0; i < files.Length; i++)
                     zip2.AddFile(files[i], "files");
-                zip2.Save();
+                zip2.Save(zipFileToCreate);
             }
         }
 
@@ -823,12 +806,12 @@ namespace Ionic.Zip.Tests.Error
             string zipFileToCreate = Path.Combine(TopLevelDir, "Error_FileNotAvailableFails.zip");
 
             // create a zip file with no entries
-            using (var zipfile = new ZipFile(zipFileToCreate)) { zipfile.Save(); }
+            using (var zipfile = new ZipFile()) { zipfile.Save(zipFileToCreate); }
 
             // open and lock
             using (new FileStream(zipFileToCreate, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.None))
             {
-                using (new ZipFile(zipFileToCreate)) { }
+                using (ZipFileExtensions.Read(zipFileToCreate)) { }
             }
         }
 
@@ -838,7 +821,7 @@ namespace Ionic.Zip.Tests.Error
         [ExpectedException(typeof(ZipException))]
         public void IncorrectZipContentTest1_wi10459()
         {
-            byte[] content = Encoding.UTF8.GetBytes("wrong zipfile content");
+            byte[] content = System.Text.Encoding.UTF8.GetBytes("wrong zipfile content");
             using (var ms = new MemoryStream(content))
             {
                 using (var zipFile = ZipFile.Read(ms)) { }

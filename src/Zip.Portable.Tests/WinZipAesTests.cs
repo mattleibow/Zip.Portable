@@ -24,6 +24,7 @@
 //
 // ------------------------------------------------------------------
 
+#if AESCRYPTO
 using System;
 using System.IO;
 using System.Collections.Generic;
@@ -123,7 +124,7 @@ namespace Ionic.Zip.Tests.WinZipAes
 
                     TestContext.WriteLine("---------------Reading {0}...", zipFileToCreate);
                     System.Threading.Thread.Sleep(1200); // seems to be a race condition?  sometimes?
-                    using (ZipFile zip2 = ZipFile.Read(zipFileToCreate))
+                    using (ZipFile zip2 = ZipFileExtensions.Read(zipFileToCreate))
                     {
                         string extractDir = String.Format("extract-{0}.{1}", k, m);
                         foreach (var e in zip2)
@@ -227,7 +228,7 @@ namespace Ionic.Zip.Tests.WinZipAes
             WinzipVerify(zipFileToCreate);
 
             // validate all the checksums
-            using (ZipFile zip2 = ZipFile.Read(zipFileToCreate))
+            using (ZipFile zip2 = ZipFileExtensions.Read(zipFileToCreate))
             {
                 foreach (ZipEntry e in zip2)
                 {
@@ -502,7 +503,7 @@ namespace Ionic.Zip.Tests.WinZipAes
             int actualFilesExtracted = 0;
             string extractDir = String.Format("Extract{0}", zipCount++);
 
-            using (ZipFile zip2 = ZipFile.Read(zipFileToRead))
+            using (ZipFile zip2 = ZipFileExtensions.Read(zipFileToRead))
             {
                 //zip2.Password = password;
                 foreach (ZipEntry e in zip2)
@@ -591,7 +592,7 @@ namespace Ionic.Zip.Tests.WinZipAes
             BasicVerifyZip(zipFileToCreate, password);
 
             // validate all the checksums
-            using (ZipFile zip2 = ZipFile.Read(zipFileToCreate))
+            using (ZipFile zip2 = ZipFileExtensions.Read(zipFileToCreate))
             {
                 foreach (ZipEntry e in zip2)
                 {
@@ -664,7 +665,7 @@ namespace Ionic.Zip.Tests.WinZipAes
             BasicVerifyZip(zipFileToCreate, password);
 
             // validate all the checksums
-            using (ZipFile zip2 = ZipFile.Read(zipFileToCreate))
+            using (ZipFile zip2 = ZipFileExtensions.Read(zipFileToCreate))
             {
                 foreach (ZipEntry e in zip2)
                 {
@@ -727,7 +728,7 @@ namespace Ionic.Zip.Tests.WinZipAes
                     BasicVerifyZip(zipFileToCreate, password);
 
                 // remove a file and re-Save
-                using (ZipFile zip2 = ZipFile.Read(zipFileToCreate))
+                using (ZipFile zip2 = ZipFileExtensions.Read(zipFileToCreate))
                 {
                     int entryToRemove = _rnd.Next(TextFiles.Length);
                     TestContext.WriteLine("Removing an entry...: {0}", Path.GetFileName(TextFiles[entryToRemove]));
@@ -946,7 +947,7 @@ namespace Ionic.Zip.Tests.WinZipAes
             TestContext.WriteLine("Updating the zip file");
 
             // Update the zip file
-            using (ZipFile zip = ZipFile.Read(zipFileToCreate))
+            using (ZipFile zip = ZipFileExtensions.Read(zipFileToCreate))
             {
                 for (int j = 0; j < 5; j++)
                 {
@@ -961,3 +962,4 @@ namespace Ionic.Zip.Tests.WinZipAes
 
     }
 }
+#endif

@@ -188,11 +188,13 @@ namespace Ionic.Zip
             bytes[i++] = (byte)(commentLength & 0x00FF);
             bytes[i++] = (byte)((commentLength & 0xFF00) >> 8);
 
+            {
                 // If reading a segmneted archive and saving to a regular archive,
                 // ZipEntry._diskNumber will be non-zero but it should be saved as
                 // zero.
                 bytes[i++] = 0;
                 bytes[i++] = 0;
+            }
 
             // internal file attrs
             // workitem 7801
@@ -712,7 +714,15 @@ namespace Ionic.Zip
             // It is never possible to compress a zero-length file, so we check for
             // this condition.
 
-            if (this._Source == ZipEntrySource.Stream)
+            // open the stream if we are a JIT stream
+            if (this._Source == ZipEntrySource.JitStream)
+            {
+                // allow the application to open the stream
+                if (_sourceStream == null)
+                    _sourceStream = this._OpenDelegate(this.FileName);
+                PrepSourceStream();
+            }
+            if (this._Source == ZipEntrySource.Stream || this._Source == ZipEntrySource.JitStream)
             {
                 // workitem 7742
                 if (_sourceStream != null && _sourceStream.CanSeek)
@@ -1157,14 +1167,6 @@ namespace Ionic.Zip
                     var crc32 = new Ionic.Crc.CRC32();
                     _Crc32 = crc32.GetCrc32(input);
 
-                    if (_sourceStream == null)
-                    {
-#if NETCF
-                        input.Close();
-#else
-                        input.Dispose();
-#endif
-                    }
                 }
                 _crcCalculated = true;
             }
@@ -1446,16 +1448,16 @@ namespace Ionic.Zip
                 compressor.Dispose();
 #if BZIP
             else if ((compressor as Ionic.BZip2.BZip2OutputStream) != null)
-                compressor.Dispose();
+                (compressor as Ionic.BZip2.BZip2OutputStream).Close();
 #if !NETCF
             else if ((compressor as Ionic.BZip2.ParallelBZip2OutputStream) != null)
-                compressor.Dispose();
+                (compressor as Ionic.BZip2.ParallelBZip2OutputStream).Close();
 #endif
 #endif
 
 #if !NETCF
             else if ((compressor as Ionic.Zlib.ParallelDeflateOutputStream) != null)
-                compressor.Dispose();
+                (compressor as Ionic.Zlib.ParallelDeflateOutputStream).Close();
 #endif
 
             encryptor.Flush();
@@ -1723,6 +1725,7 @@ namespace Ionic.Zip
                  (this._Source == ZipEntrySource.ZipOutputStream && s.CanSeek))
             {
                 // seek back and rewrite the entry header
+                {
                     // seek in the raw output stream, to the beginning of the header for
                     // this entry.
                     // workitem 8098: ok (output)
@@ -1737,6 +1740,7 @@ namespace Ionic.Zip
                     // seek in the raw output stream, to the end of the file data
                     // for this entry
                     s.Seek(_CompressedSize, SeekOrigin.Current);
+                }
             }
 
             // emit the descriptor - only if not a directory.

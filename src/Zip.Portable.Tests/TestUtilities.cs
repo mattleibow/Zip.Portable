@@ -32,6 +32,7 @@ using System.Net;
 using System.IO;
 using Ionic.Zip;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using PCLStorage;
 
 namespace Ionic.Zip.Tests.Utilities
 {
@@ -39,11 +40,13 @@ namespace Ionic.Zip.Tests.Utilities
     {
         static System.Random _rnd;
         static string cdir;
+        static string rootDirectory;
         static TestUtilities()
         {
             _rnd = new System.Random();
             LoremIpsumWords = LoremIpsum.Split(" ".ToCharArray(), System.StringSplitOptions.RemoveEmptyEntries);
             cdir = Directory.GetCurrentDirectory();
+            rootDirectory = FileSystem.Current.LocalStorage.Path;
         }
 
 
@@ -54,13 +57,18 @@ namespace Ionic.Zip.Tests.Utilities
         {
             if (cdir == null) cdir = Directory.GetCurrentDirectory();
 
-            TopLevelDir = TestUtilities.GenerateUniquePathname("tmp");
+            TopLevelDir = rootDirectory;
             Directory.CreateDirectory(TopLevelDir);
-            Directory.SetCurrentDirectory(Path.GetDirectoryName(TopLevelDir));
+            Directory.SetCurrentDirectory(TopLevelDir);
         }
 
         internal static void Cleanup(string CurrentDir, List<String> FilesToRemove)
         {
+            // because we are using PCL storage, we need to make sure we haven't left files in the root
+            var files = Directory.GetFiles(rootDirectory, "*", SearchOption.TopDirectoryOnly);
+            var folders = Directory.GetDirectories(rootDirectory);
+            FilesToRemove.AddRange(files);
+
             Assert.AreNotEqual<string>(Path.GetFileName(CurrentDir), "Temp", "at finish");
             Directory.SetCurrentDirectory(CurrentDir);
             IOException GotException = null;
@@ -188,7 +196,7 @@ namespace Ionic.Zip.Tests.Utilities
                 RandomTextGenerator rtg = new RandomTextGenerator();
                 int chunkSize = 48 * 1024;
                 int variationSize = 2 * 1024;
-                var newLinePair = Encoding.ASCII.GetBytes("\n\n");
+                var newLinePair = System.Text.Encoding.ASCII.GetBytes("\n\n");
                 int nCycles = 0;
                 // fill the file with text data, selecting large blocks at a time
                 var fodder = new byte[32][];
@@ -200,7 +208,7 @@ namespace Ionic.Zip.Tests.Utilities
                         if (fodder[n] == null)
                         {
                             string generatedText = rtg.Generate(chunkSize);
-                            fodder[n] = Encoding.ASCII.GetBytes(generatedText);
+                            fodder[n] = System.Text.Encoding.ASCII.GetBytes(generatedText);
                         }
 
                         var bytes = fodder[n];
@@ -434,7 +442,7 @@ namespace Ionic.Zip.Tests.Utilities
         internal static int CountEntries(string zipfile)
         {
             int entries = 0;
-            using (ZipFile zip = ZipFile.Read(zipfile))
+            using (ZipFile zip = ZipFileExtensions.Read(zipfile))
             {
                 foreach (ZipEntry e in zip)
                     if (!e.IsDirectory) entries++;
@@ -702,12 +710,12 @@ namespace Ionic.Zip.Tests.Utilities
 
         internal static string GetTestBinDir(string startingPoint)
         {
-            return GetTestDependentDir(startingPoint, "Zip Tests\\bin\\Debug");
+            return GetTestDependentDir(startingPoint, "Zip.Portable.Tests\\bin\\Debug");
         }
 
         internal static string GetTestSrcDir(string startingPoint)
         {
-            return GetTestDependentDir(startingPoint, "Zip Tests");
+            return GetTestDependentDir(startingPoint, "Zip.Portable.Tests");
         }
 
         private static string GetTestDependentDir(string startingPoint, string subdir)

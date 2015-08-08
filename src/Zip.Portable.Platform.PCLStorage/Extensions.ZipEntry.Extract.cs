@@ -4,10 +4,12 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using PCLStorage;
+using Ionic.Zip.PlatformSupport;
 
 namespace Ionic.Zip
 {
-    public partial class ZipEntryExtensions
+    public static partial class ZipEntryExtensions
     {
         /// <summary>
         ///   Extract the entry to the filesystem, starting at the current
@@ -48,9 +50,9 @@ namespace Ionic.Zip
         /// </para>
         ///
         /// </remarks>
-        public void Extract()
+        public static void Extract(this ZipEntry zipEntry)
         {
-            InternalExtractToBaseDir(".", null, _container, _Source, FileName);
+            zipEntry.InternalExtractToBaseDir(".", null);
         }
 
         /// <summary>
@@ -69,10 +71,10 @@ namespace Ionic.Zip
         /// <param name="extractExistingFile">
         ///   The action to take if extraction would overwrite an existing file.
         /// </param>
-        public void Extract(ExtractExistingFileAction extractExistingFile)
+        public static void Extract(this ZipEntry zipEntry, ExtractExistingFileAction extractExistingFile)
         {
-            ExtractExistingFile = extractExistingFile;
-            InternalExtractToBaseDir(".", null, _container, _Source, FileName);
+            zipEntry.ExtractExistingFile = extractExistingFile;
+            zipEntry.InternalExtractToBaseDir(".", null);
         }
 
         /// <summary>
@@ -126,9 +128,9 @@ namespace Ionic.Zip
         ///   details about how the last modified time of the created file is set.
         /// </para>
         /// </remarks>
-        public void Extract(string baseDirectory)
+        public static void Extract(this ZipEntry zipEntry, string baseDirectory)
         {
-            InternalExtractToBaseDir(baseDirectory, null, _container, _Source, FileName);
+            zipEntry.InternalExtractToBaseDir(baseDirectory, null);
         }
 
         /// <summary>
@@ -178,10 +180,10 @@ namespace Ionic.Zip
         /// <param name="extractExistingFile">
         /// The action to take if extraction would overwrite an existing file.
         /// </param>
-        public void Extract(string baseDirectory, ExtractExistingFileAction extractExistingFile)
+        public static void Extract(this ZipEntry zipEntry, string baseDirectory, ExtractExistingFileAction extractExistingFile)
         {
-            ExtractExistingFile = extractExistingFile;
-            InternalExtractToBaseDir(baseDirectory, null, _container, _Source, FileName);
+            zipEntry.ExtractExistingFile = extractExistingFile;
+            zipEntry.InternalExtractToBaseDir(baseDirectory, null);
         }
 
         /// <summary>
@@ -243,9 +245,9 @@ namespace Ionic.Zip
         /// </code>
         /// </example>
         /// <param name="password">The Password to use for decrypting the entry.</param>
-        public void ExtractWithPassword(string password)
+        public static void ExtractWithPassword(this ZipEntry zipEntry, string password)
         {
-            InternalExtractToBaseDir(".", password, _container, _Source, FileName);
+            zipEntry.InternalExtractToBaseDir(".", password);
         }
 
         /// <summary>
@@ -273,9 +275,9 @@ namespace Ionic.Zip
         ///
         /// <param name="baseDirectory">The pathname of the base directory.</param>
         /// <param name="password">The Password to use for decrypting the entry.</param>
-        public void ExtractWithPassword(string baseDirectory, string password)
+        public static void ExtractWithPassword(this ZipEntry zipEntry, string baseDirectory, string password)
         {
-            InternalExtractToBaseDir(baseDirectory, password, _container, _Source, FileName);
+            zipEntry.InternalExtractToBaseDir(baseDirectory, password);
         }
 
         /// <summary>
@@ -296,10 +298,10 @@ namespace Ionic.Zip
         /// <param name="extractExistingFile">
         /// The action to take if extraction would overwrite an existing file.
         /// </param>
-        public void ExtractWithPassword(ExtractExistingFileAction extractExistingFile, string password)
+        public static void ExtractWithPassword(this ZipEntry zipEntry, ExtractExistingFileAction extractExistingFile, string password)
         {
-            ExtractExistingFile = extractExistingFile;
-            InternalExtractToBaseDir(".", password, _container, _Source, FileName);
+            zipEntry.ExtractExistingFile = extractExistingFile;
+            zipEntry.InternalExtractToBaseDir(".", password);
         }
 
         /// <summary>
@@ -319,10 +321,10 @@ namespace Ionic.Zip
         /// overwrite an existing file.</param>
         ///
         /// <param name="password">The Password to use for decrypting the entry.</param>
-        public void ExtractWithPassword(string baseDirectory, ExtractExistingFileAction extractExistingFile, string password)
+        public static void ExtractWithPassword(this ZipEntry zipEntry, string baseDirectory, ExtractExistingFileAction extractExistingFile, string password)
         {
-            ExtractExistingFile = extractExistingFile;
-            InternalExtractToBaseDir(baseDirectory, password, _container, _Source, FileName);
+            zipEntry.ExtractExistingFile = extractExistingFile;
+            zipEntry.InternalExtractToBaseDir(baseDirectory, password);
         }
 
         /// <summary>
@@ -330,97 +332,71 @@ namespace Ionic.Zip
         /// In other words, you can extract to a stream or to a directory (filesystem), but not both!
         /// The Password param is required for encrypted entries.
         /// </summary>
-        void InternalExtractToBaseDir(string baseDir, string password, ZipContainer zipContainer, ZipEntrySource zipEntrySource, string fileName)
+        private static void InternalExtractToBaseDir(this ZipEntry zipEntry, string baseDir, string password)
         {
             if (baseDir == null)
                 throw new ArgumentNullException("baseDir");
 
-            // workitem 7958
-            if (zipContainer == null)
-                throw new BadStateException("This entry is an orphan");
+            var zipFile = zipEntry.GetZipFile();
 
             // workitem 10355
-            if (zipContainer.ZipFile == null)
+            if (zipFile == null)
                 throw new InvalidOperationException("Use Extract() only with ZipFile.");
 
-            zipContainer.ZipFile.Reset(false);
-
-            if (zipEntrySource != ZipEntrySource.ZipFile)
-                throw new BadStateException("You must call ZipFile.Save before calling any Extract method");
-
-            OnBeforeExtract(this, baseDir, zipContainer.ZipFile);
-
-            _ioOperationCanceled = false;
+            // get the full filename
+            var f = ZipEntryInternal.NameInArchive(zipEntry.FileName);
+            var targetFileName = zipFile.FlattenFoldersOnExtract
+                ? Path.Combine(baseDir, Path.GetFileName(f))
+                : Path.Combine(baseDir, f);
+            // workitem 10639
+            targetFileName = targetFileName.Replace('/', PortablePath.DirectorySeparatorChar);
+            var fullTargetPath = ZipFileExtensions.GetFullPath(targetFileName);
 
             var fileExistsBeforeExtraction = false;
-            var checkLaterForResetDirTimes = false;
-            string targetFileName = null;
             try
             {
-                ValidateCompression(_CompressionMethod_FromZipFile, fileName, GetUnsupportedCompressionMethod(_CompressionMethod));
-                ValidateEncryption(Encryption, fileName, _UnsupportedAlgorithmId);
-
-                if (IsDoneWithOutputToBaseDir(baseDir, out targetFileName))
+                // check if it is a directory
+                if (zipEntry.IsDirectory || zipEntry.FileName.EndsWith("/"))
                 {
-                    WriteStatus("extract dir {0}...", targetFileName);
-                    // if true, then the entry was a directory and has been created.
-                    // We need to fire the Extract Event.
-                    OnAfterExtract(baseDir);
-                    return;
+                    CreateDirectory(fullTargetPath);
+                    goto ExitTry; // all done, caller will return
                 }
 
-                // workitem 10639
-                // do we want to extract to a regular filesystem file?
-
-                // Check for extracting to a previously existing file. The user
-                // can specify bejavior for that case: overwrite, don't
-                // overwrite, and throw.  Also, if the file exists prior to
-                // extraction, it affects exception handling: whether to delete
-                // the target of extraction or not. This check needs to be done
-                // before the password check is done, because password check may
-                // throw a BadPasswordException, which triggers the catch,
-                // wherein the existing file may be deleted if not flagged as
-                // pre-existing.
-                if (File.Exists(targetFileName))
+                // it is a file, so start the extraction
+                if (FileSystem.Current.GetFileFromPathAsync(fullTargetPath).ExecuteSync() != null)
                 {
                     fileExistsBeforeExtraction = true;
-                    int rc = CheckExtractExistingFile(baseDir, targetFileName);
+                    int rc = zipEntry.CheckExtractExistingFile(baseDir, targetFileName);
                     if (rc == 2) goto ExitTry; // cancel
                     if (rc == 1) return; // do not overwrite
                 }
-
-                // If no password explicitly specified, use the password on the entry itself,
-                // or on the zipfile itself.
-                if (_Encryption_FromZipFile != EncryptionAlgorithm.None)
-                    EnsurePassword(password);
-
+                
                 // set up the output stream
                 var tmpName = Path.GetRandomFileName();
-                var tmpPath = Path.Combine(Path.GetDirectoryName(targetFileName), tmpName);
-                WriteStatus("extract file {0}...", targetFileName);
+                var tmpPath = Path.Combine(Path.GetDirectoryName(fullTargetPath), tmpName);
+                var dirName = Path.GetDirectoryName(tmpPath);
 
-                using (var output = OpenFileStream(tmpPath, ref checkLaterForResetDirTimes))
+                // ensure the target path exists
+                var dir = CreateDirectory(dirName, true);
+
+                // extract
+                var file = dir.CreateFileAsync(tmpPath, CreationCollisionOption.ReplaceExisting).ExecuteSync();
+                using (var output = file.OpenAsync(FileAccess.ReadAndWrite).ExecuteSync())
                 {
-                    if (ExtractToStream(ArchiveStream, output, Encryption, _Crc32))
-                        goto ExitTry;
-
-                    output.Close();
+                    zipEntry.ExtractWithPassword(output, password);
                 }
-
-                MoveFileInPlace(fileExistsBeforeExtraction, targetFileName, tmpPath, checkLaterForResetDirTimes);
-
-                OnAfterExtract(baseDir);
+                MoveFileInPlace(fileExistsBeforeExtraction, fullTargetPath, tmpPath);
 
                 ExitTry:;
             }
             catch (Exception)
             {
-                _ioOperationCanceled = true;
+                zipEntry.SetIOOperationCanceled(true);
                 throw;
             }
             finally
             {
-                if (_ioOperationCanceled && targetFileName != null)
+                if (zipEntry.IsIOOperationCanceled() && targetFileName != null)
                 {
                     // An exception has occurred. If the file exists, check
                     // to see if it existed before we tried extracting.  If
@@ -431,33 +407,11 @@ namespace Ionic.Zip
                     // but before final completion (setting times, etc). In
                     // that case the file will remain, even though some
                     // error occurred.  Nothing to be done about it.
-                    if (File.Exists(targetFileName) && !fileExistsBeforeExtraction)
-                        File.Delete(targetFileName);
+                    var file = FileSystem.Current.GetFileFromPathAsync(fullTargetPath).ExecuteSync();
+                    if (file != null && !fileExistsBeforeExtraction)
+                        file.DeleteAsync();
                 }
             }
-        }
-
-        Stream OpenFileStream(string tmpPath, ref bool checkLaterForResetDirTimes)
-        {
-            var dirName = Path.GetDirectoryName(tmpPath);
-            // ensure the target path exists
-            if (!Directory.Exists(dirName))
-            {
-                // we create the directory here, but we do not set the
-                // create/modified/accessed times on it because it is being
-                // created implicitly, not explcitly. There's no entry in the
-                // zip archive for the directory.
-                Directory.CreateDirectory(dirName);
-            }
-            else
-            {
-                // workitem 8264
-                if (_container.ZipFile != null)
-                    checkLaterForResetDirTimes = _container.ZipFile._inExtractAll;
-            }
-
-            // File.Create(CreateNew) will overwrite any existing file.
-            return new FileStream(tmpPath, FileMode.CreateNew);
         }
     }
 }

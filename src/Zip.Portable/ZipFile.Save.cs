@@ -94,7 +94,7 @@ namespace Ionic.Zip
         ///   segment size.
         /// </exception>
         ///
-        public void Save()
+        internal void Save()
         {
                 bool thisSaveUsedZip64 = false;
                 _saveOperationCanceled = false;
@@ -289,7 +289,6 @@ namespace Ionic.Zip
             _writestream = new CountingStream(outputStream);
 
             _contentsChanged = true;
-            _fileAlreadyExists = false;
             Save();
         }
 

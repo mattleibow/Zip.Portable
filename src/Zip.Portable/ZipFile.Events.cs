@@ -848,7 +848,7 @@ namespace Ionic.Zip
 
 
 
-        private void OnExtractEntry(int current, bool before, ZipEntry currentEntry, string path)
+        internal void OnExtractEntry(int current, bool before, ZipEntry currentEntry, string path)
         {
             EventHandler<ExtractProgressEventArgs> ep = ExtractProgress;
             if (ep != null)
@@ -907,7 +907,7 @@ namespace Ionic.Zip
         }
 
 
-        private void OnExtractAllCompleted(string path)
+        internal void OnExtractAllCompleted(string path)
         {
             EventHandler<ExtractProgressEventArgs> ep = ExtractProgress;
             if (ep != null)
@@ -919,7 +919,7 @@ namespace Ionic.Zip
         }
 
 
-        private void OnExtractAllStarted(string path)
+        internal void OnExtractAllStarted(string path)
         {
             EventHandler<ExtractProgressEventArgs> ep = ExtractProgress;
             if (ep != null)
@@ -1016,7 +1016,7 @@ namespace Ionic.Zip
         /// <seealso cref="Ionic.Zip.ZipFile.ExtractProgress"/>
         public event EventHandler<AddProgressEventArgs> AddProgress;
 
-        private void OnAddStarted()
+        internal void OnAddStarted()
         {
             EventHandler<AddProgressEventArgs> ap = AddProgress;
             if (ap != null)
@@ -1028,7 +1028,7 @@ namespace Ionic.Zip
             }
         }
 
-        private void OnAddCompleted()
+        internal void OnAddCompleted()
         {
             EventHandler<AddProgressEventArgs> ap = AddProgress;
             if (ap != null)

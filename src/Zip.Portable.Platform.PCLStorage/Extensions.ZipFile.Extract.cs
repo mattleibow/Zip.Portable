@@ -1,5 +1,8 @@
-﻿using System;
+﻿using Ionic.Zip.PlatformSupport;
+using PCLStorage;
+using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -120,9 +123,9 @@ namespace Ionic.Zip
         ///   The path can be relative or fully-qualified.
         /// </param>
         ///
-        public void ExtractAll(string path)
+        public static void ExtractAll(this ZipFile zipFile, string path)
         {
-            _InternalExtractAll(path, true);
+            zipFile._InternalExtractAll(path, true);
         }
 
         /// <summary>
@@ -187,79 +190,63 @@ namespace Ionic.Zip
         /// The action to take if extraction would overwrite an existing file.
         /// </param>
         /// <seealso cref="ExtractSelectedEntries(String,ExtractExistingFileAction)"/>
-        public void ExtractAll(string path, ExtractExistingFileAction extractExistingFile)
+        public static void ExtractAll(this ZipFile zipFile, string path, ExtractExistingFileAction extractExistingFile)
         {
-            ExtractExistingFile = extractExistingFile;
-            _InternalExtractAll(path, true);
+            zipFile.ExtractExistingFile = extractExistingFile;
+            zipFile._InternalExtractAll(path, true);
         }
 
-        private void _InternalExtractAll(string path, bool overrideExtractExistingProperty)
+        private static void _InternalExtractAll(this ZipFile zipFile, string path, bool overrideExtractExistingProperty)
         {
-            bool header = Verbose;
-            _inExtractAll = true;
+            bool verbose = zipFile.StatusMessageTextWriter != null;
+            bool header = verbose;
+            zipFile.SetInExtractAll(true);
             try
             {
-                OnExtractAllStarted(path);
+                zipFile.OnExtractAllStarted(path);
 
                 int n = 0;
-                foreach (ZipEntry e in _entries.Values)
+                foreach (ZipEntry e in zipFile.Entries)
                 {
                     if (header)
                     {
-                        StatusMessageTextWriter.WriteLine("\n{1,-22} {2,-8} {3,4}   {4,-8}  {0}",
+                        zipFile.StatusMessageTextWriter.WriteLine("\n{1,-22} {2,-8} {3,4}   {4,-8}  {0}",
                                   "Name", "Modified", "Size", "Ratio", "Packed");
-                        StatusMessageTextWriter.WriteLine(new System.String('-', 72));
+                        zipFile.StatusMessageTextWriter.WriteLine(new System.String('-', 72));
                         header = false;
                     }
-                    if (Verbose)
+                    if (verbose)
                     {
-                        StatusMessageTextWriter.WriteLine("{1,-22} {2,-8} {3,4:F0}%   {4,-8} {0}",
+                        zipFile.StatusMessageTextWriter.WriteLine("{1,-22} {2,-8} {3,4:F0}%   {4,-8} {0}",
                                   e.FileName,
                                   e.LastModified.ToString("yyyy-MM-dd HH:mm:ss"),
                                   e.UncompressedSize,
                                   e.CompressionRatio,
                                   e.CompressedSize);
                         if (!String.IsNullOrEmpty(e.Comment))
-                            StatusMessageTextWriter.WriteLine("  Comment: {0}", e.Comment);
+                            zipFile.StatusMessageTextWriter.WriteLine("  Comment: {0}", e.Comment);
                     }
-                    e.Password = _Password;  // this may be null
-                    OnExtractEntry(n, true, e, path);
+                    e.Password = zipFile.Password;  // this may be null
+                    zipFile.OnExtractEntry(n, true, e, path);
                     if (overrideExtractExistingProperty)
-                        e.ExtractExistingFile = this.ExtractExistingFile;
+                        e.ExtractExistingFile = zipFile.ExtractExistingFile;
                     e.Extract(path);
                     n++;
-                    OnExtractEntry(n, false, e, path);
-                    if (_extractOperationCanceled)
+                    zipFile.OnExtractEntry(n, false, e, path);
+                    if (zipFile.IsExtractOperationCanceled())
                         break;
                 }
 
-                if (!_extractOperationCanceled)
+                if (!zipFile.IsExtractOperationCanceled())
                 {
-                    // workitem 8264:
-                    // now, set times on directory entries, again.
-                    // The problem is, extracting a file changes the times on the parent
-                    // directory.  So after all files have been extracted, we have to
-                    // run through the directories again.
-                    foreach (ZipEntry e in _entries.Values)
-                    {
-                        // check if it is a directory
-                        if ((e.IsDirectory) || (e.FileName.EndsWith("/")))
-                        {
-                            string outputFile = (e.FileName.StartsWith("/"))
-                                ? Path.Combine(path, e.FileName.Substring(1))
-                                : Path.Combine(path, e.FileName);
-
-                            e._SetTimes(outputFile, false);
-                        }
-                    }
-                    OnExtractAllCompleted(path);
+                    zipFile.OnExtractAllCompleted(path);
                 }
 
             }
             finally
             {
 
-                _inExtractAll = false;
+                zipFile.SetInExtractAll(false);
             }
         }
     }

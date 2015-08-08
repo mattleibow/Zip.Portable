@@ -23,7 +23,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;AESCRYPTO_todo;BZIP</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
@@ -31,16 +31,49 @@
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
+    <DefineConstants>TRACE;AESCRYPTO_todo;BZIP</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
-  <ItemGroup>
-    <Reference Include="System" />
+  <PropertyGroup Condition=" '$(SignAssembly)' == 'true' ">
+    <DefineConstants>$(DefineConstants);SIGNED</DefineConstants>
+  </PropertyGroup>
+  <ItemGroup Condition=" '$(SignAssembly)' == 'true' ">
+    <Reference Include="Zlib.Portable, Version=1.11.0.0, Culture=neutral, PublicKeyToken=431cba815f6a8b5b, processorArchitecture=MSIL">
+      <HintPath>..\packages\Zlib.Portable.Signed.1.11.0\lib\portable-net4+sl5+wp8+win8+wpa81+MonoTouch+MonoAndroid\Zlib.Portable.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup Condition=" '$(SignAssembly)' != 'true' ">
     <Reference Include="Zlib.Portable, Version=1.11.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Zlib.Portable.1.11.0\lib\portable-net4+sl5+wp8+win8+wpa81+MonoTouch+MonoAndroid\Zlib.Portable.dll</HintPath>
       <Private>True</Private>
     </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="Ionic.CopyData, Version=1.0.1.0, Culture=neutral, PublicKeyToken=edbe51ad942a3f5c, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>Resources\Ionic.CopyData.dll</HintPath>
+    </Reference>
+    <Reference Include="Ionic.IO.JunctionPoint, Version=0.0.0.0, Culture=neutral, PublicKeyToken=edbe51ad942a3f5c, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>Resources\Ionic.IO.JunctionPoint.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.VisualStudio.Zip.9.0, Version=9.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\Windows\assembly\GAC_MSIL\Microsoft.VisualStudio.Zip.9.0\9.0.0.0__b03f5f7f11d50a3a\Microsoft.VisualStudio.Zip.9.0.dll</HintPath>
+    </Reference>
+    <Reference Include="PCLStorage, Version=1.0.2.0, Culture=neutral, PublicKeyToken=286fe515a2c35b64, processorArchitecture=MSIL">
+      <HintPath>..\packages\PCLStorage.1.0.2\lib\net45\PCLStorage.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="PCLStorage.Abstractions, Version=1.0.2.0, Culture=neutral, PublicKeyToken=286fe515a2c35b64, processorArchitecture=MSIL">
+      <HintPath>..\packages\PCLStorage.1.0.2\lib\net45\PCLStorage.Abstractions.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.XML" />
   </ItemGroup>
   <Choose>
     <When Condition="('$(VisualStudioVersion)' == '10.0' or '$(VisualStudioVersion)' == '') and '$(TargetFrameworkVersion)' == 'v3.5'">
@@ -65,9 +98,6 @@
     <Compile Include="PasswordTests.cs" />
     <Compile Include="Progress.cs" />
     <Compile Include="RandomTextGenerator.cs" />
-    <Compile Include="Selector.cs" />
-    <Compile Include="SelfExtractor.cs" />
-    <Compile Include="SplitArchives.cs" />
     <Compile Include="Streams.cs" />
     <Compile Include="TestUtilities.cs" />
     <Compile Include="UnicodeTests.cs" />
@@ -84,6 +114,10 @@
     <ProjectReference Include="..\Zip.Portable.Platform.PCLStorage\Zip.Portable.Platform.PCLStorage.csproj">
       <Project>{4dcd6b14-37f5-478e-9e06-fd4c7e16290a}</Project>
       <Name>Zip.Portable.Platform.PCLStorage</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Zip.Portable.PlatformSupport\Zip.Portable.PlatformSupport.csproj">
+      <Project>{df61ee8a-6586-4c4a-8d38-f0579e35e55d}</Project>
+      <Name>Zip.Portable.PlatformSupport</Name>
     </ProjectReference>
     <ProjectReference Include="..\Zip.Portable\Zip.Portable.csproj">
       <Project>{d282fbaa-9061-4240-8e95-d69e13d71ad1}</Project>

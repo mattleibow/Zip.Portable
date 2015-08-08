@@ -83,6 +83,63 @@ namespace Ionic.Zip
         /// <seealso cref="ZipFile.ProvisionalAlternateEncoding"/>
         ///
         public System.Text.Encoding @Encoding { get; set; }
+        
+        /// <summary>
+        /// Indicates whether to perform a full scan of the zip file when reading it.
+        /// </summary>
+        ///
+        /// <remarks>
+        ///
+        /// <para>
+        ///   You almost never want to use this property.
+        /// </para>
+        ///
+        /// <para>
+        ///   When reading a zip file, if this flag is <c>true</c> (<c>True</c> in
+        ///   VB), the entire zip archive will be scanned and searched for entries.
+        ///   For large archives, this can take a very, long time. The much more
+        ///   efficient default behavior is to read the zip directory, which is
+        ///   stored at the end of the zip file. But, in some cases the directory is
+        ///   corrupted and you need to perform a full scan of the zip file to
+        ///   determine the contents of the zip file. This property lets you do
+        ///   that, when necessary.
+        /// </para>
+        ///
+        /// <para>
+        ///   This flag is effective only when calling <see
+        ///   cref="Initialize(string)"/>. Normally you would read a ZipFile with the
+        ///   static <see cref="ZipFile.Read(String)">ZipFile.Read</see>
+        ///   method. But you can't set the <c>FullScan</c> property on the
+        ///   <c>ZipFile</c> instance when you use a static factory method like
+        ///   <c>ZipFile.Read</c>.
+        /// </para>
+        ///
+        /// </remarks>
+        ///
+        /// <example>
+        ///
+        ///   This example shows how to read a zip file using the full scan approach,
+        ///   and then save it, thereby producing a corrected zip file.
+        ///
+        /// <code lang="C#">
+        /// using (var zip = new ZipFile())
+        /// {
+        ///     zip.FullScan = true;
+        ///     zip.Initialize(zipFileName);
+        ///     zip.Save(newName);
+        /// }
+        /// </code>
+        ///
+        /// <code lang="VB">
+        /// Using zip As New ZipFile
+        ///     zip.FullScan = True
+        ///     zip.Initialize(zipFileName)
+        ///     zip.Save(newName)
+        /// End Using
+        /// </code>
+        /// </example>
+        ///
+        public bool FullScan { get; set; }
     }
 
 
@@ -162,7 +219,7 @@ namespace Ionic.Zip
         ///
         public static ZipFile Read(Stream zipStream)
         {
-            return Read(zipStream, null, null, null);
+            return Read(zipStream, null, null, null, false);
         }
 
         /// <summary>
@@ -221,7 +278,8 @@ namespace Ionic.Zip
             return Read(zipStream,
                         options.StatusMessageWriter,
                         options.Encoding,
-                        options.ReadProgress);
+                        options.ReadProgress,
+                        options.FullScan);
         }
 
 
@@ -274,7 +332,8 @@ namespace Ionic.Zip
         private static ZipFile Read(Stream zipStream,
                                    TextWriter statusMessageWriter,
                                    System.Text.Encoding encoding,
-                                   EventHandler<ReadProgressEventArgs> readProgress)
+                                   EventHandler<ReadProgressEventArgs> readProgress,
+                                   bool fullScan)
         {
             if (zipStream == null)
                 throw new ArgumentNullException("zipStream");
@@ -288,8 +347,12 @@ namespace Ionic.Zip
             zf._readstream = (zipStream.Position == 0L)
                 ? zipStream
                 : new OffsetStream(zipStream);
+            zf._ReadStreamIsOurs = false;
             if (zf.Verbose) zf._StatusMessageTextWriter.WriteLine("reading from stream...");
 
+            if (fullScan)
+            ReadIntoInstance_Orig(zf);
+            else
             ReadIntoInstance(zf);
             return zf;
         }
@@ -393,6 +456,19 @@ namespace Ionic.Zip
             }
             catch (Exception ex1)
             {
+                if (zf._ReadStreamIsOurs && zf._readstream != null)
+                {
+                    try
+                    {
+#if NETCF
+                        zf._readstream.Close();
+#else
+                        zf._readstream.Dispose();
+#endif
+                        zf._readstream = null;
+                    }
+                    finally { }
+                }
 
                 throw new ZipException("Cannot read that as a ZipFile", ex1);
             }
@@ -744,7 +820,7 @@ namespace Ionic.Zip
 
                 var bitBucket = Stream.Null;
 
-                using (ZipFile zip1 = ZipFile.Read(stream, null, null, null))
+                using (ZipFile zip1 = ZipFile.Read(stream, null, null, null, false))
                 {
                     if (testExtract)
                     {

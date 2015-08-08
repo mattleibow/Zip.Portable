@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
+using PCLStorage;
+using Ionic.Zip.PlatformSupport;
 
 namespace Ionic.Zip
 {
-    public partial class ZipFileExtensions
+    public static partial class ZipFileExtensions
     {
         /// <summary>
         ///   Adds an item, either a file or a directory, to a zip file archive.
@@ -53,9 +56,9 @@ namespace Ionic.Zip
         /// the name of the file or directory to add.</param>
         ///
         /// <returns>The <c>ZipEntry</c> added.</returns>
-        public ZipEntry AddItem(string fileOrDirectoryName)
+        public static ZipEntry AddItem(this ZipFile zipFile, string fileOrDirectoryName)
         {
-            return AddItem(fileOrDirectoryName, null);
+            return zipFile.AddItem(fileOrDirectoryName, null);
         }
 
         /// <summary>
@@ -172,17 +175,20 @@ namespace Ionic.Zip
         /// </code>
         /// </example>
         /// <returns>The <c>ZipEntry</c> added.</returns>
-        public ZipEntry AddItem(String fileOrDirectoryName, String directoryPathInArchive)
+        public static ZipEntry AddItem(this ZipFile zipFile, String fileOrDirectoryName, String directoryPathInArchive)
         {
-            if (File.Exists(fileOrDirectoryName))
-                return AddFile(fileOrDirectoryName, directoryPathInArchive);
+            string fullPath = GetFullPath(fileOrDirectoryName);
 
-            if (Directory.Exists(fileOrDirectoryName))
-                return AddDirectory(fileOrDirectoryName, directoryPathInArchive);
+            if (FileSystem.Current.GetFileFromPathAsync(fullPath).ExecuteSync() != null)
+                return zipFile.AddFile(fileOrDirectoryName, directoryPathInArchive);
+
+            if (FileSystem.Current.GetFolderFromPathAsync(fullPath).ExecuteSync() != null)
+                return zipFile.AddDirectory(fileOrDirectoryName, directoryPathInArchive);
 
             throw new FileNotFoundException(String.Format("That file or directory ({0}) does not exist!",
                                                           fileOrDirectoryName));
         }
+
 
         /// <summary>
         ///   Adds a File to a Zip file archive.
@@ -263,9 +269,9 @@ namespace Ionic.Zip
         ///   The name of the file may be a relative path or a fully-qualified path.
         /// </param>
         /// <returns>The <c>ZipEntry</c> corresponding to the File added.</returns>
-        public ZipEntry AddFile(string fileName)
+        public static ZipEntry AddFile(this ZipFile zipFile, string fileName)
         {
-            return AddFile(fileName, null);
+            return zipFile.AddFile(fileName, null);
         }
 
         /// <summary>
@@ -368,12 +374,24 @@ namespace Ionic.Zip
         /// </param>
         ///
         /// <returns>The <c>ZipEntry</c> corresponding to the file added.</returns>
-        public ZipEntry AddFile(string fileName, String directoryPathInArchive)
+        public static ZipEntry AddFile(this ZipFile zipFile, string fileName, String directoryPathInArchive)
         {
-            string nameInArchive = ZipEntry.NameInArchive(fileName, directoryPathInArchive);
-            ZipEntry ze = ZipEntry.CreateFromFile(fileName, nameInArchive);
-            if (Verbose) StatusMessageTextWriter.WriteLine("adding {0}...", fileName);
-            return _InternalAddEntry(ze);
+            string fullPath = GetFullPath(fileName);
+
+            string nameInArchive = ZipEntryInternal.NameInArchive(fileName, directoryPathInArchive);
+            return zipFile.AddEntry(nameInArchive, (name) => {
+                var file = FileSystem.Current.GetFileFromPathAsync(fullPath).ExecuteSync();
+                if (file == null)
+                {
+                    throw new FileNotFoundException(string.Format("That file ({0}) does not exist!", fileName));
+                }
+                return file.OpenAsync(FileAccess.Read).ExecuteSync();
+            }, (name, stream) => {
+                if (stream != null)
+                {
+                    stream.Dispose();
+                }
+            });
         }
 
         /// <summary>
@@ -431,9 +449,9 @@ namespace Ionic.Zip
         /// </example>
         ///
         /// <seealso cref="Ionic.Zip.ZipFile.AddSelectedFiles(String, String)" />
-        public void AddFiles(System.Collections.Generic.IEnumerable<String> fileNames)
+        public static void AddFiles(this ZipFile zipFile, System.Collections.Generic.IEnumerable<String> fileNames)
         {
-            this.AddFiles(fileNames, null);
+            zipFile.AddFiles(fileNames, null);
         }
 
         /// <summary>
@@ -461,9 +479,9 @@ namespace Ionic.Zip
         ///   the filesystem. The name of the file may be a relative path or a fully-qualified path.
         /// </param>
         ///
-        public void UpdateFiles(System.Collections.Generic.IEnumerable<String> fileNames)
+        public static void UpdateFiles(this ZipFile zipFile, System.Collections.Generic.IEnumerable<String> fileNames)
         {
-            this.UpdateFiles(fileNames, null);
+            zipFile.UpdateFiles(fileNames, null);
         }
 
         /// <summary>
@@ -508,9 +526,9 @@ namespace Ionic.Zip
         /// </param>
         ///
         /// <seealso cref="Ionic.Zip.ZipFile.AddSelectedFiles(String, String)" />
-        public void AddFiles(System.Collections.Generic.IEnumerable<String> fileNames, String directoryPathInArchive)
+        public static void AddFiles(this ZipFile zipFile, System.Collections.Generic.IEnumerable<String> fileNames, String directoryPathInArchive)
         {
-            AddFiles(fileNames, false, directoryPathInArchive);
+            zipFile.AddFiles(fileNames, directoryPathInArchive, false);
         }
 
         /// <summary>
@@ -572,40 +590,46 @@ namespace Ionic.Zip
         ///   the entries added to the ZipFile.
         /// </param>
         /// <seealso cref="Ionic.Zip.ZipFile.AddSelectedFiles(String, String)" />
-        public void AddFiles(System.Collections.Generic.IEnumerable<String> fileNames,
-                             bool preserveDirHierarchy,
-                             String directoryPathInArchive)
+        public static void AddFiles(this ZipFile zipFile, System.Collections.Generic.IEnumerable<String> fileNames, String directoryPathInArchive, bool preserveDirHierarchy)
         {
             if (fileNames == null)
                 throw new ArgumentNullException("fileNames");
 
-            _addOperationCanceled = false;
-            OnAddStarted();
+            zipFile.SetAddOperationCanceled(false);
+            zipFile.SetInAddAll(true);
+            try
+            {
+            zipFile.OnAddStarted();
             if (preserveDirHierarchy)
             {
                 foreach (var f in fileNames)
                 {
-                    if (_addOperationCanceled) break;
+                    if (zipFile.IsAddOperationCanceled()) break;
                     if (directoryPathInArchive != null)
                     {
                         //string s = SharedUtilities.NormalizePath(Path.Combine(directoryPathInArchive, Path.GetDirectoryName(f)));
-                        string s = Path.GetFullPath(Path.Combine(directoryPathInArchive, Path.GetDirectoryName(f)));
-                        this.AddFile(f, s);
+                        string s = ZipEntryInternal.NormalizePath(Path.Combine(directoryPathInArchive, Path.GetDirectoryName(f)));
+                        zipFile.AddFile(f, s);
                     }
                     else
-                        this.AddFile(f, null);
+                        zipFile.AddFile(f, null);
                 }
             }
             else
             {
                 foreach (var f in fileNames)
                 {
-                    if (_addOperationCanceled) break;
-                    this.AddFile(f, directoryPathInArchive);
+                    if (zipFile.IsAddOperationCanceled()) break;
+                    zipFile.AddFile(f, directoryPathInArchive);
                 }
             }
-            if (!_addOperationCanceled)
-                OnAddCompleted();
+            if (!zipFile.IsAddOperationCanceled())
+                zipFile.OnAddCompleted();
+            }
+            finally
+            {
+                zipFile.SetInAddAll(false);
+            }
         }
 
         /// <summary>
@@ -647,15 +671,15 @@ namespace Ionic.Zip
         /// </param>
         ///
         /// <seealso cref="Ionic.Zip.ZipFile.AddSelectedFiles(String, String)" />
-        public void UpdateFiles(System.Collections.Generic.IEnumerable<String> fileNames, String directoryPathInArchive)
+        public static void UpdateFiles(this ZipFile zipFile, System.Collections.Generic.IEnumerable<String> fileNames, String directoryPathInArchive)
         {
             if (fileNames == null)
                 throw new ArgumentNullException("fileNames");
 
-            OnAddStarted();
+            zipFile.OnAddStarted();
             foreach (var f in fileNames)
-                this.UpdateFile(f, directoryPathInArchive);
-            OnAddCompleted();
+                zipFile.UpdateFile(f, directoryPathInArchive);
+            zipFile.OnAddCompleted();
         }
 
         /// <summary>
@@ -740,9 +764,9 @@ namespace Ionic.Zip
         /// <returns>
         ///   The <c>ZipEntry</c> corresponding to the File that was added or updated.
         /// </returns>
-        public ZipEntry UpdateFile(string fileName)
+        public static ZipEntry UpdateFile(this ZipFile zipFile, string fileName)
         {
-            return UpdateFile(fileName, null);
+            return zipFile.UpdateFile(fileName, null);
         }
 
         /// <summary>
@@ -801,13 +825,13 @@ namespace Ionic.Zip
         /// <returns>
         ///   The <c>ZipEntry</c> corresponding to the File that was added or updated.
         /// </returns>
-        public ZipEntry UpdateFile(string fileName, String directoryPathInArchive)
+        public static ZipEntry UpdateFile(this ZipFile zipFile, string fileName, String directoryPathInArchive)
         {
             // ideally this would all be transactional!
-            var key = ZipEntry.NameInArchive(fileName, directoryPathInArchive);
-            if (this[key] != null)
-                this.RemoveEntry(key);
-            return this.AddFile(fileName, directoryPathInArchive);
+            var key = ZipEntryInternal.NameInArchive(fileName, directoryPathInArchive);
+            if (zipFile[key] != null)
+                zipFile.RemoveEntry(key);
+            return zipFile.AddFile(fileName, directoryPathInArchive);
         }
 
         /// <summary>
@@ -836,9 +860,9 @@ namespace Ionic.Zip
         /// <returns>
         /// The <c>ZipEntry</c> corresponding to the Directory that was added or updated.
         /// </returns>
-        public ZipEntry UpdateDirectory(string directoryName)
+        public static ZipEntry UpdateDirectory(this ZipFile zipFile, string directoryName)
         {
-            return UpdateDirectory(directoryName, null);
+            return zipFile.UpdateDirectory(directoryName, null);
         }
 
         /// <summary>
@@ -878,9 +902,9 @@ namespace Ionic.Zip
         /// <returns>
         ///   The <c>ZipEntry</c> corresponding to the Directory that was added or updated.
         /// </returns>
-        public ZipEntry UpdateDirectory(string directoryName, String directoryPathInArchive)
+        public static ZipEntry UpdateDirectory(this ZipFile zipFile, string directoryName, String directoryPathInArchive)
         {
-            return this.AddOrUpdateDirectoryImpl(directoryName, directoryPathInArchive, AddOrUpdateAction.AddOrUpdate);
+            return zipFile.AddOrUpdateDirectoryImpl(directoryName, directoryPathInArchive, AddOrUpdateAction.AddOrUpdate);
         }
 
         /// <summary>
@@ -913,9 +937,9 @@ namespace Ionic.Zip
         /// <param name="itemName">
         ///  the path to the file or directory to be added or updated.
         /// </param>
-        public void UpdateItem(string itemName)
+        public static void UpdateItem(this ZipFile zipFile, string itemName)
         {
-            UpdateItem(itemName, null);
+            zipFile.UpdateItem(itemName, null);
         }
 
         /// <summary>
@@ -965,13 +989,15 @@ namespace Ionic.Zip
         ///   <c>itemName</c>, if any.  Passing the empty string ("") will insert the
         ///   item at the root path within the archive.
         /// </param>
-        public void UpdateItem(string itemName, string directoryPathInArchive)
+        public static void UpdateItem(this ZipFile zipFile, string itemName, string directoryPathInArchive)
         {
-            if (File.Exists(itemName))
-                UpdateFile(itemName, directoryPathInArchive);
+            string fullPath = GetFullPath(itemName);
 
-            else if (Directory.Exists(itemName))
-                UpdateDirectory(itemName, directoryPathInArchive);
+            if (FileSystem.Current.GetFileFromPathAsync(fullPath).ExecuteSync() != null)
+                zipFile.UpdateFile(itemName, directoryPathInArchive);
+
+            else if (FileSystem.Current.GetFolderFromPathAsync(fullPath).ExecuteSync() != null)
+                zipFile.UpdateDirectory(itemName, directoryPathInArchive);
 
             else
                 throw new FileNotFoundException(String.Format("That file or directory ({0}) does not exist!", itemName));
@@ -1022,9 +1048,9 @@ namespace Ionic.Zip
         ///
         /// <param name="directoryName">The name of the directory to add.</param>
         /// <returns>The <c>ZipEntry</c> added.</returns>
-        public ZipEntry AddDirectory(string directoryName)
+        public static ZipEntry AddDirectory(this ZipFile zipFile, string directoryName)
         {
-            return AddDirectory(directoryName, null);
+            return zipFile.AddDirectory(directoryName, null);
         }
 
         /// <summary>
@@ -1091,42 +1117,38 @@ namespace Ionic.Zip
         /// </param>
         ///
         /// <returns>The <c>ZipEntry</c> added.</returns>
-        public ZipEntry AddDirectory(string directoryName, string directoryPathInArchive)
+        public static ZipEntry AddDirectory(this ZipFile zipFile, string directoryName, string directoryPathInArchive)
         {
-            return AddOrUpdateDirectoryImpl(directoryName, directoryPathInArchive, AddOrUpdateAction.AddOnly);
+            return zipFile.AddOrUpdateDirectoryImpl(directoryName, directoryPathInArchive, AddOrUpdateAction.AddOnly);
         }
 
-        private ZipEntry AddOrUpdateDirectoryImpl(string directoryName,
-                                          string rootDirectoryPathInArchive,
-                                          AddOrUpdateAction action)
+        internal static ZipEntry AddOrUpdateDirectoryImpl(this ZipFile zipFile, string directoryName, string rootDirectoryPathInArchive, AddOrUpdateAction action)
         {
             if (rootDirectoryPathInArchive == null)
             {
                 rootDirectoryPathInArchive = "";
             }
 
-            return AddOrUpdateDirectoryImpl(directoryName, rootDirectoryPathInArchive, action, true, 0);
+            return zipFile.AddOrUpdateDirectoryImpl(directoryName, rootDirectoryPathInArchive, action, true, 0);
         }
 
-        private ZipEntry AddOrUpdateDirectoryImpl(string directoryName,
-                                                  string rootDirectoryPathInArchive,
-                                                  AddOrUpdateAction action,
-                                                  bool recurse,
-                                                  int level)
+        internal static ZipEntry AddOrUpdateDirectoryImpl(this ZipFile zipFile, string directoryName, string rootDirectoryPathInArchive, AddOrUpdateAction action, bool recurse, int level)
         {
-            if (Verbose)
-                StatusMessageTextWriter.WriteLine("{0} {1}...",
+            string fullPath = GetFullPath(directoryName);
+
+            if (zipFile.StatusMessageTextWriter != null)
+                zipFile.StatusMessageTextWriter.WriteLine("{0} {1}...",
                                                   (action == AddOrUpdateAction.AddOnly) ? "adding" : "Adding or updating",
                                                   directoryName);
 
             if (level == 0)
             {
-                _addOperationCanceled = false;
-                OnAddStarted();
+                zipFile.SetAddOperationCanceled(false);
+                zipFile.OnAddStarted();
             }
 
             // workitem 13371
-            if (_addOperationCanceled)
+            if (zipFile.IsAddOperationCanceled())
                 return null;
 
             string dirForEntries = rootDirectoryPathInArchive;
@@ -1145,61 +1167,48 @@ namespace Ionic.Zip
             // if not top level, or if the root is non-empty, then explicitly add the directory
             if (level > 0 || rootDirectoryPathInArchive != "")
             {
-                baseDir = ZipEntry.CreateFromFile(directoryName, dirForEntries);
-                baseDir._container = new ZipContainer(this);
-                baseDir.AlternateEncoding = this.AlternateEncoding;  // workitem 6410
-                baseDir.AlternateEncodingUsage = this.AlternateEncodingUsage;
-                baseDir.MarkAsDirectory();
-                baseDir.EmitTimesInWindowsFormatWhenSaving = _emitNtfsTimes;
-                baseDir.EmitTimesInUnixFormatWhenSaving = _emitUnixTimes;
-
                 // add the directory only if it does not exist.
                 // It's not an error if it already exists.
-                if (!_entries.ContainsKey(baseDir.FileName))
+                dirForEntries = ZipEntryInternal.NameInArchive(dirForEntries) + '/';
+                if (!zipFile.EntryFileNames.Contains(dirForEntries))
                 {
-                    InternalAddEntry(baseDir.FileName, baseDir);
-                    AfterAddEntry(baseDir);
+                    baseDir = zipFile.AddDirectoryByName(dirForEntries);
                 }
-                dirForEntries = baseDir.FileName;
             }
 
-            if (!_addOperationCanceled)
+            if (!zipFile.IsAddOperationCanceled())
             {
-
-                String[] filenames = Directory.GetFiles(directoryName);
+                IFile fileCheck = FileSystem.Current.GetFileFromPathAsync(fullPath).ExecuteSync();
+                if (fileCheck != null)
+                {
+                    throw new IOException(string.Format("That path ({0}) is a file, not a directory!", directoryName));
+                }
+                IFolder folder = FileSystem.Current.GetFolderFromPathAsync(fullPath).ExecuteSync();
+                if (folder == null)
+                {
+                    throw new FileNotFoundException(string.Format("That folder ({0}) does not exist!", directoryName));
+                }
+                IList<IFile> files = folder.GetFilesAsync().ExecuteSync();
 
                 if (recurse)
                 {
                     // add the files:
-                    foreach (String filename in filenames)
+                    foreach (IFile file in files)
                     {
-                        if (_addOperationCanceled) break;
+                        if (zipFile.IsAddOperationCanceled()) break;
                         if (action == AddOrUpdateAction.AddOnly)
-                            AddFile(filename, dirForEntries);
+                            zipFile.AddFile(file.Path, dirForEntries);
                         else
-                            UpdateFile(filename, dirForEntries);
+                            zipFile.UpdateFile(file.Path, dirForEntries);
                     }
 
-                    if (!_addOperationCanceled)
+                    if (!zipFile.IsAddOperationCanceled())
                     {
                         // add the subdirectories:
-                        String[] dirnames = Directory.GetDirectories(directoryName);
-                        foreach (String dir in dirnames)
+                        IList<IFolder> dirs = folder.GetFoldersAsync().ExecuteSync();
+                        foreach (IFolder dir in dirs)
                         {
-                            // workitem 8617: Optionally traverse reparse points
-#if SILVERLIGHT
-#elif NETCF
-                            FileAttributes fileAttrs = (FileAttributes) NetCfFile.GetAttributes(dir);
-#else
-                            FileAttributes fileAttrs = System.IO.File.GetAttributes(dir);
-#endif
-                            if (this.AddDirectoryWillTraverseReparsePoints
-#if !SILVERLIGHT
-                                || ((fileAttrs & FileAttributes.ReparsePoint) == 0)
-#endif
-                                )
-                                AddOrUpdateDirectoryImpl(dir, rootDirectoryPathInArchive, action, recurse, level + 1);
-
+                                zipFile.AddOrUpdateDirectoryImpl(dir.Path, rootDirectoryPathInArchive, action, recurse, level + 1);
                         }
 
                     }
@@ -1207,7 +1216,7 @@ namespace Ionic.Zip
             }
 
             if (level == 0)
-                OnAddCompleted();
+                zipFile.OnAddCompleted();
 
             return baseDir;
         }

@@ -54,7 +54,7 @@ install:
       7za x -y infozip.zip -o"$izDir"
       7za x -y infounzip.zip -o"$izDir"
       
-      $sz = $env:ProgramFiles\7-zip\;
+      $sz = "$env:ProgramFiles\7-zip\";
       Write-Host "Installing 7-zip into $sz..."
       $sevenZipUrl = 'http://www.7-zip.org/a/7z920-x64.msi'
       Invoke-WebRequest $sevenZipUrl -OutFile 7z.msi

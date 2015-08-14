@@ -4,6 +4,10 @@ configuration: Release
 platform: Any CPU
 environment:
   LibraryVersion: 0.9.2
+  WinZipUsername:
+    secure: o91cPHdGUi1HAJJUHvYtEA==
+  WinZipKey:
+    secure: YALxthCvgXTeOx/bKfjSPRDxm0jGetiRElTG+pRomoFY65xxdEDZ7KUxQAfZd+7Y
   matrix:
     - SignAssembly: true
       Signing: Signed
@@ -22,28 +26,39 @@ assembly_info:
 # pre-requisites
 install:
   - ps: >
-      Write-Host "Installing WinZip into $env:ProgramData\WinZip\...";
+      $wzDir = "$env:ProgramData\WinZip\";
+      Write-Host "Installing WinZip into $wzDir...";
       $winzipUrl = 'http://download.winzip.com/winzip195-64.msi';
       $winzipCommand = 'http://download.winzip.com/wzcline40-64.exe';
       Invoke-WebRequest $winzipUrl -OutFile winzip.msi;
       Invoke-WebRequest $winzipCommand -OutFile wzcline.zip;
-      msiexec /i winzip.msi /qn ADDDESKTOPICON=0 ADDSTARTMENU=0 INSTALLCMD="/noc4u /notip /autoinstall";
-      regedit /S winini.reg;
-      Copy-Item winzip.addon -Force "$env:ProgramData\WinZip\";
-      7za x -y wzcline.zip -o"$env:ProgramFiles\WinZip\";
+      msiexec /i winzip.msi /qn INSTALLDIR="$wzDir" ADDDESKTOPICON=0 ADDSTARTMENU=0 INSTALLCMD="/noc4u /notip /autoinstall";
+      7za x -y wzcline.zip -o"$wzDir";
       
-      Write-Host "Installing info-zip into $env:ProgramFiles\infozip.org\..."
+      Write-Host "Registering WinZip...";
+      New-Item -Path "HKCU:\SOFTWARE\Nico Mak Computing\WinZip\WinIni\win32_version" -Value "6.3-19.5";
+      New-Item -Path "HKCU:\SOFTWARE\Nico Mak Computing\WinZip\WinIni\Setup" -Value "0";
+      New-Item -Path "HKCU:\SOFTWARE\Nico Mak Computing\WinZip\WinIni\UZQF" -Value "K112";
+      New-Item -Path "HKCU:\SOFTWARE\Nico Mak Computing\WinZip\WinIni\Name1" -Value "$env:WinZipUsername";
+      New-Item -Path "HKCU:\SOFTWARE\Nico Mak Computing\WinZip\WinIni\SN1" -Value "$env:WinZipKey";
+      Write-Host "Registering WinZip addons...";
+      $nl = [Environment]::NewLine;
+      "[Addon]$nlUZQF=K112$nlAOFF=0" | Out-File "$env:ProgramData\WinZip\WinZip.addon"
+      
+      $izDir = "$env:ProgramFiles\infozip.org\";
+      Write-Host "Installing info-zip into $izDir..."
       $infoZipUrl = 'ftp://ftp.info-zip.org/pub/infozip/win32/zip300xn.zip'
       $infoUnzipUrl = 'ftp://ftp.info-zip.org/pub/infozip/win32/unz600xn.exe'
       Invoke-WebRequest $infoZipUrl -OutFile infozip.zip
       Invoke-WebRequest $infoUnzipUrl -OutFile infounzip.zip
-      7za x -y infozip.zip -o"$env:ProgramFiles\infozip.org\"
-      7za x -y infounzip.zip -o"$env:ProgramFiles\infozip.org\"
+      7za x -y infozip.zip -o"$izDir"
+      7za x -y infounzip.zip -o"$izDir"
       
-      Write-Host "Installing 7-zip into $env:ProgramFiles\7-zip\..."
+      $sz = $env:ProgramFiles\7-zip\;
+      Write-Host "Installing 7-zip into $sz..."
       $sevenZipUrl = 'http://www.7-zip.org/a/7z920-x64.msi'
       Invoke-WebRequest $sevenZipUrl -OutFile 7z.msi
-      msiexec /i 7z.msi /qn ADDDESKTOPICON=0 ADDSTARTMENU=0
+      msiexec /i 7z.msi /qn INSTALLDIR="$sz" ADDDESKTOPICON=0 ADDSTARTMENU=0
 
 # build
 matrix:

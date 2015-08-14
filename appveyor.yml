@@ -27,8 +27,10 @@ assembly_info:
 install:
   - cinst 7zip
   - ps: >
-      $ErrorActionPreference = "Stop"
-      
+      $ErrorActionPreference = "Stop";
+      If ($true) {
+      }
+
       $wzDir = "$env:ProgramData\WinZip\"
       Write-Host "Installing WinZip into $wzDir..."
       $winzipUrl = 'http://download.winzip.com/winzip195-64.msi'
@@ -37,7 +39,7 @@ install:
       Invoke-WebRequest $winzipCommand -OutFile wzcline.zip
       msiexec /i winzip.msi /qn INSTALLDIR="$wzDir" ADDDESKTOPICON=0 ADDSTARTMENU=0 INSTALLCMD="/noc4u /notip /autoinstall"
       7za x -y wzcline.zip -o"$wzDir"
-      
+
       Write-Host "Registering WinZip..."
       New-Item -Path "HKCU:\SOFTWARE\Nico Mak Computing\WinZip\WinIni\win32_version" -Value "6.3-19.5"
       New-Item -Path "HKCU:\SOFTWARE\Nico Mak Computing\WinZip\WinIni\Setup" -Value "0"
@@ -47,7 +49,7 @@ install:
       Write-Host "Registering WinZip addons..."
       $nl = [Environment]::NewLine
       "[Addon]$nlUZQF=K112$nlAOFF=0" | Out-File "$env:ProgramData\WinZip\WinZip.addon"
-      
+
       $izDir = "$env:ProgramFiles\infozip.org\";
       Write-Host "Installing info-zip into $izDir..."
       $infoZipUrl = 'ftp://ftp.info-zip.org/pub/infozip/win32/zip300xn.zip'

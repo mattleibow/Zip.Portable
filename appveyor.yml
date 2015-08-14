@@ -26,10 +26,8 @@ assembly_info:
 # pre-requisites
 install:
   - cinst 7zip
-  - ps: >
-      $ErrorActionPreference = "Stop";
-      If ($true) {
-      }
+  - ps: |
+      $ErrorActionPreference = "Stop"
 
       $wzDir = "$env:ProgramData\WinZip\"
       Write-Host "Installing WinZip into $wzDir..."

@@ -30,35 +30,41 @@ install:
   - ps: |
       $ErrorActionPreference = "Stop"
 
-      $wzDir = "$env:ProgramData\WinZip\"
-      Write-Host "Installing WinZip into $wzDir..."
+      Write-Host "Downloading WinZip..."
       $winzipUrl = 'http://download.winzip.com/winzip195-64.msi'
       $winzipCommand = 'http://download.winzip.com/wzcline40-64.exe'
       Invoke-WebRequest $winzipUrl -OutFile winzip.msi
       Invoke-WebRequest $winzipCommand -OutFile wzcline.zip
+      
+      $wzDir = "$env:ProgramData\WinZip\"
+      Write-Host "Installing WinZip into $wzDir..."
       msiexec /i winzip.msi /qn INSTALLDIR="$wzDir" ADDDESKTOPICON=0 ADDSTARTMENU=0 INSTALLCMD="/noc4u /notip /autoinstall"
       7za x -y wzcline.zip -o"$wzDir"
 
       Write-Host "Registering WinZip..."
-      $wzreg = "HKCU:\SOFTWARE\Nico Mak Computing\WinZip\WinIni\"
-      If (-not (Test-Path "$wzreg")) {
-        New-Item -Path "$wzreg"
-      }
-      New-ItemProperty -Path "$wzreg" -Name "win32_version" -Value "6.3-19.5"
-      New-ItemProperty -Path "$wzreg" -Name "Setup" -Value "0"
-      New-ItemProperty -Path "$wzreg" -Name "UZQF" -Value "K112"
-      New-ItemProperty -Path "$wzreg" -Name "Name1" -Value "$env:WinZipUsername"
-      New-ItemProperty -Path "$wzreg" -Name "SN1" -Value "$env:WinZipKey"
+      $nicoReg = "HKCU:\SOFTWARE\Nico Mak Computing"
+      $wzreg = "$nicoReg\WinZip"
+      $wzinireg = "$wzreg\WinIni"
+      If (-not (Test-Path "$nicoReg")) New-Item -Path "$nicoReg"
+      If (-not (Test-Path "$wzreg")) New-Item -Path "$wzreg"
+      If (-not (Test-Path "$wzinireg")) New-Item -Path "$wzinireg"
+      New-ItemProperty -Path "$wzinireg" -Name "win32_version" -Value "6.3-19.5"
+      New-ItemProperty -Path "$wzinireg" -Name "Setup" -Value "0"
+      New-ItemProperty -Path "$wzinireg" -Name "UZQF" -Value "K112"
+      New-ItemProperty -Path "$wzinireg" -Name "Name1" -Value "$env:WinZipUsername"
+      New-ItemProperty -Path "$wzinireg" -Name "SN1" -Value "$env:WinZipKey"
       Write-Host "Registering WinZip addons..."
       $nl = [Environment]::NewLine
       "[Addon]$nlUZQF=K112$nlAOFF=0" | Out-File "$env:ProgramData\WinZip\WinZip.addon"
 
-      $izDir = "$env:ProgramFiles\infozip.org\";
-      Write-Host "Installing info-zip into $izDir..."
+      Write-Host "Downloading info-zip..."
       $infoZipUrl = 'ftp://ftp.info-zip.org/pub/infozip/win32/zip300xn.zip'
       $infoUnzipUrl = 'ftp://ftp.info-zip.org/pub/infozip/win32/unz600xn.exe'
       Invoke-WebRequest $infoZipUrl -OutFile infozip.zip
       Invoke-WebRequest $infoUnzipUrl -OutFile infounzip.zip
+      
+      $izDir = "$env:ProgramFiles\infozip.org\"
+      Write-Host "Installing info-zip into $izDir..."
       7za x -y infozip.zip -o"$izDir"
       7za x -y infounzip.zip -o"$izDir"
 

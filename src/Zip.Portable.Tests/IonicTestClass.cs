@@ -307,7 +307,7 @@ namespace Ionic.Zip.Tests.Utilities
                     string progfiles = null;
                     if (_wzunzip == null || _wzzip == null)
                     {
-                        progfiles = System.Environment.GetEnvironmentVariable("ProgramFiles(x86)");
+                        progfiles = System.Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles);
                         _wzunzip = Path.Combine(progfiles, "winzip", "wzunzip.exe");
                         _wzzip = Path.Combine(progfiles, "winzip", "wzzip.exe");
                     }
@@ -326,7 +326,7 @@ namespace Ionic.Zip.Tests.Utilities
                     string progfiles = null;
                     if (_sevenzip == null)
                     {
-                        progfiles = System.Environment.GetEnvironmentVariable("ProgramFiles");
+                        progfiles = System.Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles);
                         _sevenzip = Path.Combine(progfiles, "7-zip", "7z.exe");
                     }
                     _SevenZipIsPresent = new Nullable<bool>(File.Exists(_sevenzip));
@@ -345,7 +345,7 @@ namespace Ionic.Zip.Tests.Utilities
                     string progfiles = null;
                     if (_infozipzip == null)
                     {
-                        progfiles = System.Environment.GetEnvironmentVariable("ProgramFiles(x86)");
+                        progfiles = System.Environment.GetFolderPath(Environment.SpecialFolder.ProgramFiles);
                         _infozipzip = Path.Combine(progfiles, "infozip.org", "zip.exe");
                         _infozipunzip = Path.Combine(progfiles, "infozip.org", "unzip.exe");
                     }

@@ -38,7 +38,7 @@
   <PropertyGroup Condition=" '$(SignAssembly)' == 'true' ">
     <DefineConstants>$(DefineConstants);SIGNED</DefineConstants>
     <OutputPath>$(OutputPath)Signed\</OutputPath>
-	<AssemblyOriginatorKeyFile>..\Zlib.Portable.snk</AssemblyOriginatorKeyFile>
+    <AssemblyOriginatorKeyFile>..\Zlib.Portable.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(SignAssembly)' != 'true' ">
     <OutputPath>$(OutputPath)Unsigned\</OutputPath>
@@ -158,9 +158,9 @@
     <Content Include="zips\winzip-sfx.exe">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <None Include="Resources\Ionic.IO.JunctionPoint.dll">
+    <Content Include="Resources\Ionic.IO.JunctionPoint.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
+    </Content>
     <None Include="packages.config" />
     <Content Include="Resources\CreateZip.pl">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>

@@ -23,8 +23,8 @@ assembly_info:
 install:
   - ps: >
       Write-Host "Installing WinZip into $env:ProgramData\WinZip\...";
-      $winzipUrl = http://download.winzip.com/winzip195-64.msi;
-      $winzipCommand = http://download.winzip.com/wzcline40-64.exe;
+      $winzipUrl = 'http://download.winzip.com/winzip195-64.msi';
+      $winzipCommand = 'http://download.winzip.com/wzcline40-64.exe';
       Invoke-WebRequest $winzipUrl -OutFile winzip.msi;
       Invoke-WebRequest $winzipCommand -OutFile wzcline.zip;
       msiexec /i winzip.msi /qn ADDDESKTOPICON=0 ADDSTARTMENU=0 INSTALLCMD="/noc4u /notip /autoinstall";
@@ -33,15 +33,15 @@ install:
       7za x -y wzcline.zip -o"$env:ProgramFiles\WinZip\";
       
       Write-Host "Installing info-zip into $env:ProgramFiles\infozip.org\..."
-      $infoZipUrl = ftp://ftp.info-zip.org/pub/infozip/win32/zip300xn.zip
-      $infoUnzipUrl = ftp://ftp.info-zip.org/pub/infozip/win32/unz600xn.exe
+      $infoZipUrl = 'ftp://ftp.info-zip.org/pub/infozip/win32/zip300xn.zip'
+      $infoUnzipUrl = 'ftp://ftp.info-zip.org/pub/infozip/win32/unz600xn.exe'
       Invoke-WebRequest $infoZipUrl -OutFile infozip.zip
       Invoke-WebRequest $infoUnzipUrl -OutFile infounzip.zip
       7za x -y infozip.zip -o"$env:ProgramFiles\infozip.org\"
       7za x -y infounzip.zip -o"$env:ProgramFiles\infozip.org\"
       
       Write-Host "Installing 7-zip into $env:ProgramFiles\7-zip\..."
-      $sevenZipUrl = http://www.7-zip.org/a/7z920-x64.msi
+      $sevenZipUrl = 'http://www.7-zip.org/a/7z920-x64.msi'
       Invoke-WebRequest $sevenZipUrl -OutFile 7z.msi
       msiexec /i 7z.msi /qn ADDDESKTOPICON=0 ADDSTARTMENU=0
 

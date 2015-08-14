@@ -25,6 +25,7 @@ assembly_info:
 
 # pre-requisites
 install:
+  - cinst 7za
   - ps: >
       $wzDir = "$env:ProgramData\WinZip\";
       Write-Host "Installing WinZip into $wzDir...";

@@ -26,6 +26,7 @@ assembly_info:
 # pre-requisites
 install:
   - cinst 7zip
+  - cinst 7zip.commandline
   - ps: |
       $ErrorActionPreference = "Stop"
 

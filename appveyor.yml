@@ -40,11 +40,15 @@ install:
       7za x -y wzcline.zip -o"$wzDir"
 
       Write-Host "Registering WinZip..."
-      New-Item -Path "HKCU:\SOFTWARE\Nico Mak Computing\WinZip\WinIni\win32_version" -Value "6.3-19.5"
-      New-Item -Path "HKCU:\SOFTWARE\Nico Mak Computing\WinZip\WinIni\Setup" -Value "0"
-      New-Item -Path "HKCU:\SOFTWARE\Nico Mak Computing\WinZip\WinIni\UZQF" -Value "K112"
-      New-Item -Path "HKCU:\SOFTWARE\Nico Mak Computing\WinZip\WinIni\Name1" -Value "$env:WinZipUsername"
-      New-Item -Path "HKCU:\SOFTWARE\Nico Mak Computing\WinZip\WinIni\SN1" -Value "$env:WinZipKey"
+      $wzreg = "HKCU:\SOFTWARE\Nico Mak Computing\WinZip\WinIni\"
+      If (-not (Test-Path "$wzreg")) {
+        New-Item -Path "$wzreg"
+      }
+      New-ItemProperty -Path "$wzreg" -Name "win32_version" -Value "6.3-19.5"
+      New-ItemProperty -Path "$wzreg" -Name "Setup" -Value "0"
+      New-ItemProperty -Path "$wzreg" -Name "UZQF" -Value "K112"
+      New-ItemProperty -Path "$wzreg" -Name "Name1" -Value "$env:WinZipUsername"
+      New-ItemProperty -Path "$wzreg" -Name "SN1" -Value "$env:WinZipKey"
       Write-Host "Registering WinZip addons..."
       $nl = [Environment]::NewLine
       "[Addon]$nlUZQF=K112$nlAOFF=0" | Out-File "$env:ProgramData\WinZip\WinZip.addon"

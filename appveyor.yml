@@ -25,7 +25,7 @@ assembly_info:
 
 # pre-requisites
 install:
-  - cinst 7za
+  - cinst 7zip
   - ps: >
       $wzDir = "$env:ProgramData\WinZip\";
       Write-Host "Installing WinZip into $wzDir...";
@@ -54,12 +54,6 @@ install:
       Invoke-WebRequest $infoUnzipUrl -OutFile infounzip.zip
       7za x -y infozip.zip -o"$izDir"
       7za x -y infounzip.zip -o"$izDir"
-      
-      $sz = "$env:ProgramFiles\7-zip\";
-      Write-Host "Installing 7-zip into $sz..."
-      $sevenZipUrl = 'http://www.7-zip.org/a/7z920-x64.msi'
-      Invoke-WebRequest $sevenZipUrl -OutFile 7z.msi
-      msiexec /i 7z.msi /qn INSTALLDIR="$sz" ADDDESKTOPICON=0 ADDSTARTMENU=0
 
 # build
 matrix:

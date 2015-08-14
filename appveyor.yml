@@ -27,7 +27,7 @@ assembly_info:
 install:
   - cinst 7zip
   - ps: >
-      $ErrorActionPreference = "Stop"`
+      $ErrorActionPreference = "Stop"
       
       $wzDir = "$env:ProgramData\WinZip\"
       Write-Host "Installing WinZip into $wzDir..."

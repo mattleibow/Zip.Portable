@@ -45,9 +45,9 @@ install:
       $nicoReg = "HKCU:\SOFTWARE\Nico Mak Computing"
       $wzreg = "$nicoReg\WinZip"
       $wzinireg = "$wzreg\WinIni"
-      If (-not (Test-Path "$nicoReg")) New-Item -Path "$nicoReg"
-      If (-not (Test-Path "$wzreg")) New-Item -Path "$wzreg"
-      If (-not (Test-Path "$wzinireg")) New-Item -Path "$wzinireg"
+      If (-not (Test-Path "$nicoReg")) { New-Item -Path "$nicoReg" }
+      If (-not (Test-Path "$wzreg")) { New-Item -Path "$wzreg" }
+      If (-not (Test-Path "$wzinireg")) { New-Item -Path "$wzinireg" }
       New-ItemProperty -Path "$wzinireg" -Name "win32_version" -Value "6.3-19.5"
       New-ItemProperty -Path "$wzinireg" -Name "Setup" -Value "0"
       New-ItemProperty -Path "$wzinireg" -Name "UZQF" -Value "K112"

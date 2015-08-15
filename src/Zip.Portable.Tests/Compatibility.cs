@@ -358,7 +358,6 @@ namespace Ionic.Zip.Tests
         [TestMethod][Timeout(5*60*1000)]
         public void ShellApplication_Unzip_2()
         {
-            Assert.Fail("Force fail: ShellApplication_Unzip_2");
             string zipFileToCreate = Path.Combine(TopLevelDir, "ShellApplication_Unzip-2.zip");
             // create and fill the directories
             string extractDir = Path.Combine(TopLevelDir, "extract");
@@ -2016,6 +2015,8 @@ namespace Ionic.Zip.Tests
 
         private List<string> GetSelectionOfTempFiles(int numFilesWanted, Dictionary<string, byte[]> checksums)
         {
+            Assert.Fail("Force fail: GetSelectionOfTempFiles");
+
             string tmpPath = Environment.GetEnvironmentVariable("TEMP"); // C:\Users\dinoch\AppData\Local\Temp
             String[] candidates = Directory.GetFiles(tmpPath);
             var theChosenOnes = new List<String>();

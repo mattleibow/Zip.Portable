@@ -364,6 +364,8 @@ namespace Ionic.Zip.Tests
             var checksums = new Dictionary<string, byte[]>();
             var filesToZip = GetSelectionOfTempFiles(_rnd.Next(13) + 8, checksums);
 
+            Assert.Fail(string.Join(Environment.NewLine, filesToZip));
+
             // Create the zip archive
             using (ZipFile zip1 = new ZipFile())
             {

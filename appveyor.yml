@@ -54,6 +54,7 @@ install:
       New-ItemProperty -Path "$wzinireg" -Name "Name1" -Value "$env:WinZipUsername"
       New-ItemProperty -Path "$wzinireg" -Name "SN1" -Value "$env:WinZipKey"
       Write-Host "Registering WinZip addons..."
+      New-Item -ItemType Directory -Path "$env:ProgramData\WinZip\"
       $nl = [Environment]::NewLine
       "[Addon]$nlUZQF=K112$nlAOFF=0" | Out-File "$env:ProgramData\WinZip\WinZip.addon"
 

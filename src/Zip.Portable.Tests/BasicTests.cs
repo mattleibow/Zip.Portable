@@ -56,7 +56,7 @@ namespace Ionic.Zip.Tests.Basic
         public BasicTests() : base() { }
 
 
-        [TestMethod]
+        [TestMethod][Timeout(5*60*1000)]
         public void CreateZip_AddItem_WithDirectory()
         {
             // select the name of the zip file
@@ -80,7 +80,7 @@ namespace Ionic.Zip.Tests.Basic
                                  filesToZip.Length);
         }
 
-        [TestMethod]
+        [TestMethod][Timeout(5*60*1000)]
         public void CreateZip_AddItem_NoDirectory()
         {
             string zipFileToCreate = "CreateZip_AddItem.zip";
@@ -100,7 +100,7 @@ namespace Ionic.Zip.Tests.Basic
         }
 
 
-        [TestMethod]
+        [TestMethod][Timeout(5*60*1000)]
         [ExpectedException(typeof(Ionic.Zip.ZipException))]
         public void FileNotAvailableFails_wi10387()
         {
@@ -121,7 +121,7 @@ namespace Ionic.Zip.Tests.Basic
         }
 
 
-        [TestMethod]
+        [TestMethod][Timeout(5*60*1000)]
         public void CreateZip_AddFile()
         {
             int i;
@@ -139,7 +139,7 @@ namespace Ionic.Zip.Tests.Basic
                                  filesToZip.Length);
         }
 
-        [TestMethod]
+        [TestMethod][Timeout(5*60*1000)]
         public void CreateZip_AddFile_CharCase_wi13481()
         {
             string zipFileToCreate = "AddFile.zip";
@@ -176,7 +176,7 @@ namespace Ionic.Zip.Tests.Basic
         }
 
 
-        [TestMethod]
+        [TestMethod][Timeout(5*60*1000)]
         public void CreateZip_AddFileInDirectory()
         {
             string subdir = "fodder";
@@ -245,7 +245,7 @@ namespace Ionic.Zip.Tests.Basic
         }
 
 
-        [TestMethod]
+        [TestMethod][Timeout(5*60*1000)]
         public void CreateZip_AddFile_LeadingDot()
         {
             // select the name of the zip file
@@ -267,7 +267,7 @@ namespace Ionic.Zip.Tests.Basic
 
 
 
-        [TestMethod]
+        [TestMethod][Timeout(5*60*1000)]
         public void CreateZip_AddFiles_LeadingDot_Array()
         {
             // select the name of the zip file
@@ -288,7 +288,7 @@ namespace Ionic.Zip.Tests.Basic
 
 
 
-        [TestMethod]
+        [TestMethod][Timeout(5*60*1000)]
         public void CreateZip_AddFiles_PreserveDirHierarchy()
         {
             // select the name of the zip file
@@ -336,7 +336,7 @@ namespace Ionic.Zip.Tests.Basic
         }
 
 
-        [TestMethod]
+        [TestMethod][Timeout(5*60*1000)]
         public void CreateZip_AddEntry_ByteArray()
         {
             // select the name of the zip file
@@ -379,7 +379,7 @@ namespace Ionic.Zip.Tests.Basic
 
 
 
-        [TestMethod]
+        [TestMethod][Timeout(5*60*1000)]
         public void CreateZip_AddFile_AddItem()
         {
             string zipFileToCreate = "CreateZip_AddFile_AddItem.zip";
@@ -418,7 +418,7 @@ namespace Ionic.Zip.Tests.Basic
 
 
 
-        [TestMethod]
+        [TestMethod][Timeout(5*60*1000)]
         public void CreateZip_ZeroEntries()
         {
             // select the name of the zip file
@@ -441,7 +441,7 @@ namespace Ionic.Zip.Tests.Basic
 
 
 
-        [TestMethod]
+        [TestMethod][Timeout(5*60*1000)]
         public void CreateZip_Basic_ParameterizedSave()
         {
             string zipFileToCreate = "CreateZip_Basic_ParameterizedSave.zip";
@@ -468,33 +468,33 @@ namespace Ionic.Zip.Tests.Basic
         }
 
 
-        [TestMethod]
+        [TestMethod][Timeout(5*60*1000)]
         public void CreateZip_AddFile_OnlyZeroLengthFiles()
         {
             _Internal_ZeroLengthFiles(_rnd.Next(33) + 3, "CreateZip_AddFile_OnlyZeroLengthFiles", null);
         }
 
-        [TestMethod]
+        [TestMethod][Timeout(5*60*1000)]
         public void CreateZip_AddFile_OnlyZeroLengthFiles_Password()
         {
             _Internal_ZeroLengthFiles(_rnd.Next(33) + 3, "CreateZip_AddFile_OnlyZeroLengthFiles", Path.GetRandomFileName());
         }
 
-        [TestMethod]
+        [TestMethod][Timeout(5*60*1000)]
         public void CreateZip_AddFile_OneZeroLengthFile()
         {
             _Internal_ZeroLengthFiles(1, "CreateZip_AddFile_OneZeroLengthFile", null);
         }
 
 
-        [TestMethod]
+        [TestMethod][Timeout(5*60*1000)]
         public void CreateZip_AddFile_OneZeroLengthFile_Password()
         {
             _Internal_ZeroLengthFiles(1, "CreateZip_AddFile_OneZeroLengthFile_Password", Path.GetRandomFileName());
         }
 
 
-        [TestMethod]
+        [TestMethod][Timeout(5*60*1000)]
         public void CreateZip_KeepStreamOpen()
         {
             int i;
@@ -559,7 +559,7 @@ namespace Ionic.Zip.Tests.Basic
         }
 
 
-        [TestMethod]
+        [TestMethod][Timeout(5*60*1000)]
         public void CreateZip_UpdateDirectory()
         {
             int i, j;
@@ -728,7 +728,7 @@ namespace Ionic.Zip.Tests.Basic
 
 
 
-        [TestMethod]
+        [TestMethod][Timeout(5*60*1000)]
         public void CreateZip_AddDirectory_OnlyZeroLengthFiles()
         {
             string zipFileToCreate = "CreateZip_AddDirectory_OnlyZeroLengthFiles.zip";
@@ -760,7 +760,7 @@ namespace Ionic.Zip.Tests.Basic
 
 
 
-        [TestMethod]
+        [TestMethod][Timeout(5*60*1000)]
         public void CreateZip_AddDirectory_OneZeroLengthFile()
         {
             string zipFileToCreate = "CreateZip_AddDirectory_OneZeroLengthFile.zip";
@@ -780,7 +780,7 @@ namespace Ionic.Zip.Tests.Basic
         }
 
 
-        [TestMethod]
+        [TestMethod][Timeout(5*60*1000)]
         public void CreateZip_AddDirectory_OnlyEmptyDirectories()
         {
             string zipFileToCreate = "CreateZip_AddDirectory_OnlyEmptyDirectories.zip";
@@ -804,7 +804,7 @@ namespace Ionic.Zip.Tests.Basic
         }
 
 
-        [TestMethod]
+        [TestMethod][Timeout(5*60*1000)]
         public void CreateZip_AddDirectory_OneEmptyDirectory()
         {
             string zipFileToCreate = "CreateZip_AddDirectory_OneEmptyDirectory.zip";
@@ -822,7 +822,7 @@ namespace Ionic.Zip.Tests.Basic
         }
 
 
-        [TestMethod]
+        [TestMethod][Timeout(5*60*1000)]
         public void CreateZip_WithEmptyDirectory()
         {
             string zipFileToCreate = "Create_WithEmptyDirectory.zip";
@@ -839,7 +839,7 @@ namespace Ionic.Zip.Tests.Basic
 
 
 
-        [TestMethod]
+        [TestMethod][Timeout(5*60*1000)]
         public void CreateZip_AddDirectory_CheckStatusTextWriter()
         {
             string zipFileToCreate = "CreateZip_AddDirectory_CheckStatusTextWriter.zip";
@@ -891,7 +891,7 @@ namespace Ionic.Zip.Tests.Basic
         }
 
 
-        [TestMethod]
+        [TestMethod][Timeout(5*60*1000)]
         public void CreateZip_AddDirectory()
         {
             TestTrial[] trials = {
@@ -959,7 +959,7 @@ namespace Ionic.Zip.Tests.Basic
         }
 
 
-        [TestMethod]
+        [TestMethod][Timeout(5*60*1000)]
         public void CreateZip_AddDirectory_Nested()
         {
             // Each trial provides a directory name into which to add
@@ -1032,7 +1032,7 @@ namespace Ionic.Zip.Tests.Basic
         }
 
 
-        [TestMethod]
+        [TestMethod][Timeout(5*60*1000)]
         public void Basic_SaveToFileStream()
         {
             // from small numbers of files to larger numbers of files
@@ -1071,7 +1071,7 @@ namespace Ionic.Zip.Tests.Basic
 
 
 
-        [TestMethod]
+        [TestMethod][Timeout(5*60*1000)]
         public void Basic_IsText()
         {
             // from small numbers of files to larger numbers of files
@@ -1136,7 +1136,7 @@ namespace Ionic.Zip.Tests.Basic
         }
 
 
-        [TestMethod]
+        [TestMethod][Timeout(5*60*1000)]
         public void CreateZip_VerifyThatStreamRemainsOpenAfterSave()
         {
             Ionic.Zlib.CompressionLevel[] compressionLevelOptions = {
@@ -1204,7 +1204,7 @@ namespace Ionic.Zip.Tests.Basic
         }
 
 
-        [TestMethod]
+        [TestMethod][Timeout(5*60*1000)]
         public void CreateZip_AddFile_VerifyCrcAndContents()
         {
             string filename = null;
@@ -1260,7 +1260,7 @@ namespace Ionic.Zip.Tests.Basic
 
 
 
-        [TestMethod]
+        [TestMethod][Timeout(5*60*1000)]
         public void Extract_IntoMemoryStream()
         {
             string filename = null;
@@ -1315,7 +1315,7 @@ namespace Ionic.Zip.Tests.Basic
         }
 
 
-        [TestMethod]
+        [TestMethod][Timeout(5*60*1000)]
         public void Retrieve_ViaIndexer2_wi11056()
         {
             string fileName = "wi11056.dwf";
@@ -1336,7 +1336,7 @@ namespace Ionic.Zip.Tests.Basic
 
 
 
-        [TestMethod]
+        [TestMethod][Timeout(5*60*1000)]
         public void Retrieve_ViaIndexer()
         {
             // select the name of the zip file
@@ -1411,7 +1411,7 @@ namespace Ionic.Zip.Tests.Basic
 
 
 
-        [TestMethod]
+        [TestMethod][Timeout(5*60*1000)]
         public void CreateZip_SetFileComments()
         {
             string zipFileToCreate = "FileComments.zip";
@@ -1455,7 +1455,7 @@ namespace Ionic.Zip.Tests.Basic
         }
 
 
-        [TestMethod]
+        [TestMethod][Timeout(5*60*1000)]
         public void CreateZip_SetFileLastModified()
         {
             //int fileCount = _rnd.Next(13) + 23;
@@ -1545,9 +1545,8 @@ namespace Ionic.Zip.Tests.Basic
 
 
 
-        [TestCategory("NotForCI")]
         [TestMethod]
-        [Timeout(1000 * 240)]  // timeout in ms.  240s = 4 mins
+        [Timeout(4 * 60*1000 * 240)] // timeout in ms.
         public void CreateZip_VerifyFileLastModified()
         {
             string zipFileToCreate = "CreateZip_VerifyFileLastModified.zip";
@@ -1711,7 +1710,7 @@ namespace Ionic.Zip.Tests.Basic
 
 
 
-        [TestMethod]
+        [TestMethod][Timeout(5*60*1000)]
         public void CreateZip_AddDirectory_NoFilesInRoot()
         {
             string zipFileToCreate = "CreateZip_AddDirectory_NoFilesInRoot.zip";
@@ -1746,7 +1745,7 @@ namespace Ionic.Zip.Tests.Basic
         }
 
 
-        [TestMethod]
+        [TestMethod][Timeout(5*60*1000)]
         public void CreateZip_AddDirectory_OneCharOverrideName()
         {
             int entries = 0;
@@ -1810,7 +1809,7 @@ namespace Ionic.Zip.Tests.Basic
 
 
 
-        [TestMethod]
+        [TestMethod][Timeout(5*60*1000)]
         public void CreateZip_CompressionLevelZero_AllEntries()
         {
             string zipFileToCreate = "CompressionLevelZero.zip";
@@ -1853,7 +1852,7 @@ namespace Ionic.Zip.Tests.Basic
 
 
 
-        [TestMethod]
+        [TestMethod][Timeout(5*60*1000)]
         public void CreateZip_ForceNoCompressionSomeEntries()
         {
             string zipFileToCreate = "ForceNoCompression.zip";
@@ -1898,7 +1897,7 @@ namespace Ionic.Zip.Tests.Basic
 
 
 
-        [TestMethod]
+        [TestMethod][Timeout(5*60*1000)]
         public void AddFile_CompressionMethod_None_wi9208()
         {
             string zipFileToCreate = "AddFile_CompressionMethod_None_wi9208.zip";
@@ -1928,7 +1927,7 @@ namespace Ionic.Zip.Tests.Basic
 
 
 
-        [TestMethod]
+        [TestMethod][Timeout(5*60*1000)]
         public void GetInfo()
         {
             TestContext.WriteLine("GetInfo");
@@ -1985,7 +1984,7 @@ namespace Ionic.Zip.Tests.Basic
 
 
 
-        [TestMethod]
+        [TestMethod][Timeout(5*60*1000)]
         public void Create_WithAbsolutePath()
         {
             string zipFileToCreate = "Create_WithAbsolutePath.zip";
@@ -2263,7 +2262,7 @@ namespace Ionic.Zip.Tests.Basic
         }
 
 
-        [TestMethod]
+        [TestMethod][Timeout(5*60*1000)]
         public void Resave_CompressionMethod_0()
         {
             for (int i=0; i<CryptoPairs.Length;  i++)
@@ -2273,7 +2272,7 @@ namespace Ionic.Zip.Tests.Basic
         }
 
 
-        [TestMethod]
+        [TestMethod][Timeout(5*60*1000)]
         public void Resave_CompressionMethod_1()
         {
             for (int i=0; i<CryptoPairs.Length;  i++)
@@ -2283,7 +2282,7 @@ namespace Ionic.Zip.Tests.Basic
             }
         }
 
-        [TestMethod]
+        [TestMethod][Timeout(5*60*1000)]
         public void Resave_CompressionMethod_2()
         {
             for (int i=0; i<CryptoPairs.Length;  i++)
@@ -2292,7 +2291,7 @@ namespace Ionic.Zip.Tests.Basic
             }
         }
 
-        [TestMethod]
+        [TestMethod][Timeout(5*60*1000)]
         public void Resave_CompressionMethod_3()
         {
             for (int i=0; i<CryptoPairs.Length;  i++)
@@ -2302,7 +2301,7 @@ namespace Ionic.Zip.Tests.Basic
         }
 
 
-        [TestMethod]
+        [TestMethod][Timeout(5*60*1000)]
         public void Resave_CompressionLevel_0()
         {
             for (int i=0; i<CryptoPairs.Length;  i++)
@@ -2312,7 +2311,7 @@ namespace Ionic.Zip.Tests.Basic
         }
 
 
-        [TestMethod]
+        [TestMethod][Timeout(5*60*1000)]
         public void Resave_CompressionLevel_1()
         {
             for (int i=0; i<CryptoPairs.Length;  i++)
@@ -2322,7 +2321,7 @@ namespace Ionic.Zip.Tests.Basic
             }
         }
 
-        [TestMethod]
+        [TestMethod][Timeout(5*60*1000)]
         public void Resave_CompressionLevel_2()
         {
             for (int i=0; i<CryptoPairs.Length;  i++)
@@ -2331,7 +2330,7 @@ namespace Ionic.Zip.Tests.Basic
             }
         }
 
-        [TestMethod]
+        [TestMethod][Timeout(5*60*1000)]
         public void Resave_CompressionLevel_3()
         {
             for (int i=0; i<CryptoPairs.Length;  i++)

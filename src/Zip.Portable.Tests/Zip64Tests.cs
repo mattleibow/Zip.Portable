@@ -446,7 +446,7 @@ namespace Ionic.Zip.Tests.Zip64
 
 
 
-        [TestMethod]
+        [TestMethod][Timeout(5*60*1000)]
         public void Zip64_Create()
         {
             Zip64Option[] Options = { Zip64Option.Always,
@@ -518,7 +518,7 @@ namespace Ionic.Zip.Tests.Zip64
 
 
 
-        [TestMethod]
+        [TestMethod][Timeout(5*60*1000)]
         public void Zip64_Convert()
         {
             string trialDescription = "Trial {0}/{1}:  create archive as 'zip64={2}', then open it and re-save with 'zip64={3}'";
@@ -953,7 +953,7 @@ namespace Ionic.Zip.Tests.Zip64
 
 
 
-        [TestMethod]
+        [TestMethod][Timeout(5*60*1000)]
         public void Zip64_Winzip_Unzip_OneFile()
         {
             string fileToZip = Path.Combine(SourceDir, TestUtilities.GetBinDir("Zip.Portable.Tests"), "Zip.Portable.dll");

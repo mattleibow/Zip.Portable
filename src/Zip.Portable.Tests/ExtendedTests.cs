@@ -260,7 +260,7 @@ namespace Ionic.Zip.Tests.Extended
 
 
 
-        [TestMethod]
+        [TestMethod][Timeout(5*60*1000)]
         public void TestZip_IsZipFile()
         {
             string zipFileToCreate = Path.Combine(TopLevelDir, "TestZip_IsZipFile.zip");
@@ -303,7 +303,7 @@ namespace Ionic.Zip.Tests.Extended
         }
 
 
-        [TestMethod]
+        [TestMethod][Timeout(5*60*1000)]
         public void TestZip_IsZipFile_Stream()
         {
             string zipFileToCreate = Path.Combine(TopLevelDir, "TestZip_IsZipFile_Stream.zip");
@@ -348,7 +348,7 @@ namespace Ionic.Zip.Tests.Extended
 
 
 
-        [TestMethod]
+        [TestMethod][Timeout(5*60*1000)]
         public void ReadZip_DirectoryBitSetForEmptyDirectories()
         {
             string zipFileToCreate = Path.Combine(TopLevelDir, "ReadZip_DirectoryBitSetForEmptyDirectories.zip");
@@ -396,7 +396,7 @@ namespace Ionic.Zip.Tests.Extended
         }
 
 
-        [TestMethod]
+        [TestMethod][Timeout(5*60*1000)]
         [ExpectedException(typeof(System.ArgumentException))]
         public void Create_DuplicateEntries_wi8047()
         {
@@ -417,7 +417,7 @@ namespace Ionic.Zip.Tests.Extended
         }
 
 
-        [TestMethod]
+        [TestMethod][Timeout(5*60*1000)]
         public void Create_RenameRemoveAndRenameAgain_wi8047()
         {
             string filename = "file.test";
@@ -456,7 +456,7 @@ namespace Ionic.Zip.Tests.Extended
         }
 
 
-        [TestMethod]
+        [TestMethod][Timeout(5*60*1000)]
         public void Create_EmitTimestampOptions()
         {
             string dirToZip = Path.GetFileNameWithoutExtension(Path.GetRandomFileName());
@@ -509,7 +509,7 @@ namespace Ionic.Zip.Tests.Extended
 
 
 
-        [TestMethod]
+        [TestMethod][Timeout(5*60*1000)]
         public void Extract_AfterSaveNoDispose()
         {
             string zipFileToCreate = Path.Combine(TopLevelDir, "Extract_AfterSaveNoDispose.zip");
@@ -544,7 +544,7 @@ namespace Ionic.Zip.Tests.Extended
 
 
 
-        [TestMethod]
+        [TestMethod][Timeout(5*60*1000)]
         public void Test_AddUpdateFileFromStream()
         {
             string[] passwords = { null, "Password", TestUtilities.GenerateRandomPassword(), "A" };
@@ -603,7 +603,7 @@ namespace Ionic.Zip.Tests.Extended
 
 
 
-        [TestMethod]
+        [TestMethod][Timeout(5*60*1000)]
         public void Test_AddEntry_String()
         {
             string[] passwords = { null, "Password", TestUtilities.GenerateRandomPassword(), "A" };
@@ -721,7 +721,7 @@ namespace Ionic.Zip.Tests.Extended
 
 
 
-        [TestMethod]
+        [TestMethod][Timeout(5*60*1000)]
         public void Test_AddDirectoryByName()
         {
             for (int n = 1; n <= 10; n++)
@@ -758,7 +758,7 @@ namespace Ionic.Zip.Tests.Extended
 
 
 
-        [TestMethod]
+        [TestMethod][Timeout(5*60*1000)]
         public void Test_AddDirectoryByName_Nested()
         {
             Directory.SetCurrentDirectory(TopLevelDir);
@@ -795,7 +795,7 @@ namespace Ionic.Zip.Tests.Extended
         }
 
 
-        [TestMethod]
+        [TestMethod][Timeout(5*60*1000)]
         public void Test_AddDirectoryByName_WithFiles()
         {
             Directory.SetCurrentDirectory(TopLevelDir);
@@ -974,7 +974,7 @@ namespace Ionic.Zip.Tests.Extended
         }
 
 
-        [TestMethod]
+        [TestMethod][Timeout(5*60*1000)]
         public void Create_WithEvents()
         {
             string dirToZip = Path.Combine(TopLevelDir, "EventTest");
@@ -1044,7 +1044,7 @@ namespace Ionic.Zip.Tests.Extended
 
 
 
-        [TestMethod]
+        [TestMethod][Timeout(5*60*1000)]
         public void CreateZip_AddDirectory_NoFilesInRoot_WI5893()
         {
             string zipFileToCreate = Path.Combine(TopLevelDir, "CreateZip_AddDirectory_NoFilesInRoot_WI5893.zip");
@@ -1076,7 +1076,7 @@ namespace Ionic.Zip.Tests.Extended
         }
 
 
-        [TestMethod]
+        [TestMethod][Timeout(5*60*1000)]
         public void Create_AddDirectory_NoFilesInRoot_WI5893a()
         {
             string zipFileToCreate = Path.Combine(TopLevelDir, "Create_AddDirectory_NoFilesInRoot_WI5893a.zip");
@@ -1112,7 +1112,7 @@ namespace Ionic.Zip.Tests.Extended
 
 
 
-        [TestMethod]
+        [TestMethod][Timeout(5*60*1000)]
         public void Create_SaveCancellation()
         {
             string zipFileToCreate = Path.Combine(TopLevelDir, "Create_SaveCancellation.zip");
@@ -1138,7 +1138,7 @@ namespace Ionic.Zip.Tests.Extended
         }
 
 
-        [TestMethod]
+        [TestMethod][Timeout(5*60*1000)]
         public void Create_AddCancellation_wi13371()
         {
             string zipFileToCreate = Path.Combine(TopLevelDir, "Create_AddCancellation.zip");
@@ -1167,7 +1167,7 @@ namespace Ionic.Zip.Tests.Extended
 
 
 
-        [TestMethod]
+        [TestMethod][Timeout(5*60*1000)]
         public void ExtractAll_Cancellation()
         {
             string zipFileToCreate = Path.Combine(TopLevelDir, "ExtractAll_Cancellation.zip");
@@ -1199,7 +1199,7 @@ namespace Ionic.Zip.Tests.Extended
 
 
 
-        [TestMethod]
+        [TestMethod][Timeout(5*60*1000)]
         public void ExtractAll_WithPassword()
         {
             string zipFileToCreate = Path.Combine(TopLevelDir, "ExtractAll_WithPassword.zip");
@@ -1236,7 +1236,7 @@ namespace Ionic.Zip.Tests.Extended
 
 
 
-        [TestMethod]
+        [TestMethod][Timeout(5*60*1000)]
         public void Extract_ImplicitPassword()
         {
             for (int k = 0; k < compLevels.Length; k++)
@@ -1295,7 +1295,7 @@ namespace Ionic.Zip.Tests.Extended
 
 
 
-        [TestMethod]
+        [TestMethod][Timeout(5*60*1000)]
         public void Extract_MultiThreaded_wi6637()
         {
             int nConcurrentZipFiles = 5;
@@ -1399,7 +1399,7 @@ namespace Ionic.Zip.Tests.Extended
 
 
 
-        [TestMethod]
+        [TestMethod][Timeout(5*60*1000)]
         public void Extract_ExistingFile()
         {
             string zipFileToCreate = Path.Combine(TopLevelDir, "Extract_ExistingFile.zip");
@@ -1487,7 +1487,7 @@ namespace Ionic.Zip.Tests.Extended
 
 
 
-        [TestMethod]
+        [TestMethod][Timeout(5*60*1000)]
         public void Extended_CheckZip1()
         {
             string[] dirNames = { "", Path.GetFileName(Path.GetRandomFileName()) };
@@ -1553,7 +1553,7 @@ namespace Ionic.Zip.Tests.Extended
 
 
 
-        [TestMethod]
+        [TestMethod][Timeout(5*60*1000)]
         public void Extended_CheckZip2()
         {
             string textToEncode =
@@ -1647,14 +1647,14 @@ namespace Ionic.Zip.Tests.Extended
         }
 
 
-        [TestMethod]
+        [TestMethod][Timeout(5*60*1000)]
         [ExpectedException(typeof(System.ArgumentException))]
         public void Create_DuplicateNames_DifferentFolders_wi8982_flat()
         {
             _Internal_DuplicateNames_DifferentFolders_wi8982(true);
         }
 
-        [TestMethod]
+        [TestMethod][Timeout(5*60*1000)]
         public void Create_DuplicateNames_DifferentFolders_wi8982_PreserveHierarchy()
         {
             _Internal_DuplicateNames_DifferentFolders_wi8982(false);
@@ -1699,7 +1699,7 @@ namespace Ionic.Zip.Tests.Extended
 
 
 
-        [TestMethod]
+        [TestMethod][Timeout(5*60*1000)]
         [ExpectedException(typeof(System.IO.IOException))]
         public void Create_ZipErrorAction_Throw()
         {
@@ -1725,7 +1725,7 @@ namespace Ionic.Zip.Tests.Extended
 
 
 
-        [TestMethod]
+        [TestMethod][Timeout(5*60*1000)]
         public void Create_ZipErrorAction_Skip()
         {
             Directory.SetCurrentDirectory(TopLevelDir);
@@ -1839,7 +1839,7 @@ namespace Ionic.Zip.Tests.Extended
 
 
 
-        [TestMethod]
+        [TestMethod][Timeout(5*60*1000)]
         public void Create_ZipErrorAction_RetryAndEventuallySkip()
         {
             string zipFileToCreate = Path.Combine(TopLevelDir, "Create_ZipErrorAction_RetryAndEventuallySkip.zip");
@@ -1869,7 +1869,7 @@ namespace Ionic.Zip.Tests.Extended
 
 
 
-        [TestMethod]
+        [TestMethod][Timeout(5*60*1000)]
         [ExpectedException(typeof(System.IO.IOException))]
         public void Create_ZipErrorAction_RetryAndEventuallyThrow()
         {
@@ -1909,7 +1909,7 @@ namespace Ionic.Zip.Tests.Extended
 
 
 
-        [TestMethod]
+        [TestMethod][Timeout(5*60*1000)]
         public void Create_ZipErrorAction_RetryAndEventuallySucceed()
         {
             string zipFileToCreate = Path.Combine(TopLevelDir, "Create_ZipErrorAction_RetryAndEventuallySucceed.zip");
@@ -1942,7 +1942,7 @@ namespace Ionic.Zip.Tests.Extended
 
 
 
-        [TestMethod]
+        [TestMethod][Timeout(5*60*1000)]
         public void ParallelDeflateStream_Create()
         {
             string zipFileToCreate = Path.Combine(TopLevelDir, "ParallelDeflateStream_Create.zip");
@@ -1964,7 +1964,7 @@ namespace Ionic.Zip.Tests.Extended
 
 
 
-        [TestMethod]
+        [TestMethod][Timeout(5*60*1000)]
         public void ParallelDeflateStream_Create_CompareSpeeds()
         {
             string dirToZip = Path.GetFileNameWithoutExtension(Path.GetRandomFileName());
@@ -2010,7 +2010,7 @@ namespace Ionic.Zip.Tests.Extended
 
 
 
-        [TestMethod]
+        [TestMethod][Timeout(5*60*1000)]
         [ExpectedException(typeof(System.ArgumentOutOfRangeException))]
         public void ParallelDeflateStream_Create_InvalidThreshold()
         {
@@ -2032,7 +2032,7 @@ namespace Ionic.Zip.Tests.Extended
 
 
 
-        [TestMethod]
+        [TestMethod][Timeout(5*60*1000)]
         public void CompressTiff_Level9_wi8647()
         {
 
@@ -2086,7 +2086,7 @@ namespace Ionic.Zip.Tests.Extended
 
 
 
-        [TestMethod]
+        [TestMethod][Timeout(5*60*1000)]
         public void ContainsEntryTest()
         {
             string zipFileToCreate = "ContainsEntry.zip";
@@ -2112,7 +2112,7 @@ namespace Ionic.Zip.Tests.Extended
         }
 
 
-        [TestMethod]
+        [TestMethod][Timeout(5*60*1000)]
         public void SortedSave()
         {
             var rtg = new RandomTextGenerator();
@@ -2164,7 +2164,7 @@ namespace Ionic.Zip.Tests.Extended
             }
         }
 
-        [TestMethod]
+        [TestMethod][Timeout(5*60*1000)]
         public void DoubleSave_wi10735()
         {
             string zipFileToCreate1 = "DoubleSave.1.zip";

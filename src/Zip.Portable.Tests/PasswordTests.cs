@@ -36,7 +36,7 @@ namespace Ionic.Zip.Tests.Password
     {
         public PasswordTests() : base() { }
 
-        [TestMethod]
+        [TestMethod][Timeout(5*60*1000)]
         public void Password_BasicAddAndExtract()
         {
             int i;
@@ -120,7 +120,7 @@ namespace Ionic.Zip.Tests.Password
 
 
 
-        [TestMethod]
+        [TestMethod][Timeout(5*60*1000)]
         public void Password_CheckZipPassword_wi13664()
         {
             string[] passwords = { null,
@@ -155,7 +155,7 @@ namespace Ionic.Zip.Tests.Password
         }
 
 
-        [TestMethod]
+        [TestMethod][Timeout(5*60*1000)]
         public void Password_UnsetEncryptionAfterSetPassword_wi13909_ZOS()
         {
             // Verify that unsetting the Encryption property after
@@ -203,7 +203,7 @@ namespace Ionic.Zip.Tests.Password
 
 
 
-        [TestMethod]
+        [TestMethod][Timeout(5*60*1000)]
         public void Password_UnsetEncryptionAfterSetPassword_wi13909_ZF()
         {
             // Verify that unsetting the Encryption property after
@@ -249,7 +249,7 @@ namespace Ionic.Zip.Tests.Password
         }
 
 
-        [TestMethod]
+        [TestMethod][Timeout(5*60*1000)]
         [ExpectedException(typeof(Ionic.Zip.BadPasswordException))]
         public void Password_CheckBadPassword_wi13668()
         {
@@ -281,7 +281,7 @@ namespace Ionic.Zip.Tests.Password
         }
 
 
-        [TestMethod]
+        [TestMethod][Timeout(5*60*1000)]
         public void Password_MultipleEntriesDifferentPasswords()
         {
             string ZipFileToCreate = Path.Combine(TopLevelDir, "Password_MultipleEntriesDifferentPasswords.zip");
@@ -335,7 +335,7 @@ namespace Ionic.Zip.Tests.Password
         }
 
 
-        [TestMethod]
+        [TestMethod][Timeout(5*60*1000)]
         [ExpectedException(typeof(Ionic.Zip.BadPasswordException))]
         public void Password_Extract_WrongPassword()
         {
@@ -377,7 +377,7 @@ namespace Ionic.Zip.Tests.Password
         }
 
 
-        [TestMethod]
+        [TestMethod][Timeout(5*60*1000)]
         public void Password_AddEntryWithPasswordToExistingZip()
         {
             string zipFileToCreate = "AddEntryWithPasswordToExistingZip.zip";
@@ -446,7 +446,7 @@ namespace Ionic.Zip.Tests.Password
 
 
 
-        [TestMethod]
+        [TestMethod][Timeout(5*60*1000)]
         public void SilentDeletion_wi10639()
         {
             string zipFileToCreate = "SilentDeletion.zip";

@@ -83,7 +83,7 @@ namespace Ionic.Zip.Tests
 
 
 
-        [TestMethod]
+        [TestMethod][Timeout(5*60*1000)]
         public void Progress_ReadFile()
         {
             Directory.SetCurrentDirectory(TopLevelDir);
@@ -134,7 +134,7 @@ namespace Ionic.Zip.Tests
         }
 
 
-        [TestMethod]
+        [TestMethod][Timeout(5*60*1000)]
         public void Progress_AddFiles()
         {
             Directory.SetCurrentDirectory(TopLevelDir);

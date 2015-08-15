@@ -25,18 +25,18 @@ assembly_info:
 
 # pre-requisites
 install:
-  - cinst 7zip
-  - cinst 7zip.commandline
+  - cinst 7zip -x86
+  - cinst 7zip.commandline -x86
   - ps: |
       $ErrorActionPreference = "Stop"
 
       Write-Host "Downloading WinZip..."
-      $winzipUrl = 'http://download.winzip.com/winzip195-64.msi'
-      $winzipCommand = 'http://download.winzip.com/wzcline40-64.exe'
+      $winzipUrl = 'http://download.winzip.com/winzip195-32.msi'
+      $winzipCommand = 'http://download.winzip.com/wzcline40-32.exe'
       Invoke-WebRequest $winzipUrl -OutFile winzip.msi
       Invoke-WebRequest $winzipCommand -OutFile wzcline.zip
       
-      $wzDir = "$env:ProgramFiles\WinZip\"
+      $wzDir = "${env:ProgramFiles(x86)}\WinZip\"
       Write-Host "Installing WinZip into $wzDir..."
       msiexec /i winzip.msi /qn INSTALLDIR="$wzDir" ADDDESKTOPICON=0 ADDSTARTMENU=0 INSTALLCMD="/noc4u /notip /autoinstall"
       7za x -y wzcline.zip -o"$wzDir"
@@ -64,7 +64,7 @@ install:
       Invoke-WebRequest $infoZipUrl -OutFile infozip.zip
       Invoke-WebRequest $infoUnzipUrl -OutFile infounzip.zip
       
-      $izDir = "$env:ProgramFiles\infozip.org\"
+      $izDir = "${env:ProgramFiles(x86)}\infozip.org\"
       Write-Host "Installing info-zip into $izDir..."
       7za x -y infozip.zip -o"$izDir"
       7za x -y infounzip.zip -o"$izDir"

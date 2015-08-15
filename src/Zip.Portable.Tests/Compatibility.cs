@@ -447,8 +447,11 @@ namespace Ionic.Zip.Tests
 
             TestContext.WriteLine("======================================================");
 
-            Dictionary<string, byte[]> checksums = new Dictionary<string, byte[]>();
-            var filesToZip = GetSelectionOfTempFiles(_rnd.Next(33) + 11, checksums);
+            string tempDir = Path.Combine(TopLevelDir, "temp");
+            string[] temporaryFiles;
+            Dictionary<string, byte[]> checksums;
+            CreateFilesAndChecksums(tempDir, _rnd.Next(13) + 8, 0, out temporaryFiles, out checksums);
+            var filesToZip = temporaryFiles.ToList();
 
             Directory.CreateDirectory(subdir);
             Directory.SetCurrentDirectory(subdir);
@@ -1541,9 +1544,10 @@ namespace Ionic.Zip.Tests
 
             // create and fill the directories
             string extractDir = "extract";
-            //string subdir = "files";
-            Dictionary<string, byte[]> checksums = new Dictionary<string, byte[]>();
-            var filesToZip = GetSelectionOfTempFiles(_rnd.Next(13) + 8, checksums);
+            string subdir = Path.Combine(TopLevelDir, "files");
+            string[] filesToZip;
+            Dictionary<string, byte[]> checksums;
+            CreateFilesAndChecksums(subdir, _rnd.Next(13) + 8, 0, out filesToZip, out checksums);
 
             // Create the zip archive
             using (ZipFile zip1 = new ZipFile())
@@ -1553,7 +1557,7 @@ namespace Ionic.Zip.Tests
             }
 
             // Verify the number of files in the zip
-            Assert.AreEqual<int>(TestUtilities.CountEntries(zipFileToCreate), filesToZip.Count,
+            Assert.AreEqual<int>(TestUtilities.CountEntries(zipFileToCreate), filesToZip.Length,
                                  "Incorrect number of entries in the zip file.");
 
             // now, extract the zip
@@ -1767,8 +1771,17 @@ namespace Ionic.Zip.Tests
             string[] filesToZip;
             Dictionary<string, byte[]> checksums;
             CreateFilesAndChecksums(subdir, out filesToZip, out checksums);
-
-            var additionalFiles = GetSelectionOfTempFiles(checksums);
+            
+            // create additional files (normal+extra) and then ignore the first bit as they will have the same names
+            string additionalSubdir = Path.Combine(TopLevelDir, "additional-files");
+            string[] additionalFiles;
+            Dictionary<string, byte[]> additionalChecksums;
+            CreateFilesAndChecksums(additionalSubdir, _rnd.Next(23) + 9 + filesToZip.Length, 0, out additionalFiles, out additionalChecksums);
+            additionalFiles = additionalFiles.Skip(filesToZip.Length).ToArray();
+            foreach (var checksum in additionalChecksums.Skip(filesToZip.Length))
+            {
+                checksums.Add(checksum.Key, checksum.Value);
+            }
 
             // Now, Create the zip archive with DotNetZip
             using (ZipFile zip1 = new ZipFile())
@@ -1782,7 +1795,7 @@ namespace Ionic.Zip.Tests
             TestContext.WriteLine("Verifying the number of files in the zip");
             // Verify the number of files in the zip
             Assert.AreEqual<int>(TestUtilities.CountEntries(zipFileToCreate),
-                                 filesToZip.Length + additionalFiles.Count,
+                                 filesToZip.Length + additionalFiles.Length,
                                  "Incorrect number of entries in the zip file.");
 
 
@@ -1804,7 +1817,7 @@ namespace Ionic.Zip.Tests
             TestContext.WriteLine("Found {0} stored entries.", numStored);
 
             Assert.AreEqual<int>( numBzipped + numStored,
-                                 filesToZip.Length + additionalFiles.Count);
+                                 filesToZip.Length + additionalFiles.Length);
             Assert.IsTrue( numBzipped > 2*numStored,
                            "The number of bzipped files is too low.");
 
@@ -1818,9 +1831,9 @@ namespace Ionic.Zip.Tests
 
             // check the files in the extract dir
             Directory.SetCurrentDirectory(TopLevelDir);
-            String[] filesToCheck = new String[filesToZip.Length + additionalFiles.Count];
+            String[] filesToCheck = new String[filesToZip.Length + additionalFiles.Length];
             filesToZip.CopyTo(filesToCheck, 0);
-            additionalFiles.ToArray().CopyTo(filesToCheck, filesToZip.Length);
+            additionalFiles.CopyTo(filesToCheck, filesToZip.Length);
 
             VerifyChecksums(Path.Combine("extract", dirInZip), filesToCheck, checksums);
 
@@ -1904,7 +1917,16 @@ namespace Ionic.Zip.Tests
             Dictionary<string, byte[]> checksums;
             CreateFilesAndChecksums(subdir, out filesToZip, out checksums);
 
-            var additionalFiles = GetSelectionOfTempFiles(checksums);
+            // create additional files (normal+extra) and then ignore the first bit as they will have the same names
+            string additionalSubdir = Path.Combine(TopLevelDir, "additional-files");
+            string[] additionalFiles;
+            Dictionary<string, byte[]> additionalChecksums;
+            CreateFilesAndChecksums(additionalSubdir, _rnd.Next(23) + 9 + filesToZip.Length, 0, out additionalFiles, out additionalChecksums);
+            additionalFiles = additionalFiles.Skip(filesToZip.Length).ToArray();
+            foreach (var checksum in additionalChecksums.Skip(filesToZip.Length))
+            {
+                checksums.Add(checksum.Key, checksum.Value);
+            }
 
             int i = 0;
             // set R and S attributes on the first file
@@ -1927,7 +1949,7 @@ namespace Ionic.Zip.Tests
 
             // Verify the number of files in the zip
             Assert.AreEqual<int>(TestUtilities.CountEntries(zipFileToCreate),
-                                 filesToZip.Length + additionalFiles.Count,
+                                 filesToZip.Length + additionalFiles.Length,
                                  "Incorrect number of entries in the zip file.");
 
             // examine and unpack the zip archive via WinZip
@@ -1958,9 +1980,9 @@ namespace Ionic.Zip.Tests
 
             // check the files in the extract dir
             Directory.SetCurrentDirectory(TopLevelDir);
-            String[] filesToCheck = new String[filesToZip.Length + additionalFiles.Count];
+            String[] filesToCheck = new String[filesToZip.Length + additionalFiles.Length];
             filesToZip.CopyTo(filesToCheck, 0);
-            additionalFiles.ToArray().CopyTo(filesToCheck, filesToZip.Length);
+            additionalFiles.CopyTo(filesToCheck, filesToZip.Length);
 
             VerifyChecksums(Path.Combine("extract", dirInZip), filesToCheck, checksums);
 
@@ -1968,7 +1990,7 @@ namespace Ionic.Zip.Tests
         }
 
 
-        private void VerifyFileTimes1(string extractDir, List<string> additionalFiles)
+        private void VerifyFileTimes1(string extractDir, string[] additionalFiles)
         {
             // verify the file times
             DateTime atMidnight = new DateTime(DateTime.Now.Year,
@@ -2003,74 +2025,6 @@ namespace Ionic.Zip.Tests
                     Assert.AreEqual<DateTime>(t1, t2);
                 }
             }
-        }
-
-        private List<string> GetSelectionOfTempFiles(Dictionary<string, byte[]> checksums)
-        {
-            return GetSelectionOfTempFiles(_rnd.Next(23) + 9, checksums);
-        }
-
-        private List<string> excludedFilenames = new List<string>();
-
-
-        private List<string> GetSelectionOfTempFiles(int numFilesWanted, Dictionary<string, byte[]> checksums)
-        {
-            string tmpPath = Environment.GetEnvironmentVariable("TEMP"); // C:\Users\dinoch\AppData\Local\Temp
-            String[] candidates = Directory.GetFiles(tmpPath);
-            var theChosenOnes = new List<String>();
-            int trials = 0;
-            int otherSide = 0;
-            int minOtherSide = numFilesWanted / 3 + 1;
-            do
-            {
-                if (theChosenOnes.Count > numFilesWanted && otherSide >= minOtherSide) break;
-
-                // randomly select a candidate
-                var f = candidates[_rnd.Next(candidates.Length)];
-                if (excludedFilenames.Contains(f)) continue;
-
-                try
-                {
-                    var fi = new FileInfo(f);
-                    if (Path.GetFileName(f)[0] == '~'
-                        || theChosenOnes.Contains(f)
-                        || fi.Length > 10000000  // too large
-                        || fi.Length < 100)      // too small
-                    {
-                        excludedFilenames.Add(f);
-                    }
-                    else
-                    {
-                        DateTime lastwrite = File.GetLastWriteTime(f);
-                        bool onOtherSideOfDst =
-                            (DateTime.Now.IsDaylightSavingTime() && !lastwrite.IsDaylightSavingTime()) ||
-                            (!DateTime.Now.IsDaylightSavingTime() && lastwrite.IsDaylightSavingTime());
-
-                        if (onOtherSideOfDst)
-                            otherSide++;
-
-                        // If it's on the other side of DST,
-                        //   or
-                        // there are zero or one on *this side*
-                        //   or
-                        // we can still reach the "other side" quota.
-                        if (onOtherSideOfDst || (theChosenOnes.Count - otherSide < 2) ||
-                            ((otherSide < minOtherSide) && (numFilesWanted - theChosenOnes.Count > minOtherSide - otherSide)))
-                        {
-                            var key = Path.GetFileName(f);
-                            var chk = TestUtilities.ComputeChecksum(f);
-                            checksums.Add(key, chk);
-                            theChosenOnes.Add(f);
-                        }
-                    }
-                }
-                catch { /* gulp! */ }
-                trials++;
-            }
-            while (trials < 1000);
-
-            theChosenOnes.Sort();
-            return theChosenOnes;
         }
 
 

@@ -86,6 +86,21 @@ Sub CreateZip(pathToZipFile, dirToZip)
         WScript.Echo  s
     Next
 
+    
+    ' copy files to a temporary directory to avoid unicode path errors
+    const TemporaryFolder = 2
+    dim tempDirName, tempDir
+    tempDirName = fso.CreateFolder(fso.GetSpecialFolder(TemporaryFolder) & "\\" & fso.GetTempName() & "\\")
+    set tempDir = sa.NameSpace(tempDirName)
+    WScript.Echo "Copying to temporary dir (" & tempDirName & ")"
+    tempDir.CopyHere d.items, 4
+    sLoop = 0
+    Do Until d.Items.Count <= tempDir.Items.Count
+        Wscript.Sleep(1000)
+    Loop
+    ' now switch the zip dir to the temp dir
+    set d = tempDir
+
 
     ' http://msdn.microsoft.com/en-us/library/bb787866(VS.85).aspx
     ' ===============================================================

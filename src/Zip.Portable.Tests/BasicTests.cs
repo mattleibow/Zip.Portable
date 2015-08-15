@@ -1320,9 +1320,6 @@ namespace Ionic.Zip.Tests.Basic
         {
             string fileName = "wi11056.dwf";
             string entryName = @"com.autodesk.dwf.ePlot_5VFMLy3OdEetAPFe7uWXYg\descriptor.xml";
-            string SourceDir = CurrentDir;
-            for (int i = 0; i < 3; i++)
-                SourceDir = Path.GetDirectoryName(SourceDir);
 
             TestContext.WriteLine("Current Dir: {0}", CurrentDir);
 
@@ -1548,6 +1545,7 @@ namespace Ionic.Zip.Tests.Basic
 
 
 
+        [TestCategory("NotForCI")]
         [TestMethod]
         [Timeout(1000 * 240)]  // timeout in ms.  240s = 4 mins
         public void CreateZip_VerifyFileLastModified()
@@ -2095,7 +2093,7 @@ namespace Ionic.Zip.Tests.Basic
                                                 out Dictionary<string, byte[]> checksums
                                                 )
         {
-            string srcDir = TestUtilities.GetTestSrcDir(CurrentDir);
+            string srcDir = Path.Combine(SourceDir, "Zip.Portable.Tests");
             files = Directory.GetFiles(srcDir, "*.cs", SearchOption.TopDirectoryOnly);
             checksums = new Dictionary<string, byte[]>();
             foreach (string f in  files)

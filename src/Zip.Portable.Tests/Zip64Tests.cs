@@ -824,6 +824,7 @@ namespace Ionic.Zip.Tests.Zip64
 
 
 
+        [TestCategory("NotForCI")]
         [Timeout(3 * 60*60*1000), TestMethod] // 60*60*1000 = 1hr
         public void Zip64_Update_WZ()
         {
@@ -835,6 +836,7 @@ namespace Ionic.Zip.Tests.Zip64
         }
 
 
+        [TestCategory("NotForCI")]
         [Timeout(3 * 60*60*1000), TestMethod] // 60*60*1000 = 1hr
         public void Zip64_Update_DNZ()
         {
@@ -954,8 +956,7 @@ namespace Ionic.Zip.Tests.Zip64
         [TestMethod]
         public void Zip64_Winzip_Unzip_OneFile()
         {
-            string testBin = TestUtilities.GetTestBinDir(CurrentDir);
-            string fileToZip = Path.Combine(testBin, "Zip.Portable.dll");
+            string fileToZip = Path.Combine(SourceDir, TestUtilities.GetBinDir("Zip.Portable.Tests"), "Zip.Portable.dll");
 
             Directory.SetCurrentDirectory(TopLevelDir);
 
@@ -1003,6 +1004,7 @@ namespace Ionic.Zip.Tests.Zip64
 
 
 
+        [TestCategory("NotForCI")]
         [Timeout((int)(1 * 60*60*1000)), TestMethod] // in milliseconds.
         public void Zip64_Winzip_Unzip_Huge()
         {
@@ -1162,6 +1164,7 @@ namespace Ionic.Zip.Tests.Zip64
 
 
 
+        [TestCategory("NotForCI")]
         [Timeout((int)(4 * 60*60*1000)), TestMethod] // 60*60*1000 == 1 hr
         public void Zip64_Winzip_Zip_Huge()
         {
@@ -1257,6 +1260,7 @@ namespace Ionic.Zip.Tests.Zip64
 
 
 
+        [TestCategory("NotForCI")]
         [TestMethod, Timeout((int)(2 * 60*60*1000))] // 60*60*1000 = 1 hr
         public void Zip64_Winzip_Setup()
         {
@@ -1277,6 +1281,7 @@ namespace Ionic.Zip.Tests.Zip64
         }
 
 
+        [TestCategory("NotForCI")]
         [TestMethod, Timeout(1 * 60*60*1000)]
         public void Zip64_Over_4gb()
         {
@@ -1387,12 +1392,14 @@ namespace Ionic.Zip.Tests.Zip64
         }
 
 
+        [TestCategory("NotForCI")]
         [TestMethod, Timeout(1 * 60*60*1000)]
         public void Z64_ManyEntries_NoEncryption_DefaultCompression_AsNecessary()
         {
             _Zip64_Over65534Entries(Zip64Option.AsNecessary, EncryptionAlgorithm.None, Ionic.Zlib.CompressionLevel.Default);
         }
 
+        [TestCategory("NotForCI")]
         [TestMethod, Timeout(1 * 60*60*1000)]
         public void Z64_ManyEntries_PkZipEncryption_DefaultCompression_AsNecessary()
         {
@@ -1400,6 +1407,7 @@ namespace Ionic.Zip.Tests.Zip64
         }
 
 #if AESCRYPTO
+        [TestCategory("NotForCI")]
         [TestMethod, Timeout(2 * 60*60*1000)]
         public void Z64_ManyEntries_WinZipEncryption_DefaultCompression_AsNecessary()
         {
@@ -1408,12 +1416,14 @@ namespace Ionic.Zip.Tests.Zip64
 #endif
 
 
+        [TestCategory("NotForCI")]
         [TestMethod, Timeout(1 * 60*60*1000)]
         public void Z64_ManyEntries_NoEncryption_DefaultCompression_Always()
         {
             _Zip64_Over65534Entries(Zip64Option.Always, EncryptionAlgorithm.None, Ionic.Zlib.CompressionLevel.Default);
         }
 
+        [TestCategory("NotForCI")]
         [TestMethod, Timeout(1 * 60*60*1000)]
         public void Z64_ManyEntries_PkZipEncryption_DefaultCompression_Always()
         {
@@ -1431,6 +1441,7 @@ namespace Ionic.Zip.Tests.Zip64
 
 
 
+        [TestCategory("NotForCI")]
         [TestMethod, Timeout(30 * 60*1000)]
         [ExpectedException(typeof(Ionic.Zip.ZipException))]
         public void Z64_ManyEntries_NOZIP64()
@@ -1581,6 +1592,7 @@ namespace Ionic.Zip.Tests.Zip64
 
 
 
+        [TestCategory("NotForCI")]
         [Timeout(3 * 60*60*1000), TestMethod]    // 60*60*1000 = 1 hr
         public void Zip64_UpdateEntryComment_wi9214_WZ()
         {
@@ -1593,6 +1605,7 @@ namespace Ionic.Zip.Tests.Zip64
             Z64UpdateHugeZipWithComment(zipFilesToUpdate[0], "WinZip");
         }
 
+        [TestCategory("NotForCI")]
         [Timeout(3 * 60*60*1000), TestMethod]    // 60*60*1000 = 1 hr
         public void Zip64_UpdateEntryComment_wi9214_DNZ()
         {

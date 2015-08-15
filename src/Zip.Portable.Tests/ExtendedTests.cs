@@ -119,6 +119,7 @@ namespace Ionic.Zip.Tests.Extended
 
 
 
+        [TestCategory("NotForCI")]
         [TestMethod]
         [Timeout(22 * 60*1000)]
         public void Bzip2_Perf()
@@ -164,10 +165,7 @@ namespace Ionic.Zip.Tests.Extended
                           fi.Name, fi.Length);
 
             // Get the unzip.exe tool:
-            string dnzDir = CurrentDir;
-            for (int i = 0; i < 3; i++)
-                dnzDir = Path.GetDirectoryName(dnzDir);
-            string unzip = Path.Combine(dnzDir, "Tools", TestUtilities.GetBinDir("Unzip"), "Unzip.exe");
+            string unzip = Path.Combine(SourceDir, "Tools", TestUtilities.GetBinDir("Unzip"), "Unzip.exe");
             Assert.IsTrue(File.Exists(unzip),
                           "The unzip.exe tool is not available.");
 
@@ -617,9 +615,8 @@ namespace Ionic.Zip.Tests.Extended
                                                  System.Text.Encoding.GetEncoding("iso-8859-1"),
                                                  System.Text.Encoding.GetEncoding("Windows-1252"),
                 };
-
-            string testBin = TestUtilities.GetTestBinDir(CurrentDir);
-            string testStringsFile = Path.Combine(testBin, "Resources", "TestStrings.txt");
+            
+            string testStringsFile = Path.Combine(SourceDir, TestUtilities.GetBinDir("Zip.Portable.Tests"), "Resources", "TestStrings.txt");
             var contentStrings = File.ReadAllLines(testStringsFile);
 
             int[] successfulEncodings = new int[contentStrings.Length];
@@ -1406,18 +1403,15 @@ namespace Ionic.Zip.Tests.Extended
         public void Extract_ExistingFile()
         {
             string zipFileToCreate = Path.Combine(TopLevelDir, "Extract_ExistingFile.zip");
-            string sourceDir = CurrentDir;
-            for (int i = 0; i < 3; i++)
-                sourceDir = Path.GetDirectoryName(sourceDir);
 
             Directory.SetCurrentDirectory(TopLevelDir);
 
             string[] filenames =
                 {
-                    Path.Combine(sourceDir, "Tools", TestUtilities.GetBinDir("Zipit"), "Zipit.exe"),
-                    Path.Combine(sourceDir, TestUtilities.GetBinDir("Zip.Portable"), "Zip.Portable.dll"),
-                    Path.Combine(sourceDir, TestUtilities.GetBinDir("Zip.Portable"), "Zip.Portable.pdb"),
-                    Path.Combine(sourceDir, TestUtilities.GetBinDir("Zip.Portable"), "Zip.Portable.xml"),
+                    Path.Combine(SourceDir, "Tools", TestUtilities.GetBinDir("Zipit"), "Zipit.exe"),
+                    Path.Combine(SourceDir, TestUtilities.GetBinDir("Zip.Portable"), "Zip.Portable.dll"),
+                    Path.Combine(SourceDir, TestUtilities.GetBinDir("Zip.Portable"), "Zip.Portable.pdb"),
+                    Path.Combine(SourceDir, TestUtilities.GetBinDir("Zip.Portable"), "Zip.Portable.xml"),
                     //Path.Combine(SourceDir, "AppNote.txt")
                 };
 
@@ -1594,9 +1588,8 @@ namespace Ionic.Zip.Tests.Extended
                 " " +
                 "The huge variety of combinations of possibilities is what makes " +
                 "testing a zip library so challenging. " ;
-
-            string testBin = TestUtilities.GetTestBinDir(CurrentDir);
-            string fileToZip = Path.Combine(testBin, "Zip.Portable.dll");
+            
+            string fileToZip = Path.Combine(SourceDir, TestUtilities.GetBinDir("Zip.Portable.Tests"), "Zip.Portable.dll");
 
             for (int i = 0; i < crypto.Length; i++)
             {
@@ -2042,9 +2035,8 @@ namespace Ionic.Zip.Tests.Extended
         [TestMethod]
         public void CompressTiff_Level9_wi8647()
         {
-            string testBin = TestUtilities.GetTestBinDir(CurrentDir);
 
-            string tifFile = Path.Combine(testBin, "Resources", "wi8647.tif");
+            string tifFile = Path.Combine(SourceDir, TestUtilities.GetBinDir("Zip.Portable.Tests"), "Resources", "wi8647.tif");
             Assert.IsTrue(File.Exists(tifFile), "tif file does not exist ({0})", tifFile);
 
             byte[] chk1 = TestUtilities.ComputeChecksum(tifFile);

@@ -335,6 +335,7 @@ namespace Ionic.BZip2.Tests
 #endregion
 
 
+        [TestCategory("NotForCI")]
         [TestMethod]
         [Timeout(15 * 60*1000)] // 60*1000 = 1min
         public void BZ_LargeParallel()
@@ -380,6 +381,7 @@ namespace Ionic.BZip2.Tests
 
 
 
+        [TestCategory("NotForCI")]
         [TestMethod]
         [Timeout(15 * 60*1000)] // 60*1000 = 1min
         public void BZ_Basic()

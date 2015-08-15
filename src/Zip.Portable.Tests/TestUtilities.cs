@@ -708,17 +708,7 @@ namespace Ionic.Zip.Tests.Utilities
             return filesToZip;
         }
 
-
-        internal static string GetTestBinDir(string startingPoint)
-        {
-            return GetTestDependentDir(startingPoint, GetBinDir("Zip.Portable.Tests"));
-        }
-
-        internal static string GetTestSrcDir(string startingPoint)
-        {
-            return GetTestDependentDir(startingPoint, "Zip.Portable.Tests");
-        }
-
+        
         internal static string GetBinDir(string startingPoint)
         {
 #if DEBUG
@@ -748,7 +738,7 @@ namespace Ionic.Zip.Tests.Utilities
         internal static Ionic.CopyData.Transceiver
             StartProgressMonitor(string progressChannel, string title, string initialStatus)
         {
-            string testBin = TestUtilities.GetTestBinDir(cdir);
+            string testBin = Path.Combine(cdir, GetBinDir("Zip.Portable.Tests"));
             string progressMonitorTool = Path.Combine(testBin, "Resources", "UnitTestProgressMonitor.exe");
             string requiredDll = Path.Combine(testBin, "Resources", "Ionic.CopyData.dll");
             Assert.IsTrue(File.Exists(progressMonitorTool), "progress monitor tool does not exist ({0})",  progressMonitorTool);

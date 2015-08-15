@@ -36,7 +36,7 @@ install:
       Invoke-WebRequest $winzipUrl -OutFile winzip.msi
       Invoke-WebRequest $winzipCommand -OutFile wzcline.zip
       
-      $wzDir = "$env:ProgramData\WinZip\"
+      $wzDir = "$env:ProgramFiles\WinZip\"
       Write-Host "Installing WinZip into $wzDir..."
       msiexec /i winzip.msi /qn INSTALLDIR="$wzDir" ADDDESKTOPICON=0 ADDSTARTMENU=0 INSTALLCMD="/noc4u /notip /autoinstall"
       7za x -y wzcline.zip -o"$wzDir"
@@ -84,8 +84,9 @@ build:
 test:
   assemblies:
     - '**\*.Tests.dll'
-#  categories:
-#    - CI
+  categories:
+    except:
+      - NotForCI
 
 # artifacts
 artifacts: 

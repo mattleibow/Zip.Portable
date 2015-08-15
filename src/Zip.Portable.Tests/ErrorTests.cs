@@ -117,9 +117,8 @@ namespace Ionic.Zip.Tests.Error
         private void _Internal_ExtractExisting(int flavor)
         {
             string zipFileToCreate = Path.Combine(TopLevelDir, String.Format("Error-Extract-ExistingFileWithoutOverwrite-{0}.zip", flavor));
-
-            string testBin = TestUtilities.GetTestBinDir(CurrentDir);
-            string resourceDir = Path.Combine(testBin, "Resources");
+            
+            string resourceDir = Path.Combine(SourceDir, TestUtilities.GetBinDir("Zip.Portable.Tests"), "Resources");
 
             Assert.IsTrue(Directory.Exists(resourceDir));
 
@@ -253,16 +252,13 @@ namespace Ionic.Zip.Tests.Error
 
         private void CreateSmallZip(string zipFileToCreate)
         {
-            string sourceDir = CurrentDir;
-            for (int i = 0; i < 3; i++)
-                sourceDir = Path.GetDirectoryName(sourceDir);
 
             // the list of filenames to add to the zip
             string[] fileNames =
                 {
-                    Path.Combine(sourceDir, "Tools", TestUtilities.GetBinDir("Zipit"), "Zipit.exe"),
-                    Path.Combine(sourceDir, TestUtilities.GetBinDir("Zip.Portable"), "Zip.Portable.xml"),
-                    Path.Combine(sourceDir, "Tools", "WinFormsApp", "Icon2.res"),
+                    Path.Combine(SourceDir, "Tools", TestUtilities.GetBinDir("Zipit"), "Zipit.exe"),
+                    Path.Combine(SourceDir, TestUtilities.GetBinDir("Zip.Portable"), "Zip.Portable.xml"),
+                    Path.Combine(SourceDir, "Tools", "WinFormsApp", "Icon2.res"),
                 };
 
             using (ZipFile zip = new ZipFile())
@@ -450,8 +446,7 @@ namespace Ionic.Zip.Tests.Error
         [ExpectedException(typeof(System.ArgumentNullException))]
         public void Error_Save_NoFilename()
         {
-            string testBin = TestUtilities.GetTestBinDir(CurrentDir);
-            string resourceDir = Path.Combine(testBin, "Resources");
+            string resourceDir = Path.Combine(SourceDir, TestUtilities.GetBinDir("Zip.Portable.Tests"), "Resources");
             Directory.SetCurrentDirectory(TopLevelDir);
             string filename = Path.Combine(resourceDir, "TestStrings.txt");
             Assert.IsTrue(File.Exists(filename), String.Format("The file '{0}' doesnot exist.", filename));
@@ -472,8 +467,7 @@ namespace Ionic.Zip.Tests.Error
         [ExpectedException(typeof(Ionic.Zip.BadStateException))]
         public void Error_Extract_WithoutSave()
         {
-            string testBin = TestUtilities.GetTestBinDir(CurrentDir);
-            string resourceDir = Path.Combine(testBin, "Resources");
+            string resourceDir = Path.Combine(SourceDir, TestUtilities.GetBinDir("Zip.Portable.Tests"), "Resources");
             Directory.SetCurrentDirectory(TopLevelDir);
 
             // add a directory to the zipfile, then try
@@ -493,8 +487,7 @@ namespace Ionic.Zip.Tests.Error
         [ExpectedException(typeof(Ionic.Zip.BadStateException))]
         public void Error_Read_WithoutSave()
         {
-            string testBin = TestUtilities.GetTestBinDir(CurrentDir);
-            string resourceDir = Path.Combine(testBin, "Resources");
+            string resourceDir = Path.Combine(SourceDir, TestUtilities.GetBinDir("Zip.Portable.Tests"), "Resources");
             Directory.SetCurrentDirectory(TopLevelDir);
 
             // add a directory to the zipfile, then try
@@ -576,18 +569,15 @@ namespace Ionic.Zip.Tests.Error
         public void Error_ReadCorruptedZipFile_Passwords()
         {
             string zipFileToCreate = Path.Combine(TopLevelDir, "Read_CorruptedZipFile_Passwords.zip");
-            string sourceDir = CurrentDir;
-            for (int i = 0; i < 3; i++)
-                sourceDir = Path.GetDirectoryName(sourceDir);
 
             Directory.SetCurrentDirectory(TopLevelDir);
 
             // the list of filenames to add to the zip
             string[] filenames =
             {
-                Path.Combine(sourceDir, "Tools", TestUtilities.GetBinDir("Zipit"), "Zipit.exe"),
-                Path.Combine(sourceDir, TestUtilities.GetBinDir("Zip.Portable"), "Zip.Portable.xml"),
-                Path.Combine(sourceDir, "Tools", "WinFormsApp", "Icon2.res"),
+                Path.Combine(SourceDir, "Tools", TestUtilities.GetBinDir("Zipit"), "Zipit.exe"),
+                Path.Combine(SourceDir, TestUtilities.GetBinDir("Zip.Portable"), "Zip.Portable.xml"),
+                Path.Combine(SourceDir, "Tools", "WinFormsApp", "Icon2.res"),
             };
 
             // passwords to use for those entries

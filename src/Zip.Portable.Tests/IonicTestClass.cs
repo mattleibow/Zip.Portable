@@ -40,6 +40,7 @@ namespace Ionic.Zip.Tests.Utilities
     {
         protected System.Random _rnd;
         protected System.Collections.Generic.List<string> _FilesToRemove;
+        protected static string SourceDir = null;
         protected static string CurrentDir = null;
         protected string TopLevelDir = null;
         private string _wzunzip = null;
@@ -95,6 +96,7 @@ namespace Ionic.Zip.Tests.Utilities
         {
             CurrentDir = Directory.GetCurrentDirectory();
             Assert.AreNotEqual<string>(Path.GetFileName(CurrentDir), "Temp", "at startup");
+            SourceDir = Path.GetFullPath(Path.Combine(CurrentDir, "..", "..", "..", ".."));
         }
 
         //
@@ -109,6 +111,7 @@ namespace Ionic.Zip.Tests.Utilities
         public void MyTestInitialize()
         {
             if (CurrentDir == null) CurrentDir = Directory.GetCurrentDirectory();
+            if (SourceDir == null) SourceDir = Path.GetFullPath(Path.Combine(CurrentDir, "..", "..", "..", ".."));
             TestUtilities.Initialize(out TopLevelDir);
             //_FilesToRemove.Add(TopLevelDir);
             Directory.SetCurrentDirectory(TopLevelDir);
@@ -285,12 +288,9 @@ namespace Ionic.Zip.Tests.Utilities
             {
                 if (_ZipitIsPresent == null)
                 {
-                    string sourceDir = CurrentDir;
-                    for (int i = 0; i < 3; i++)
-                        sourceDir = Path.GetDirectoryName(sourceDir);
 
                     _zipit =
-                        Path.Combine(sourceDir, "Tools", TestUtilities.GetBinDir("Zipit"), "Zipit.exe");
+                        Path.Combine(SourceDir, "Tools", TestUtilities.GetBinDir("Zipit"), "Zipit.exe");
 
                     _ZipitIsPresent = new Nullable<bool>(File.Exists(_zipit));
                 }

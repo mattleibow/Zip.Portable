@@ -468,6 +468,7 @@ namespace Ionic.Zip.Tests.Streams
 
 
 
+        [TestCategory("NotForCI")]
         [TestMethod, Timeout(45 * 60*1000)]
         public void ZOS_over65534_EncryptPkZip_CompressDefault_Z64AsNecessary()
         {
@@ -477,6 +478,7 @@ namespace Ionic.Zip.Tests.Streams
         }
 
 #if AESCRYPTO
+        [TestCategory("NotForCI")]
         [TestMethod, Timeout(2 * 60*60*1000)]
         public void ZOS_over65534_EncryptWinZip_CompressDefault_Z64AsNecessary()
         {
@@ -486,7 +488,8 @@ namespace Ionic.Zip.Tests.Streams
         }
 #endif
 
-        [TestMethod, Timeout(45 * 60*1000)]
+        [TestCategory("NotForCI")]
+        [TestMethod, Timeout(45 * 60 * 1000)]
         public void ZOS_over65534_EncryptNo_CompressDefault_Z64AsNecessary()
         {
             _ZOS_z64Over65534Entries(Zip64Option.AsNecessary,
@@ -495,6 +498,7 @@ namespace Ionic.Zip.Tests.Streams
         }
 
 
+        [TestCategory("NotForCI")]
         [TestMethod, Timeout(35 * 60 * 1000)]
         [ExpectedException(typeof(System.InvalidOperationException))]
         public void ZOS_over65534_FAIL()
@@ -1118,6 +1122,7 @@ namespace Ionic.Zip.Tests.Streams
 
 
 
+        [TestCategory("NotForCI")]
         [TestMethod, Timeout(30 * 60 * 1000)]  // in ms.  30*60*100 == 30min
         public void ZipFile_PDOS_LeakTest_wi10030()
         {
@@ -1864,7 +1869,7 @@ namespace Ionic.Zip.Tests.Streams
         [TestMethod]
         public void ASPNET_GenerateZip()
         {
-            string testBin = TestUtilities.GetTestBinDir(CurrentDir);
+            string testBin = Path.Combine(SourceDir, TestUtilities.GetBinDir("Zip.Portable.Tests"));
             string resourceDir = Path.Combine(testBin, "Resources");
             string aspnetHost = Path.Combine(resourceDir, "AspNetHost.exe");
             Assert.IsTrue(File.Exists(aspnetHost), "file {0} does not exit.", aspnetHost);
@@ -1935,8 +1940,7 @@ namespace Ionic.Zip.Tests.Streams
         [TestMethod]
         public void ZIS_ZOS_VaryCompression()
         {
-            string testBin = TestUtilities.GetTestBinDir(CurrentDir);
-            string resourceDir = Path.Combine(testBin, "Resources");
+            string resourceDir = Path.Combine(SourceDir, TestUtilities.GetBinDir("Zip.Portable.Tests"), "Resources");
             var filesToAdd = Directory.GetFiles(resourceDir);
 
             Func<int, int, bool> chooseCompression = (ix, cycle) => {

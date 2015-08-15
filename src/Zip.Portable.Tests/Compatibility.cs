@@ -161,8 +161,7 @@ namespace Ionic.Zip.Tests
         private string GetScript(string scriptName)
         {
             // check existence of script and script engine
-            string testBin = TestUtilities.GetTestBinDir(CurrentDir);
-            string resourceDir = Path.Combine(testBin, "Resources");
+            string resourceDir = Path.Combine(SourceDir, TestUtilities.GetBinDir("Zip.Portable.Tests"), "Resources");
             string script = Path.Combine(resourceDir, scriptName);
             Assert.IsTrue(File.Exists(script), "script ({0}) does not exist", script);
             return script;
@@ -584,6 +583,7 @@ namespace Ionic.Zip.Tests
 
 
 
+        [TestCategory("NotForCI")]
         [TestMethod]
         [Timeout(3 * 60 * 1000)]  // timeout in ms.
         public void VStudio_UnZip()
@@ -1529,6 +1529,7 @@ namespace Ionic.Zip.Tests
 
 
 
+        [TestCategory("NotForCI")]
         [TestMethod]
         [Timeout(9 * 60 * 1000)]  // in ms, 60 * 1000 = 1min
         public void Winzip_Unzip_2()
@@ -2122,11 +2123,8 @@ namespace Ionic.Zip.Tests
         private void _Extract_ZipFile(string fileName)
         {
             TestContext.WriteLine("Current Dir: {0}", CurrentDir);
-            string sourceDir = CurrentDir;
-            for (int i = 0; i < 3; i++)
-                sourceDir = Path.GetDirectoryName(sourceDir);
 
-            string fqFileName = Path.Combine(sourceDir, TestUtilities.GetBinDir("Zip.Portable.Tests"), "zips", fileName);
+            string fqFileName = Path.Combine(SourceDir, TestUtilities.GetBinDir("Zip.Portable.Tests"), "zips", fileName);
 
             TestContext.WriteLine("Reading zip file: '{0}'", fqFileName);
             using (ZipFile zip = ZipFileExtensions.Read(fqFileName))

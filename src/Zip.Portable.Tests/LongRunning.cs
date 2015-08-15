@@ -129,6 +129,7 @@ namespace Ionic.Zip.Tests.LongRunning
 
 
 
+        [TestCategory("NotForCI")]
         [TestMethod, Timeout(120 * 60 * 1000)]
         public void CreateZip_AddDirectory_LargeNumberOfSmallFiles()
         {
@@ -339,6 +340,7 @@ namespace Ionic.Zip.Tests.LongRunning
 
 
 
+        [TestCategory("NotForCI")]
         [TestMethod, Timeout(60 * 60 * 1000)]
         public void LargeFile_WithProgress()
         {

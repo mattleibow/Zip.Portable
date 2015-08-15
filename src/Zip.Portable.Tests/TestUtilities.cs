@@ -738,7 +738,7 @@ namespace Ionic.Zip.Tests.Utilities
         internal static Ionic.CopyData.Transceiver
             StartProgressMonitor(string progressChannel, string title, string initialStatus)
         {
-            string testBin = Path.Combine(cdir, GetBinDir("Zip.Portable.Tests"));
+            string testBin = cdir;
             string progressMonitorTool = Path.Combine(testBin, "Resources", "UnitTestProgressMonitor.exe");
             string requiredDll = Path.Combine(testBin, "Resources", "Ionic.CopyData.dll");
             Assert.IsTrue(File.Exists(progressMonitorTool), "progress monitor tool does not exist ({0})",  progressMonitorTool);

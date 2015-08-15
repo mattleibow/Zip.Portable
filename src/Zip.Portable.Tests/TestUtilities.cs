@@ -68,6 +68,7 @@ namespace Ionic.Zip.Tests.Utilities
             var files = Directory.GetFiles(rootDirectory, "*", SearchOption.TopDirectoryOnly);
             var folders = Directory.GetDirectories(rootDirectory);
             FilesToRemove.AddRange(files);
+            FilesToRemove.AddRange(folders);
 
             Assert.AreNotEqual<string>(Path.GetFileName(CurrentDir), "Temp", "at finish");
             Directory.SetCurrentDirectory(CurrentDir);

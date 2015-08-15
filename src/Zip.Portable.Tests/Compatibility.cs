@@ -2015,8 +2015,6 @@ namespace Ionic.Zip.Tests
 
         private List<string> GetSelectionOfTempFiles(int numFilesWanted, Dictionary<string, byte[]> checksums)
         {
-            Assert.Fail("Force fail: GetSelectionOfTempFiles");
-
             string tmpPath = Environment.GetEnvironmentVariable("TEMP"); // C:\Users\dinoch\AppData\Local\Temp
             String[] candidates = Directory.GetFiles(tmpPath);
             var theChosenOnes = new List<String>();
@@ -2070,6 +2068,8 @@ namespace Ionic.Zip.Tests
                 trials++;
             }
             while (trials < 1000);
+
+            Assert.Fail("Force fail: GetSelectionOfTempFiles - SORT");
 
             theChosenOnes.Sort();
             return theChosenOnes;

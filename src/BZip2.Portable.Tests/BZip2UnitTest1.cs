@@ -466,7 +466,7 @@ namespace Ionic.BZip2.Tests
         }
 
 
-        [TestMethod][Timeout(5*60*1000)]
+        [TestMethod]
         [ExpectedException(typeof(IOException))]
         public void BZ_Error_1()
         {
@@ -479,7 +479,7 @@ namespace Ionic.BZip2.Tests
                 CopyStream(decompressor, output);
         }
 
-        [TestMethod][Timeout(5*60*1000)]
+        [TestMethod]
         [ExpectedException(typeof(IOException))]
         public void BZ_Error_2()
         {
@@ -491,7 +491,7 @@ namespace Ionic.BZip2.Tests
         }
 
 
-        [TestMethod][Timeout(5*60*1000)]
+        [TestMethod]
         public void BZ_Utility()
         {
             var bzbin = GetToolsBinDir(CurrentDir);
@@ -542,7 +542,7 @@ namespace Ionic.BZip2.Tests
             }
         }
 
-        [TestMethod][Timeout(5*60*1000)]
+        [TestMethod]
         public void BZ_StreamCopy()
         {
             var src = new MemoryStream(System.Text.Encoding.ASCII.GetBytes("Hello"));
@@ -574,7 +574,7 @@ namespace Ionic.BZip2.Tests
             }
         }
 
-        [TestMethod][Timeout(5*60*1000)]
+        [TestMethod]
         public void BZ_Samples()
         {
             string testBin = GetTestBinDir(CurrentDir);

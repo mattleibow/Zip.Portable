@@ -201,7 +201,7 @@ namespace Ionic.Zip.Tests
 
 
 
-        [TestMethod][Timeout(5*60*1000)]
+        [TestMethod]
         public void ShellApplication_Unzip()
         {
             // get a set of files to zip up
@@ -248,7 +248,7 @@ namespace Ionic.Zip.Tests
         }
 
 
-        [TestMethod][Timeout(5*60*1000)]
+        [TestMethod]
         public void ShellApplication_Unzip_NonSeekableOutput()
         {
             // get a set of files to zip up
@@ -307,7 +307,7 @@ namespace Ionic.Zip.Tests
 
 #if SHELLAPP_UNZIP_SFX
 
-        [TestMethod][Timeout(5*60*1000)]
+        [TestMethod]
         public void ShellApplication_Unzip_SFX()
         {
             // get a set of files to zip up
@@ -355,7 +355,7 @@ namespace Ionic.Zip.Tests
 
 
 
-        [TestMethod][Timeout(5*60*1000)]
+        [TestMethod]
         public void ShellApplication_Unzip_2()
         {
             string zipFileToCreate = Path.Combine(TopLevelDir, "ShellApplication_Unzip-2.zip");
@@ -402,7 +402,7 @@ namespace Ionic.Zip.Tests
 
 
 
-        [TestMethod][Timeout(5*60*1000)]
+        [TestMethod]
         public void ShellApplication_Zip()
         {
             string zipFileToCreate = Path.Combine(TopLevelDir, "ShellApplication_Zip.zip");
@@ -438,7 +438,7 @@ namespace Ionic.Zip.Tests
         }
 
 
-        [TestMethod][Timeout(5*60*1000)]
+        [TestMethod]
         public void ShellApplication_Zip_2()
         {
             string zipFileToCreate = "ShellApplication_Zip.zip";
@@ -553,7 +553,7 @@ namespace Ionic.Zip.Tests
 
 
 
-        [TestMethod][Timeout(5*60*1000)]
+        [TestMethod]
         public void VStudio_Zip()
         {
             string zipFileToCreate = Path.Combine(TopLevelDir, "VStudio_Zip.zip");
@@ -640,7 +640,7 @@ namespace Ionic.Zip.Tests
 
 
 
-        [TestMethod][Timeout(5*60*1000)]
+        [TestMethod]
         public void InfoZip_Unzip()
         {
             if (!InfoZipIsPresent)
@@ -714,7 +714,7 @@ namespace Ionic.Zip.Tests
         }
 
 
-        [TestMethod][Timeout(5*60*1000)]
+        [TestMethod]
         public void InfoZip_Zip()
         {
             if (!InfoZipIsPresent)
@@ -780,7 +780,7 @@ namespace Ionic.Zip.Tests
 
 
 
-        [TestMethod][Timeout(5*60*1000)]
+        [TestMethod]
         public void InfoZip_Zip_Password()
         {
             if (!InfoZipIsPresent)
@@ -839,7 +839,7 @@ namespace Ionic.Zip.Tests
         // "errors" and warnings...true multi-part support doesn't exist
         // yet (coming soon).
 
-        [TestMethod][Timeout(5*60*1000)]
+        [TestMethod]
         public void InfoZip_Unzip_Split()
         {
             if (!InfoZipIsPresent)
@@ -912,7 +912,7 @@ namespace Ionic.Zip.Tests
 #endif
 
 
-        [TestMethod][Timeout(5*60*1000)]
+        [TestMethod]
         public void InfoZip_Unzip_z64_wi11936()
         {
             if (!InfoZipIsPresent)
@@ -977,7 +977,7 @@ namespace Ionic.Zip.Tests
         }
 
 
-        [TestMethod][Timeout(5*60*1000)]
+        [TestMethod]
         public void InfoZip_Unzip_ZeroLengthFile()
         {
             if (!InfoZipIsPresent)
@@ -1038,7 +1038,7 @@ namespace Ionic.Zip.Tests
 
 
 
-        [TestMethod][Timeout(5*60*1000)]
+        [TestMethod]
         public void Perl_Zip()
         {
             if (perl == null)
@@ -1076,7 +1076,7 @@ namespace Ionic.Zip.Tests
 
 
 
-        [TestMethod][Timeout(5*60*1000)]
+        [TestMethod]
         public void SevenZip_Zip_1()
         {
             if (!SevenZipIsPresent)
@@ -1111,7 +1111,7 @@ namespace Ionic.Zip.Tests
 
 
 
-        [TestMethod][Timeout(5*60*1000)]
+        [TestMethod]
         public void SevenZip_Zip_2()
         {
             if (!SevenZipIsPresent)
@@ -1151,7 +1151,7 @@ namespace Ionic.Zip.Tests
 
 
 
-        [TestMethod][Timeout(5*60*1000)]
+        [TestMethod]
         public void SevenZip_Unzip()
         {
             if (!SevenZipIsPresent)
@@ -1188,7 +1188,7 @@ namespace Ionic.Zip.Tests
         }
 
 
-        [TestMethod][Timeout(5*60*1000)]
+        [TestMethod]
         public void SevenZip_Unzip_Password()
         {
             if (!SevenZipIsPresent)
@@ -1226,7 +1226,7 @@ namespace Ionic.Zip.Tests
 
 
 
-        [TestMethod][Timeout(5*60*1000)]
+        [TestMethod]
         public void SevenZip_Unzip_Password_NonSeekableOutput()
         {
             if (!SevenZipIsPresent)
@@ -1318,14 +1318,14 @@ namespace Ionic.Zip.Tests
 
 
 
-        [TestMethod][Timeout(5*60*1000)]
+        [TestMethod]
         public void Winzip_Zip()
         {
             Winzip_Zip_Variable("");
         }
 
 
-        [TestMethod][Timeout(5*60*1000)]
+        [TestMethod]
         public void Winzip_Zip_Password()
         {
             if (!WinZipIsPresent)
@@ -1347,25 +1347,25 @@ namespace Ionic.Zip.Tests
         }
 
 
-        [TestMethod][Timeout(5*60*1000)]
+        [TestMethod]
         public void Winzip_Zip_Normal()
         {
             Winzip_Zip_Variable("-en");
         }
 
-        [TestMethod][Timeout(5*60*1000)]
+        [TestMethod]
         public void Winzip_Zip_Fast()
         {
             Winzip_Zip_Variable("-ef");
         }
 
-        [TestMethod][Timeout(5*60*1000)]
+        [TestMethod]
         public void Winzip_Zip_SuperFast()
         {
             Winzip_Zip_Variable("-es");
         }
 
-        [TestMethod][Timeout(5*60*1000)]
+        [TestMethod]
         [ExpectedException(typeof(Ionic.Zip.ZipException))]
         public void Winzip_Zip_EZ()
         {
@@ -1374,7 +1374,7 @@ namespace Ionic.Zip.Tests
             Winzip_Zip_Variable("-ez");
         }
 
-        [TestMethod][Timeout(5*60*1000)]
+        [TestMethod]
         [ExpectedException(typeof(Ionic.Zip.ZipException))]
         public void Winzip_Zip_PPMd()
         {
@@ -1383,14 +1383,14 @@ namespace Ionic.Zip.Tests
             Winzip_Zip_Variable("-ep");
         }
 
-        [TestMethod][Timeout(5*60*1000)]
+        [TestMethod]
         public void Winzip_Zip_Bzip2()
         {
             if (!WinZipIsPresent) throw new Exception("no winzip");
             Winzip_Zip_Variable("-eb");
         }
 
-        [TestMethod][Timeout(5*60*1000)]
+        [TestMethod]
         [ExpectedException(typeof(Ionic.Zip.ZipException))]
         public void Winzip_Zip_Enhanced()
         {
@@ -1400,7 +1400,7 @@ namespace Ionic.Zip.Tests
         }
 
 
-        [TestMethod][Timeout(5*60*1000)]
+        [TestMethod]
         [ExpectedException(typeof(Ionic.Zip.ZipException))]
         public void Winzip_Zip_LZMA()
         {
@@ -1511,7 +1511,7 @@ namespace Ionic.Zip.Tests
 
 
 
-        [TestMethod][Timeout(5*60*1000)]
+        [TestMethod]
         public void Winzip_Unzip_ZeroLengthFile()
         {
             if (!WinZipIsPresent)
@@ -1569,7 +1569,7 @@ namespace Ionic.Zip.Tests
 
 
 
-        [TestMethod][Timeout(5*60*1000)]
+        [TestMethod]
         public void Winzip_Unzip_Password()
         {
             if (!WinZipIsPresent)
@@ -1617,7 +1617,7 @@ namespace Ionic.Zip.Tests
 
 
 
-        [TestMethod][Timeout(5*60*1000)]
+        [TestMethod]
         public void Winzip_Unzip_Password_NonSeekableOutput()
         {
             if (!WinZipIsPresent)
@@ -1692,7 +1692,7 @@ namespace Ionic.Zip.Tests
 
 
 
-        [TestMethod][Timeout(5*60*1000)]
+        [TestMethod]
         public void Winzip_Unzip_Bzip2()
         {
             if (!WinZipIsPresent) throw new Exception("no winzip");
@@ -1776,7 +1776,7 @@ namespace Ionic.Zip.Tests
         }
 
 
-        [TestMethod][Timeout(5*60*1000)]
+        [TestMethod]
         public void Winzip_Unzip_Bzip2_Large()
         {
             // BZip2 uses work buffers of 900k (ish). When compressing files that
@@ -1836,7 +1836,7 @@ namespace Ionic.Zip.Tests
 
 
 
-        [TestMethod][Timeout(5*60*1000)]
+        [TestMethod]
         public void Winzip_Unzip_Basic()
         {
             if (!WinZipIsPresent)
@@ -1966,43 +1966,43 @@ namespace Ionic.Zip.Tests
 
 
 
-        [TestMethod][Timeout(5*60*1000)]
+        [TestMethod]
         public void Extract_WinZip_SelfExtractor()
         {
             _Extract_ZipFile("winzip-sfx.exe");
         }
 
-        [TestMethod][Timeout(5*60*1000)]
+        [TestMethod]
         public void Extract_Docx()
         {
             _Extract_ZipFile("Vanishing Oatmeal Cookies.docx");
         }
 
-        [TestMethod][Timeout(5*60*1000)]
+        [TestMethod]
         public void Extract_ZipWithDuplicateNames_wi10330()
         {
             _Extract_ZipFile("wi10330-badzip.zip");
         }
 
-        [TestMethod][Timeout(5*60*1000)]
+        [TestMethod]
         public void Extract_Xlsx()
         {
             _Extract_ZipFile("Book1.xlsx");
         }
 
-        [TestMethod][Timeout(5*60*1000)]
+        [TestMethod]
         public void Extract_DWF()
         {
             _Extract_ZipFile("plot.dwf");
         }
 
-        [TestMethod][Timeout(5*60*1000)]
+        [TestMethod]
         public void Extract_InfoZipAppNote()
         {
             _Extract_ZipFile("appnote-iz-latest.zip");
         }
 
-        [TestMethod][Timeout(5*60*1000)]
+        [TestMethod]
         public void Extract_AndroidApp()
         {
             _Extract_ZipFile("Calendar.apk");

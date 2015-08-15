@@ -43,7 +43,7 @@ namespace Ionic.Zip.Tests.Unicode
         public UnicodeTests() : base() { }
 
 
-        [TestMethod][Timeout(5*60*1000)]
+        [TestMethod]
         public void Create_UnicodeEntries()
         {
             int i;
@@ -170,7 +170,7 @@ namespace Ionic.Zip.Tests.Unicode
         }
 
 
-        [TestMethod][Timeout(5*60*1000)]
+        [TestMethod]
         public void Create_UnicodeEntries_Mixed()
         {
             var filesToZip = _CreateUnicodeFiles();
@@ -224,7 +224,7 @@ namespace Ionic.Zip.Tests.Unicode
 
 
 
-        [TestMethod][Timeout(5*60*1000)]
+        [TestMethod]
         public void Unicode_Create_ZOS_wi12634()
         {
             TestContext.WriteLine("==Unicode_Create_ZOS_wi12634()=");
@@ -298,7 +298,7 @@ namespace Ionic.Zip.Tests.Unicode
 
 
 
-        [TestMethod][Timeout(5*60*1000)]
+        [TestMethod]
         public void UnicodeComment_wi10392()
         {
             const string zipFileToCreate = "UnicodeComment_wi10392.zip";
@@ -328,7 +328,7 @@ namespace Ionic.Zip.Tests.Unicode
         }
 
 
-        [TestMethod][Timeout(5*60*1000)]
+        [TestMethod]
         public void UnicodeUpdate_wi12744()
         {
             const string specialEntryName = "Привет.txt";
@@ -431,7 +431,7 @@ namespace Ionic.Zip.Tests.Unicode
             }
         }
 
-        [TestMethod][Timeout(5*60*1000)]
+        [TestMethod]
         public void Create_WithSpecifiedCodepage()
         {
             int i;
@@ -539,7 +539,7 @@ namespace Ionic.Zip.Tests.Unicode
 
 
 
-        [TestMethod][Timeout(5*60*1000)]
+        [TestMethod]
         public void CodePage_UpdateZip_AlternateEncoding_wi10180()
         {
             System.Text.Encoding JIS = System.Text.Encoding.GetEncoding("shift_jis");
@@ -613,7 +613,7 @@ namespace Ionic.Zip.Tests.Unicode
 
 
 
-        [TestMethod][Timeout(5*60*1000)]
+        [TestMethod]
         public void Unicode_AddDirectoryByName_wi8984()
         {
             string format = "弹出应用程序{0:D3}.dir"; // Chinese characters

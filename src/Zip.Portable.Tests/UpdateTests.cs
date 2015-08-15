@@ -43,7 +43,7 @@ namespace Ionic.Zip.Tests.Update
     {
         public UpdateTests() : base() { }
 
-        [TestMethod][Timeout(5*60*1000)]
+        [TestMethod]
         public void UpdateZip_AddNewDirectory()
         {
             string zipFileToCreate = Path.Combine(TopLevelDir, "UpdateZip_AddNewDirectory.zip");
@@ -114,7 +114,7 @@ namespace Ionic.Zip.Tests.Update
 
 
 #if AESCRYPTO
-        [TestMethod][Timeout(5*60*1000)]
+        [TestMethod]
         public void UpdateZip_ChangeMetadata_AES()
         {
             Directory.SetCurrentDirectory(TopLevelDir);
@@ -192,7 +192,7 @@ namespace Ionic.Zip.Tests.Update
 
 
 
-        [TestMethod][Timeout(5*60*1000)]
+        [TestMethod]
         public void UpdateZip_RemoveEntry_ByLastModTime()
         {
             // select the name of the zip file
@@ -277,7 +277,7 @@ namespace Ionic.Zip.Tests.Update
         }
 
 
-        [TestMethod][Timeout(5*60*1000)]
+        [TestMethod]
         public void UpdateZip_RemoveEntry_ByFilename_WithPassword()
         {
             string password = "*!ookahoo";
@@ -372,7 +372,7 @@ namespace Ionic.Zip.Tests.Update
 
 
 
-        [TestMethod][Timeout(5*60*1000)]
+        [TestMethod]
         public void UpdateZip_RenameEntry()
         {
             string dirToZip = Path.GetFileNameWithoutExtension(Path.GetRandomFileName());
@@ -466,7 +466,7 @@ namespace Ionic.Zip.Tests.Update
         }
 
 
-        [TestMethod][Timeout(5*60*1000)]
+        [TestMethod]
         public void UpdateZip_UpdateEntryComment()
         {
             for (int k = 0; k < 2; k++)
@@ -585,7 +585,7 @@ namespace Ionic.Zip.Tests.Update
 
 
 
-        [TestMethod][Timeout(5*60*1000)]
+        [TestMethod]
         public void UpdateZip_RemoveEntry_ByFilename()
         {
             for (int k = 0; k < 2; k++)
@@ -700,7 +700,7 @@ namespace Ionic.Zip.Tests.Update
 
 
 
-        [TestMethod][Timeout(5*60*1000)]
+        [TestMethod]
         public void UpdateZip_RemoveEntry_ViaIndexer_WithPassword()
         {
             string password = TestUtilities.GenerateRandomPassword();
@@ -799,7 +799,7 @@ namespace Ionic.Zip.Tests.Update
 
 
 
-        [TestMethod][Timeout(5*60*1000)]
+        [TestMethod]
         public void UpdateZip_RemoveAllEntries()
         {
             string password = "Wheeee!!" + TestUtilities.GenerateRandomLowerString(7);
@@ -860,7 +860,7 @@ namespace Ionic.Zip.Tests.Update
         }
 
 
-        [TestMethod][Timeout(5*60*1000)]
+        [TestMethod]
         public void UpdateZip_AddFile_OldEntriesWithPassword()
         {
             string password = "Secret!";
@@ -983,7 +983,7 @@ namespace Ionic.Zip.Tests.Update
 
 
 
-        [TestMethod][Timeout(5*60*1000)]
+        [TestMethod]
         public void UpdateZip_UpdateItem()
         {
             string filename = null;
@@ -1077,7 +1077,7 @@ namespace Ionic.Zip.Tests.Update
         }
 
 
-        [TestMethod][Timeout(5*60*1000)]
+        [TestMethod]
         public void UpdateZip_AddFile_NewEntriesWithPassword()
         {
             string password = "V.Secret!";
@@ -1197,7 +1197,7 @@ namespace Ionic.Zip.Tests.Update
         }
 
 
-        [TestMethod][Timeout(5*60*1000)]
+        [TestMethod]
         public void UpdateZip_AddFile_DifferentPasswords()
         {
             string password1 = Path.GetRandomFileName();
@@ -1323,7 +1323,7 @@ namespace Ionic.Zip.Tests.Update
 
 
 
-        [TestMethod][Timeout(5*60*1000)]
+        [TestMethod]
         public void UpdateZip_UpdateFile_NoPasswords()
         {
             string filename = null;
@@ -1444,7 +1444,7 @@ namespace Ionic.Zip.Tests.Update
         }
 
 
-        [TestMethod][Timeout(5*60*1000)]
+        [TestMethod]
         public void UpdateZip_UpdateFile_2_NoPasswords()
         {
             string filename = null;
@@ -1578,7 +1578,7 @@ namespace Ionic.Zip.Tests.Update
 
 
 
-        [TestMethod][Timeout(5*60*1000)]
+        [TestMethod]
         public void UpdateZip_UpdateFile_OldEntriesWithPassword()
         {
             string Password = "1234567";
@@ -1699,7 +1699,7 @@ namespace Ionic.Zip.Tests.Update
         }
 
 
-        [TestMethod][Timeout(5*60*1000)]
+        [TestMethod]
         public void UpdateZip_UpdateFile_NewEntriesWithPassword()
         {
             string Password = " P@ssw$rd";
@@ -1821,7 +1821,7 @@ namespace Ionic.Zip.Tests.Update
         }
 
 
-        [TestMethod][Timeout(5*60*1000)]
+        [TestMethod]
         public void UpdateZip_UpdateFile_DifferentPasswords()
         {
             string Password1 = "Whoofy1";
@@ -1945,7 +1945,7 @@ namespace Ionic.Zip.Tests.Update
         }
 
 
-        [TestMethod][Timeout(5*60*1000)]
+        [TestMethod]
         [ExpectedException(typeof(System.ArgumentException))]
         public void UpdateZip_AddFile_ExistingFile_Error()
         {
@@ -1997,7 +1997,7 @@ namespace Ionic.Zip.Tests.Update
         }
 
 
-        [TestMethod][Timeout(5*60*1000)]
+        [TestMethod]
         public void Update_MultipleSaves_wi10319()
         {
             string zipFileToCreate = "MultipleSaves_wi10319.zip";
@@ -2048,7 +2048,7 @@ namespace Ionic.Zip.Tests.Update
 
 
 
-        [TestMethod][Timeout(5*60*1000)]
+        [TestMethod]
         public void Update_MultipleSaves_wi10694()
         {
             string zipFileToCreate = "Update_MultipleSaves_wi10694.zip";
@@ -2087,7 +2087,7 @@ namespace Ionic.Zip.Tests.Update
 
 
 
-        [TestMethod][Timeout(5*60*1000)]
+        [TestMethod]
         public void Update_MultipleSavesWithRename_wi10544()
         {
             // select the name of the zip file
@@ -2139,7 +2139,7 @@ namespace Ionic.Zip.Tests.Update
         }
 
 
-        [TestMethod][Timeout(5*60*1000)]
+        [TestMethod]
         public void Update_FromRoot_wi11988()
         {
             string zipFileToCreate = "FromRoot.zip";

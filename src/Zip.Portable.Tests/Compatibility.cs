@@ -2021,6 +2021,7 @@ namespace Ionic.Zip.Tests
             int trials = 0;
             int otherSide = 0;
             int minOtherSide = numFilesWanted / 3 + 1;
+            Assert.Fail("Force fail: GetSelectionOfTempFiles - candidates = " + candidates.Length);
             do
             {
                 if (theChosenOnes.Count > numFilesWanted && otherSide >= minOtherSide) break;
@@ -2068,8 +2069,6 @@ namespace Ionic.Zip.Tests
                 trials++;
             }
             while (trials < 1000);
-
-            Assert.Fail("Force fail: GetSelectionOfTempFiles - SORT");
 
             theChosenOnes.Sort();
             return theChosenOnes;

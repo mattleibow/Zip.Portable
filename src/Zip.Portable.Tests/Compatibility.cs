@@ -2021,7 +2021,6 @@ namespace Ionic.Zip.Tests
             int trials = 0;
             int otherSide = 0;
             int minOtherSide = numFilesWanted / 3 + 1;
-            Assert.Fail("Force fail: GetSelectionOfTempFiles - candidates = " + candidates.Length);
             do
             {
                 if (theChosenOnes.Count > numFilesWanted && otherSide >= minOtherSide) break;
@@ -2058,6 +2057,7 @@ namespace Ionic.Zip.Tests
                         if (onOtherSideOfDst || (theChosenOnes.Count - otherSide < 2) ||
                             ((otherSide < minOtherSide) && (numFilesWanted - theChosenOnes.Count > minOtherSide - otherSide)))
                         {
+            Assert.Fail("Force fail: GetSelectionOfTempFiles - picked one! = " + f);
                             var key = Path.GetFileName(f);
                             var chk = TestUtilities.ComputeChecksum(f);
                             checksums.Add(key, chk);

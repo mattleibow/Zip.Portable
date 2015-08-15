@@ -108,10 +108,6 @@ namespace Ionic.Zip.Tests.Utilities
         [TestInitialize()]
         public void MyTestInitialize()
         {
-            Console.WriteLine("Console.WriteLine - " + TestContext.TestName);
-            TestContext.WriteLine("TestContext.WriteLine - " + TestContext.TestName);
-            System.Diagnostics.Trace.WriteLine("Trace.WriteLine - " + TestContext.TestName);
-
             if (CurrentDir == null) CurrentDir = Directory.GetCurrentDirectory();
             TestUtilities.Initialize(out TopLevelDir);
             //_FilesToRemove.Add(TopLevelDir);

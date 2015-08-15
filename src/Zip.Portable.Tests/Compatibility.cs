@@ -361,8 +361,10 @@ namespace Ionic.Zip.Tests
             string zipFileToCreate = Path.Combine(TopLevelDir, "ShellApplication_Unzip-2.zip");
             // create and fill the directories
             string extractDir = Path.Combine(TopLevelDir, "extract");
-            var checksums = new Dictionary<string, byte[]>();
-            var filesToZip = GetSelectionOfTempFiles(_rnd.Next(13) + 8, checksums);
+            string subdir = Path.Combine(TopLevelDir, "files");
+            string[] filesToZip;
+            Dictionary<string, byte[]> checksums;
+            CreateFilesAndChecksums(subdir, _rnd.Next(13) + 8, 0, out filesToZip, out checksums);
 
             Assert.Fail(string.Join(Environment.NewLine, filesToZip));
 
@@ -374,7 +376,7 @@ namespace Ionic.Zip.Tests
             }
 
             // Verify the number of files in the zip
-            Assert.AreEqual<int>(TestUtilities.CountEntries(zipFileToCreate), filesToZip.Count,
+            Assert.AreEqual<int>(TestUtilities.CountEntries(zipFileToCreate), filesToZip.Length,
                                  "Incorrect number of entries in the zip file.");
 
             // run the unzip script
@@ -2057,7 +2059,6 @@ namespace Ionic.Zip.Tests
                         if (onOtherSideOfDst || (theChosenOnes.Count - otherSide < 2) ||
                             ((otherSide < minOtherSide) && (numFilesWanted - theChosenOnes.Count > minOtherSide - otherSide)))
                         {
-            Assert.Fail("Force fail: GetSelectionOfTempFiles - picked one! = " + f);
                             var key = Path.GetFileName(f);
                             var chk = TestUtilities.ComputeChecksum(f);
                             checksums.Add(key, chk);

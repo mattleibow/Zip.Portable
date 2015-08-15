@@ -358,6 +358,7 @@ namespace Ionic.Zip.Tests
         [TestMethod][Timeout(5*60*1000)]
         public void ShellApplication_Unzip_2()
         {
+            Assert.Fail("Force fail: ShellApplication_Unzip_2");
             string zipFileToCreate = Path.Combine(TopLevelDir, "ShellApplication_Unzip-2.zip");
             // create and fill the directories
             string extractDir = Path.Combine(TopLevelDir, "extract");

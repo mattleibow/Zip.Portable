@@ -127,7 +127,9 @@ namespace Ionic.Zip
                     // disconnect from the stream
                     zipFile.SetUnderlyingZipStream(null);
                     // move the temporary file into position
+                    zipFile.OnSaveEvent(ZipProgressEventType.Saving_BeforeRenameTempArchive);
                     ZipEntryExtensions.MoveFileInPlace(fileExists, fullPath, tmpFile.Path);
+                    zipFile.OnSaveEvent(ZipProgressEventType.Saving_AfterRenameTempArchive);
                     // and now set the read stream to be that of the new file
                     var targetFile = FileSystem.Current.GetFileFromPathAsync(fullPath).ExecuteSync();
                     var fileStream = targetFile.OpenAsync(FileAccess.Read).ExecuteSync();

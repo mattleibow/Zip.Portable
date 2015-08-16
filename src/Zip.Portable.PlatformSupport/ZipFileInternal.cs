@@ -17,6 +17,7 @@ namespace Ionic.Zip.PlatformSupport
         {
             zipFile.OnAddCompleted();
         }
+
         public static void OnExtractAllStarted(this ZipFile zipFile, string path)
         {
             zipFile.OnExtractAllStarted(path);
@@ -30,6 +31,11 @@ namespace Ionic.Zip.PlatformSupport
         public static void OnExtractAllCompleted(this ZipFile zipFile, string path)
         {
             zipFile.OnExtractAllCompleted(path);
+        }
+
+        public static void OnSaveEvent(this ZipFile zipFile, ZipProgressEventType eventFlavor)
+        {
+            zipFile.OnSaveEvent(eventFlavor);
         }
 
         public static void SetAddOperationCanceled(this ZipFile zipFile, bool canceled)
@@ -89,6 +95,11 @@ namespace Ionic.Zip.PlatformSupport
             // reset all the entry streams
             foreach (var entry in zipFile.Entries)
             {
+                var zss1 = entry._archiveStream as ZipSegmentedStream;
+                if (zss1 != null)
+                {
+                    zss1.Dispose();
+                }
                 entry._archiveStream = null;
             }
             // set the new stream

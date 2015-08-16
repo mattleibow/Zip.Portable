@@ -38,23 +38,17 @@ install:
       
       $wzDir = "${env:ProgramFiles(x86)}\WinZip\"
       Write-Host "Installing WinZip into $wzDir..."
-      msiexec /i winzip.msi /qn INSTALLDIR="$wzDir" ADDDESKTOPICON=0 ADDSTARTMENU=0 INSTALLCMD="/noc4u /notip /autoinstall"
+      $wzInstall = "/i winzip.msi /qn /l WinZipInstall.log INSTALLDIR=`"$wzDir`" ADDDESKTOPICON=0 ADDSTARTMENU=0 INSTALLCMD=`"/noc4u /notip /autoinstall`""
+      Start-Process msiexec -ArgumentList $wzInstall -Wait
+      echo (Get-Content WinZipInstall.log)
       7za x -y wzcline.zip -o"$wzDir"
 
       Write-Host "Registering WinZip..."
-      $nicoReg = "HKCU:\SOFTWARE\Nico Mak Computing"
-      $wzreg = "$nicoReg\WinZip"
-      $wzinireg = "$wzreg\WinIni"
-      If (-not (Test-Path "$nicoReg")) { New-Item -Path "$nicoReg" }
-      If (-not (Test-Path "$wzreg")) { New-Item -Path "$wzreg" }
-      If (-not (Test-Path "$wzinireg")) { New-Item -Path "$wzinireg" }
-      New-ItemProperty -Path "$wzinireg" -Name "win32_version" -Value "6.3-19.5"
-      New-ItemProperty -Path "$wzinireg" -Name "Setup" -Value "0"
+      $wzinireg = "HKCU:\SOFTWARE\Nico Mak Computing\WinZip\WinIni"
       New-ItemProperty -Path "$wzinireg" -Name "UZQF" -Value "K112"
       New-ItemProperty -Path "$wzinireg" -Name "Name1" -Value "$env:WinZipUsername"
       New-ItemProperty -Path "$wzinireg" -Name "SN1" -Value "$env:WinZipKey"
       Write-Host "Registering WinZip addons..."
-      New-Item -ItemType Directory -Path "$env:ProgramData\WinZip\"
       $nl = [Environment]::NewLine
       "[Addon]$nlUZQF=K112$nlAOFF=0" | Out-File "$env:ProgramData\WinZip\WinZip.addon"
 

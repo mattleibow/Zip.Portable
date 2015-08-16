@@ -1761,7 +1761,7 @@ namespace Ionic.Zip.Tests.Basic
             {
                 zip.AddFile(filename, "");
                 Directory.SetCurrentDirectory(SourceDir);
-                zip.AddFile(Path.Combine(SourceDir, TestUtilities.GetBinDir("Zip.Portable.Tests"), "BasicTests.cs"), "");
+                zip.AddFile(Path.Combine(SourceDir, "Zip.Portable.Tests", "BasicTests.cs"), "");
                 Directory.SetCurrentDirectory(cwd);
                 zip.Save(zipFileToCreate);
             }

@@ -1863,16 +1863,6 @@ namespace Ionic.Zip.Tests
                 checksums.Add(checksum.Key, checksum.Value);
             }
 
-            int i = 0;
-            // set R and S attributes on the first file
-            if (!File.Exists(filesToZip[i])) throw new Exception("Something is berry berry wrong.");
-            File.SetAttributes(filesToZip[i], FileAttributes.ReadOnly | FileAttributes.System);
-
-            // set H attribute on the second file
-            i++;
-            if (i == filesToZip.Length) throw new Exception("Not enough files??.");
-            if (!File.Exists(filesToZip[i])) throw new Exception("Something is berry berry wrong.");
-            File.SetAttributes(filesToZip[i], FileAttributes.Hidden);
 
             // Now, Create the zip archive with DotNetZip
             using (ZipFile zip1 = new ZipFile())
@@ -1891,21 +1881,6 @@ namespace Ionic.Zip.Tests
             // first, examine the zip entry metadata:
             string wzzipOut = this.Exec(wzzip, "-vt " + zipFileToCreate);
 
-            string[] expectedAttrStrings = { "s-r-", "-hw-", "--w-" };
-
-            // example: Filename: folder5\Test8.txt
-            for (i = 0; i < expectedAttrStrings.Length; i++)
-            {
-                var f = Path.GetFileName(filesToZip[i]);
-                var fileInZip = Path.Combine(dirInZip, f);
-                string textToLookFor = String.Format("Filename: {0}", fileInZip.Replace("/", "\\"));
-                int x = wzzipOut.IndexOf(textToLookFor);
-                Assert.IsTrue(x > 0, "Could not find expected text ({0}) in WZZIP output.", textToLookFor);
-                textToLookFor = "Attributes: ";
-                x = wzzipOut.IndexOf(textToLookFor, x);
-                string attrs = wzzipOut.Substring(x + textToLookFor.Length, 4);
-                Assert.AreEqual(expectedAttrStrings[i], attrs, "Unexpected attributes on File {0}.", i);
-            }
 
             // now, extract the zip
             // eg, wzunzip.exe -d test.zip  <extractdir>

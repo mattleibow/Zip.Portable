@@ -95,6 +95,7 @@
     <Compile Include="PasswordTests.cs" />
     <Compile Include="Progress.cs" />
     <Compile Include="RandomTextGenerator.cs" />
+    <Compile Include="SplitArchives.cs" />
     <Compile Include="Streams.cs" />
     <Compile Include="TestUtilities.cs" />
     <Compile Include="UnicodeTests.cs" />

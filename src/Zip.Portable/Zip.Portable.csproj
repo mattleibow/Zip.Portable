@@ -70,6 +70,7 @@
     <Compile Include="ZipFile.x-IEnumerable.cs" />
     <Compile Include="ZipInputStream.cs" />
     <Compile Include="ZipOutputStream.cs" />
+    <Compile Include="ZipSegmentedStream.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\BZip2.Portable\BZip2.Portable.csproj">

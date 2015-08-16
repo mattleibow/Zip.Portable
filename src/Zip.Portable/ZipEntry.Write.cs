@@ -188,6 +188,16 @@ namespace Ionic.Zip
             bytes[i++] = (byte)(commentLength & 0x00FF);
             bytes[i++] = (byte)((commentLength & 0xFF00) >> 8);
 
+            // Disk number start
+            bool segmented = (this._container.ZipFile != null) &&
+                (this._container.ZipFile.MaxOutputSegmentSize != 0);
+            if (segmented) // workitem 13915
+            {
+                // Emit nonzero disknumber only if saving segmented archive.
+                bytes[i++] = (byte)(_diskNumber & 0x00FF);
+                bytes[i++] = (byte)((_diskNumber & 0xFF00) >> 8);
+            }
+            else
             {
                 // If reading a segmneted archive and saving to a regular archive,
                 // ZipEntry._diskNumber will be non-zero but it should be saved as
@@ -1108,6 +1118,19 @@ namespace Ionic.Zip
 
             _LengthOfHeader = i;
 
+            // handle split archives
+            var zss = s as ZipSegmentedStream;
+            if (zss != null)
+            {
+                zss.ContiguousWrite = true;
+                UInt32 requiredSegment = zss.ComputeSegment(i);
+                if (requiredSegment != zss.CurrentSegment)
+                    _future_ROLH = 0; // rollover!
+                else
+                    _future_ROLH = zss.Position;
+
+                _diskNumber = requiredSegment;
+            }
 
             // validate the ZIP64 usage
             if (_container.Zip64 == Zip64Option.Never && (uint)_RelativeOffsetOfLocalHeader >= 0xFFFFFFFF)
@@ -1117,6 +1140,9 @@ namespace Ionic.Zip
             // finally, write the header to the stream
             s.Write(bytes, 0, i);
 
+            // now that the header is written, we can turn off the contiguous write restriction.
+            if (zss != null)
+                zss.ContiguousWrite = false;
 
             // Preserve this header data, we'll use it again later.
             // ..when seeking backward, to write again, after we have the Crc, compressed
@@ -1725,6 +1751,18 @@ namespace Ionic.Zip
                  (this._Source == ZipEntrySource.ZipOutputStream && s.CanSeek))
             {
                 // seek back and rewrite the entry header
+                var zss = s as ZipSegmentedStream;
+                if (zss != null && _diskNumber != zss.CurrentSegment)
+                {
+                    // In this case the entry header is in a different file,
+                    // which has already been closed. Need to re-open it.
+                    using (Stream hseg = ZipSegmentedStream.ForUpdate(this._container.ZipFile.Name, _diskNumber))
+                    {
+                        hseg.Seek(this._RelativeOffsetOfLocalHeader, SeekOrigin.Begin);
+                        hseg.Write(_EntryHeader, 0, _EntryHeader.Length);
+                    }
+                }
+                else
                 {
                     // seek in the raw output stream, to the beginning of the header for
                     // this entry.
@@ -1981,6 +2019,7 @@ namespace Ionic.Zip
         internal void Write(Stream s)
         {
             var cs1 = s as CountingStream;
+            var zss1 = s as ZipSegmentedStream;
 
             bool done = false;
             do
@@ -2025,6 +2064,9 @@ namespace Ionic.Zip
                         StoreRelativeOffset();
                         _entryRequiresZip64 = new Nullable<bool>(_RelativeOffsetOfLocalHeader >= 0xFFFFFFFF);
                         _OutputUsesZip64 = new Nullable<bool>(_container.Zip64 == Zip64Option.Always || _entryRequiresZip64.Value);
+                        // handle case for split archives
+                        if (zss1 != null)
+                            _diskNumber = zss1.CurrentSegment;
 
                         return;
                     }
@@ -2071,6 +2113,14 @@ namespace Ionic.Zip
                             // Seek back in the raw output stream, to the beginning of the file
                             // data for this entry.
 
+                            // handle case for split archives
+                            if (zss1 != null)
+                            {
+                                // Console.WriteLine("***_diskNumber/first: {0}", _diskNumber);
+                                // Console.WriteLine("***_diskNumber/current: {0}", zss.CurrentSegment);
+                                zss1.TruncateBackward(_diskNumber, _RelativeOffsetOfLocalHeader);
+                            }
+                            else
                                 // workitem 8098: ok (output).
                                 s.Seek(_RelativeOffsetOfLocalHeader, SeekOrigin.Begin);
 
@@ -2293,6 +2343,8 @@ namespace Ionic.Zip
 
             // is it necessary to re-constitute new metadata for this entry?
             bool needRecompute = _metadataChanged ||
+                (this.ArchiveStream is ZipSegmentedStream) ||
+                (outStream is ZipSegmentedStream) ||
                 (_InputUsesZip64 && _container.UseZip64WhenSaving == Zip64Option.Never) ||
                 (!_InputUsesZip64 && _container.UseZip64WhenSaving == Zip64Option.Always);
 

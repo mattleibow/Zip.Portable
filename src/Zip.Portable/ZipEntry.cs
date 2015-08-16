@@ -2426,7 +2426,7 @@ namespace Ionic.Zip
                     {
                         var zf = _container.ZipFile;
                         zf.Reset(false);
-                        _archiveStream = zf.ReadStream;
+                        _archiveStream = zf.StreamForDiskNumber(_diskNumber);
                     }
                     else
                     {

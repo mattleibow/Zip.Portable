@@ -100,6 +100,7 @@ namespace Ionic.Zip
             {
                 bool thisSaveUsedZip64 = false;
                 _saveOperationCanceled = false;
+                _numberOfSegmentsForMostRecentSave = 0;
                 OnSaveStarted();
 
                 if (WriteStream == null)
@@ -149,8 +150,11 @@ namespace Ionic.Zip
                 if (_saveOperationCanceled)
                     return;
 
+                var zss = WriteStream as ZipSegmentedStream;
 
-                const uint _numberOfSegmentsForMostRecentSave = 1;
+                _numberOfSegmentsForMostRecentSave = (zss!=null)
+                    ? zss.CurrentSegment
+                    : 1;
 
                 bool directoryNeededZip64 =
                     ZipOutput.WriteCentralDirectoryStructure
@@ -316,6 +320,9 @@ namespace Ionic.Zip
                                                           String comment,
                                                           ZipContainer container)
         {
+            var zss = s as ZipSegmentedStream;
+            if (zss != null)
+                zss.ContiguousWrite = true;
 
             // write to a memory stream in order to keep the
             // CDR contiguous
@@ -356,6 +363,10 @@ namespace Ionic.Zip
             long Finish = (output != null) ? output.ComputedPosition : s.Position;  // BytesWritten
             long Start = Finish - aLength;
 
+            // need to know which segment the EOCD record starts in
+            UInt32 startSegment = (zss != null)
+                ? zss.CurrentSegment
+                : 0;
 
             Int64 SizeOfCentralDirectory = Finish - Start;
 
@@ -379,12 +390,56 @@ namespace Ionic.Zip
 
                 var a = GenZip64EndOfCentralDirectory(Start, Finish, countOfEntries, numSegments);
                 a2 = GenCentralDirectoryFooter(Start, Finish, zip64, countOfEntries, comment, container);
+                if (startSegment != 0)
+                {
+                    UInt32 thisSegment = zss.ComputeSegment(a.Length + a2.Length);
+                    int i = 16;
+                    // number of this disk
+                    Array.Copy(BitConverter.GetBytes(thisSegment), 0, a, i, 4);
+                    i += 4;
+                    // number of the disk with the start of the central directory
+                    //Array.Copy(BitConverter.GetBytes(startSegment), 0, a, i, 4);
+                    Array.Copy(BitConverter.GetBytes(thisSegment), 0, a, i, 4);
+
+                    i = 60;
+                    // offset 60
+                    // number of the disk with the start of the zip64 eocd
+                    Array.Copy(BitConverter.GetBytes(thisSegment), 0, a, i, 4);
+                    i += 4;
+                    i += 8;
+
+                    // offset 72
+                    // total number of disks
+                    Array.Copy(BitConverter.GetBytes(thisSegment), 0, a, i, 4);
+                }
                 s.Write(a, 0, a.Length);
             }
             else
                 a2 = GenCentralDirectoryFooter(Start, Finish, zip64, countOfEntries, comment, container);
 
+
+            // now, the regular footer
+            if (startSegment != 0)
+            {
+                // The assumption is the central directory is never split across
+                // segment boundaries.
+
+                UInt16 thisSegment = (UInt16) zss.ComputeSegment(a2.Length);
+                int i = 4;
+                // number of this disk
+                Array.Copy(BitConverter.GetBytes(thisSegment), 0, a2, i, 2);
+                i += 2;
+                // number of the disk with the start of the central directory
+                //Array.Copy(BitConverter.GetBytes((UInt16)startSegment), 0, a2, i, 2);
+                Array.Copy(BitConverter.GetBytes(thisSegment), 0, a2, i, 2);
+                i += 2;
+            }
+
             s.Write(a2, 0, a2.Length);
+
+            // reset the contiguous write property if necessary
+            if (zss != null)
+                zss.ContiguousWrite = false;
 
             return needZip64CentralDirectory;
         }

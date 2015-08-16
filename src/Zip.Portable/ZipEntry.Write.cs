@@ -743,7 +743,7 @@ namespace Ionic.Zip
             // that case we check the callback to see if the app wants
             // to tell us whether to compress or not.
             if (SetCompression != null)
-                CompressionLevel = SetCompression("(stream)", _FileNameInArchive);
+                CompressionLevel = SetCompression(LocalFileName, _FileNameInArchive);
 
             // finally, set CompressionMethod to None if CompressionLevel is None
             if (CompressionLevel == (short)Ionic.Zlib.CompressionLevel.None &&
@@ -1829,7 +1829,7 @@ namespace Ionic.Zip
                            FileName,
                            CompressionLevel,
                            Encryption,
-                           "(stream)");
+                           _container.Name);
 
             // Wrap a counting stream around the raw output stream:
             // This is the last thing that happens before the bits go to the
@@ -2116,7 +2116,7 @@ namespace Ionic.Zip
                             }
                             if (ZipErrorAction == ZipErrorAction.Skip)
                             {
-                                WriteStatus("Skipping file {0} (exception: {1})", "(stream)", exc1.ToString());
+                                WriteStatus("Skipping file {0} (exception: {1})", LocalFileName, exc1.ToString());
 
                                 _skippedDuringSave = true;
                                 done = true;

@@ -267,6 +267,7 @@ namespace Ionic.Zip
             _zip64 = Zip64Option.Never;
             _leaveUnderlyingStreamOpen = leaveOpen;
             Strategy = Ionic.Zlib.CompressionStrategy.Default;
+            _name = name ?? "(stream)";
 #if !NETCF
             ParallelDeflateThreshold = -1L;
 #endif
@@ -282,7 +283,7 @@ namespace Ionic.Zip
         /// <returns>a string representation of the instance.</returns>
         public override String ToString()
         {
-            return String.Format ("ZipOutputStream::{0}(leaveOpen({1})))", "(stream)", _leaveUnderlyingStreamOpen);
+            return String.Format ("ZipOutputStream::{0}(leaveOpen({1})))", _name, _leaveUnderlyingStreamOpen);
         }
 
 
@@ -1126,6 +1127,13 @@ namespace Ionic.Zip
             }
         }
 
+        internal String Name
+        {
+            get
+            {
+                return _name;
+            }
+        }
 
         /// <summary>
         ///   Returns true if an entry by the given name has already been written
@@ -1533,6 +1541,7 @@ namespace Ionic.Zip
         private Stream _deflater;
         private Ionic.Crc.CrcCalculatorStream _entryOutputStream;
         private bool _needToWriteEntryHeader;
+        private string _name;
         private bool _DontIgnoreCase;
 #if !NETCF
         internal Ionic.Zlib.ParallelDeflateOutputStream ParallelDeflater;
@@ -1580,6 +1589,15 @@ namespace Ionic.Zip
             get { return _zos; }
         }
 
+        public string Name
+        {
+            get
+            {
+                if (_zf != null) return _zf.Name;
+                if (_zis != null) throw new NotSupportedException();
+                return _zos.Name;
+            }
+        }
 
         public string Password
         {

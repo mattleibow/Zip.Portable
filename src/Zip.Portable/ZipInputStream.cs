@@ -266,6 +266,7 @@ namespace  Ionic.Zip
             _provisionalAlternateEncoding = System.Text.Encoding.GetEncoding("IBM437");
             _leaveUnderlyingStreamOpen = leaveOpen;
             _findRequired= true;
+            _name = name ?? "(stream)";
         }
 
 
@@ -278,7 +279,7 @@ namespace  Ionic.Zip
         /// <returns>a string representation of the instance.</returns>
         public override String ToString()
         {
-            return String.Format ("ZipInputStream::{0}(leaveOpen({1})))", "(stream)", _leaveUnderlyingStreamOpen);
+            return String.Format ("ZipInputStream::{0}(leaveOpen({1})))", _name, _leaveUnderlyingStreamOpen);
         }
 
 
@@ -732,6 +733,7 @@ namespace  Ionic.Zip
         private Int64 _LeftToRead;
         internal String _Password;
         private Int64 _endOfEntry;
+        private string _name;
 
         private bool _leaveUnderlyingStreamOpen;
         private bool _closed;

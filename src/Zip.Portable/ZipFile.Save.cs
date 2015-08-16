@@ -96,6 +96,8 @@ namespace Ionic.Zip
         ///
         internal void Save()
         {
+            try
+            {
                 bool thisSaveUsedZip64 = false;
                 _saveOperationCanceled = false;
                 OnSaveStarted();
@@ -172,6 +174,12 @@ namespace Ionic.Zip
                 NotifyEntriesSaveComplete(c);
                 OnSaveCompleted();
                 _JustSaved = true;
+            }
+
+            // workitem 5043
+            finally
+            {
+            }
 
             return;
         }
@@ -285,6 +293,8 @@ namespace Ionic.Zip
             if (!outputStream.CanWrite)
                 throw new ArgumentException("Must be a writable stream.", "outputStream");
 
+            // if we had a filename to save to, we are now obliterating it.
+            _name = null;
 
             _writestream = new CountingStream(outputStream);
 

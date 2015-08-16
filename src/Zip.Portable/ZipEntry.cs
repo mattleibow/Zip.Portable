@@ -675,6 +675,37 @@ namespace Ionic.Zip
 
 
         /// <summary>
+        ///   The name of the filesystem file, referred to by the ZipEntry.
+        /// </summary>
+        ///
+        /// <remarks>
+        ///  <para>
+        ///    This property specifies the thing-to-be-zipped on disk, and is set only
+        ///    when the <c>ZipEntry</c> is being created from a filesystem file.  If the
+        ///    <c>ZipFile</c> is instantiated by reading an existing .zip archive, then
+        ///    the LocalFileName will be <c>null</c> (<c>Nothing</c> in VB).
+        ///  </para>
+        ///
+        ///  <para>
+        ///    When it is set, the value of this property may be different than <see
+        ///    cref="FileName"/>, which is the path used in the archive itself.  If you
+        ///    call <c>Zip.AddFile("foop.txt", AlternativeDirectory)</c>, then the path
+        ///    used for the <c>ZipEntry</c> within the zip archive will be different
+        ///    than this path.
+        ///  </para>
+        ///
+        ///  <para>
+        ///   If the entry is being added from a stream, then this is null (Nothing in VB).
+        ///  </para>
+        ///
+        /// </remarks>
+        /// <seealso cref="FileName"/>
+        internal string LocalFileName
+        {
+            get { return _LocalFileName; }
+        }
+
+        /// <summary>
         ///   The name of the file contained in the ZipEntry.
         /// </summary>
         ///
@@ -2530,6 +2561,7 @@ namespace Ionic.Zip
         private bool _emitNtfsTimes = true;
         private bool _emitUnixTimes;  // by default, false
         private bool _TrimVolumeFromFullyQualifiedPaths = true;  // by default, trim them.
+        internal string _LocalFileName;
         private string _FileNameInArchive;
         internal Int16 _VersionNeeded;
         internal Int16 _BitField;

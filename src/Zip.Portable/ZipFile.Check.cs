@@ -308,7 +308,7 @@ namespace Ionic.Zip
             get
             {
                 var builder = new System.Text.StringBuilder();
-                builder.Append(string.Format("          ZipFile: {0}\n", "(stream)"));
+                builder.Append(string.Format("          ZipFile: {0}\n", this.Name));
                 if (!string.IsNullOrEmpty(this._Comment))
                 {
                     builder.Append(string.Format("          Comment: {0}\n", this._Comment));

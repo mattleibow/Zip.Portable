@@ -114,7 +114,7 @@ namespace Ionic.Zip
 
             try
             {
-                // extract
+                // save
                 var tmpFile = folder.CreateFileAsync(tmpName, CreationCollisionOption.ReplaceExisting).ExecuteSync();
                 using (var tmpStream = tmpFile.OpenAsync(FileAccess.ReadAndWrite).ExecuteSync())
                 {
@@ -133,6 +133,7 @@ namespace Ionic.Zip
                     var fileStream = targetFile.OpenAsync(FileAccess.Read).ExecuteSync();
                     zipFile.SetUnderlyingZipStream(fileStream);
                     zipFile.SetShouldDisposeReadStream(true);
+                    zipFile.Name = fullPath;
 
                     // so we can shortcut the existance checks
                     tmpName = null;

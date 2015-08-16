@@ -582,7 +582,10 @@ namespace Ionic.Zip
 
             ZipEntry e;
             if (zf.Verbose)
+                if (zf.Name == null)
                     zf.StatusMessageTextWriter.WriteLine("Reading zip from stream...");
+                else
+                    zf.StatusMessageTextWriter.WriteLine("Reading zip {0}...", zf.Name);
 
             // work item 6647:  PK00 (packed to removable disk)
             bool firstEntry = true;

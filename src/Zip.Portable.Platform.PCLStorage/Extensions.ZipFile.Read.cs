@@ -324,6 +324,7 @@ namespace Ionic.Zip
                 stream = file.OpenAsync(FileAccess.Read).ExecuteSync();
                 var zipFile = ZipFile.Read(stream, options);
                 zipFile.SetShouldDisposeReadStream(true);
+                zipFile.Name = fullPath;
                 return zipFile;
             }
             catch (Exception e1)

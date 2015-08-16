@@ -320,6 +320,35 @@ namespace Ionic.Zip
         }
 
 
+        /// <summary>
+        ///   The name of the <c>ZipFile</c>, on disk.
+        /// </summary>
+        ///
+        /// <remarks>
+        ///
+        /// <para>
+        ///   When the <c>ZipFile</c> instance was created by reading an archive using
+        ///   one of the <c>ZipFile.Read</c> methods, this property represents the name
+        ///   of the zip file that was read.  When the <c>ZipFile</c> instance was
+        ///   created by using the no-argument constructor, this value is <c>null</c>
+        ///   (<c>Nothing</c> in VB).
+        /// </para>
+        ///
+        /// <para>
+        ///   If you use the no-argument constructor, and you then explicitly set this
+        ///   property, when you call <see cref="ZipFile.Save()"/>, this name will
+        ///   specify the name of the zip file created.  Doing so is equivalent to
+        ///   calling <see cref="ZipFile.Save(String)"/>.  When instantiating a
+        ///   <c>ZipFile</c> by reading from a stream or byte array, the <c>Name</c>
+        ///   property remains <c>null</c>.  When saving to a stream, the <c>Name</c>
+        ///   property is implicitly set to <c>null</c>.
+        /// </para>
+        /// </remarks>
+        public string Name
+        {
+            get { return _name; }
+            set { _name = value; }
+        }
 
 
         /// <summary>
@@ -2005,7 +2034,7 @@ namespace Ionic.Zip
         /// <returns>a string representation of the instance.</returns>
         public override String ToString()
         {
-            return String.Format("ZipFile::{0}", "(stream)");
+            return String.Format("ZipFile::{0}", Name);
         }
 
 
@@ -2883,6 +2912,7 @@ namespace Ionic.Zip
         //private System.Collections.Generic.List<ZipEntry> _entries;
         private System.Collections.Generic.Dictionary<String, ZipEntry> _entries;
         private List<ZipEntry> _zipEntriesAsList;
+        private string _name;
         private string _Comment;
         internal string _Password;
         private bool _emitNtfsTimes = true;

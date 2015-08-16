@@ -1750,6 +1750,24 @@ namespace Ionic.Zip.Tests.Basic
 
 
         [TestMethod]
+        public void Create_WithChangeDirectory()
+        {
+            string zipFileToCreate = "Create_WithChangeDirectory.zip";
+            String filename = "Testfile.txt";
+            TestUtilities.CreateAndFillFileText(filename, _rnd.Next(34000) + 5000);
+
+            string cwd = Directory.GetCurrentDirectory();
+            using (var zip = new ZipFile())
+            {
+                zip.AddFile(filename, "");
+                Directory.SetCurrentDirectory(SourceDir);
+                zip.AddFile(Path.Combine(SourceDir, TestUtilities.GetBinDir("Zip.Portable.Tests"), "BasicTests.cs"), "");
+                Directory.SetCurrentDirectory(cwd);
+                zip.Save(zipFileToCreate);
+            }
+        }
+
+        [TestMethod]
         public void Create_WithAbsolutePath()
         {
             string zipFileToCreate = "Create_WithAbsolutePath.zip";

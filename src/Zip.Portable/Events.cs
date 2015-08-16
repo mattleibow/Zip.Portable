@@ -671,6 +671,13 @@ namespace Ionic.Zip
             get { return _exc; }
         }
 
+        /// <summary>
+        /// Returns the name of the file that caused the exception, if any.
+        /// </summary>
+        public String FileName
+        {
+            get { return CurrentEntry.LocalFileName; }
+        }
     }
 
 

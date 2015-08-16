@@ -35,7 +35,7 @@ namespace Ionic.Zip
         {
             get
             {
-                return "(stream)";
+                return (_name != null) ? _name : "(stream)";
             }
         }
 

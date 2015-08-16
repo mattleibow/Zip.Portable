@@ -29,6 +29,11 @@ namespace Ionic.Zip.PlatformSupport
             return SharedUtilities.NormalizePathForUseInZipFile(pathName);
         }
 
+        public static void SetLocalFileName(this ZipEntry zipEntry, string localFilename)
+        {
+            zipEntry._LocalFileName = localFilename;
+        }
+
         public static void SetIOOperationCanceled(this ZipEntry zipEntry, bool canceled)
         {
             zipEntry._ioOperationCanceled = canceled;

@@ -379,7 +379,7 @@ namespace Ionic.Zip
             string fullPath = GetFullPath(fileName);
 
             string nameInArchive = ZipEntryInternal.NameInArchive(fileName, directoryPathInArchive);
-            return zipFile.AddEntry(nameInArchive, (name) => {
+            ZipEntry entry = zipFile.AddEntry(nameInArchive, (name) => {
                 var file = FileSystem.Current.GetFileFromPathAsync(fullPath).ExecuteSync();
                 if (file == null)
                 {
@@ -392,6 +392,8 @@ namespace Ionic.Zip
                     stream.Dispose();
                 }
             });
+            entry.SetLocalFileName(fullPath);
+            return entry;
         }
 
         /// <summary>

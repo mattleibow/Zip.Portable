@@ -27,6 +27,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ZipIt", "Tools\ZipIt\ZipIt.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WinFormsApp", "Tools\WinFormsApp\WinFormsApp.csproj", "{6BCCF138-2EFB-464C-B872-E3079F0A4708}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AspNetHost", "Tools\AspNetHost\AspNetHost.csproj", "{3F05013E-42B2-4A54-8FAC-843BE21F0ECF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -73,6 +75,10 @@ Global
 		{6BCCF138-2EFB-464C-B872-E3079F0A4708}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6BCCF138-2EFB-464C-B872-E3079F0A4708}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6BCCF138-2EFB-464C-B872-E3079F0A4708}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3F05013E-42B2-4A54-8FAC-843BE21F0ECF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3F05013E-42B2-4A54-8FAC-843BE21F0ECF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3F05013E-42B2-4A54-8FAC-843BE21F0ECF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3F05013E-42B2-4A54-8FAC-843BE21F0ECF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -84,6 +90,7 @@ Global
 		{A22C89E0-B5D4-4881-A61F-4B1FD82F2453} = {A5194150-93DA-422A-B81C-1CABF2778B61}
 		{98008721-C4DD-4F34-B3AE-A3453E29BB65} = {A5194150-93DA-422A-B81C-1CABF2778B61}
 		{6BCCF138-2EFB-464C-B872-E3079F0A4708} = {A5194150-93DA-422A-B81C-1CABF2778B61}
+		{3F05013E-42B2-4A54-8FAC-843BE21F0ECF} = {A5194150-93DA-422A-B81C-1CABF2778B61}
 	EndGlobalSection
 	GlobalSection(TestCaseManagementSettings) = postSolution
 		CategoryFile = DotNetZip.vsmdi

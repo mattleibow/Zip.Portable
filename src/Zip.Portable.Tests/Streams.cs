@@ -1871,25 +1871,27 @@ namespace Ionic.Zip.Tests.Streams
         {
             string testBin = Path.Combine(SourceDir, TestUtilities.GetBinDir("Zip.Portable.Tests"));
             string resourceDir = Path.Combine(testBin, "Resources");
-            string aspnetHost = Path.Combine(resourceDir, "AspNetHost.exe");
+            string aspnetBin = Path.Combine(SourceDir, "Tools", TestUtilities.GetBinDir("AspNetHost"));
+            string aspnetHost = Path.Combine(aspnetBin, "AspNetHost.exe");
             Assert.IsTrue(File.Exists(aspnetHost), "file {0} does not exit.", aspnetHost);
-            string aspnetHostPdb = Path.Combine(resourceDir, "AspNetHost.pdb");
+            string webConfig = Path.Combine(resourceDir, "web.config");
 
             // page that generates a zip file.
             string aspxPage = Path.Combine(resourceDir, "GenerateZip-cs.aspx");
             Assert.IsTrue(File.Exists(aspxPage));
 
-            string ionicZipDll = Path.Combine(testBin, "Ionic.Zip.dll");
             string loremFile = "LoremIpsum.txt";
 
             Action<String> copyToBin = (x) =>
                 File.Copy(x, Path.Combine("bin",
                                           Path.GetFileName(x)));
             Directory.CreateDirectory("bin");
-            copyToBin(aspnetHost);
-            copyToBin(aspnetHostPdb);
-            copyToBin(ionicZipDll);
+            foreach (var file in Directory.GetFiles(testBin))
+                copyToBin(file);
+            foreach (var file in Directory.GetFiles(aspnetBin))
+                copyToBin(file);
             File.Copy(aspxPage, Path.GetFileName(aspxPage));
+            File.Copy(webConfig, Path.GetFileName(webConfig));
             File.WriteAllText(loremFile, TestUtilities.LoremIpsum);
 
             string zipFileToCreate = "ASPX-output.out";

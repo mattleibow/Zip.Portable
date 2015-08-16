@@ -1666,7 +1666,7 @@ namespace Ionic.Zip.Tests
 
                 // now, test the zip
                 // eg, wzunzip.exe -t test.zip
-                string wzunzipOut = this.Exec(wzunzip, String.Format("-t -s{0} {1}",
+                string wzunzipOut = this.Exec(wzunzip, String.Format("-t -s{0} \"{1}\"",
                                                                      password, zipFileToCreate));
                 TestContext.WriteLine("{0}", wzunzipOut);
 
@@ -1676,7 +1676,7 @@ namespace Ionic.Zip.Tests
                 // extract the zip
                 Directory.CreateDirectory(extractDir);
                 // eg, wzunzip.exe -d -yx -sPassword  test.zip  <extractdir>
-                wzunzipOut = this.Exec(wzunzip, String.Format("-d -yx -s{0} {1} {2}",
+                wzunzipOut = this.Exec(wzunzip, String.Format("-d -yx -s{0} \"{1}\" \"{2}\"",
                                                              password, zipFileToCreate, extractDir));
                 Assert.IsFalse(wzunzipOut.Contains("skipping"));
                 Assert.IsFalse(wzunzipOut.Contains("incorrect"));

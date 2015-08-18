@@ -2193,7 +2193,12 @@ namespace Ionic.Zip
                 //return (this.ReadStream as FileStream);
                 return this.ReadStream;
             }
-            return ZipSegmentedStream.ForReading(this._name,
+            var manager = this._readSegmentsManager ?? this._writeSegmentsManager;
+            if (manager == null)
+            {
+                throw new ZipException("No ZipSegmentedStreamManager was specified.");
+            }
+            return ZipSegmentedStream.ForReading(manager,
                                                  diskNumber, _diskNumberWithCd);
         }
 
@@ -3016,11 +3021,22 @@ namespace Ionic.Zip
             get
             {
                 if (_writestream != null) return _writestream;
-                if (_name == null) return _writestream;
 
                 if (_maxOutputSegmentSize != 0)
                 {
-                    _writestream = ZipSegmentedStream.ForWriting(this._name, _maxOutputSegmentSize);
+                    if (this._writeSegmentsManager == null)
+                    {
+                        throw new ZipException("No ZipSegmentedStreamManager was specified.");
+                    }
+                    _writestream = ZipSegmentedStream.ForWriting(this._writeSegmentsManager, _maxOutputSegmentSize);
+                    _WriteStreamIsOurs = true;
+                    return _writestream;
+                }
+
+                if (this._writeSegmentsManager != null)
+                {
+                    _writestream = this._writeSegmentsManager.CreateTemporarySegment();
+                    _WriteStreamIsOurs = true;
                     return _writestream;
                 }
 
@@ -3045,6 +3061,8 @@ namespace Ionic.Zip
         private UInt32 _diskNumberWithCd;
         private Int32 _maxOutputSegmentSize;
         private UInt32 _numberOfSegmentsForMostRecentSave;
+        internal ZipSegmentedStreamManager _readSegmentsManager;
+        internal ZipSegmentedStreamManager _writeSegmentsManager;
         private ZipErrorAction _zipErrorAction;
         private bool _disposed;
         //private System.Collections.Generic.List<ZipEntry> _entries;
@@ -3059,6 +3077,7 @@ namespace Ionic.Zip
         private Ionic.Zip.CompressionMethod _compressionMethod = Ionic.Zip.CompressionMethod.Deflate;
         private bool _contentsChanged;
         private bool _hasBeenSaved;
+        internal bool _WriteStreamIsOurs = false;
         internal bool _ReadStreamIsOurs = false;
         private object LOCK = new object();
         internal bool _saveOperationCanceled;

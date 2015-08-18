@@ -114,11 +114,25 @@ namespace Ionic.Zip
 
             try
             {
+                ZipSegmentedStreamManager segmentsManager = null;
+
+                if (zipFile.MaxOutputSegmentSize != 0)
+                {
+                    // save segmented files using the segments manager
+                    var manager = new FileSystemZipSegmentedStreamManager(fullPath);
+                    segmentsManager = manager;
+                    zipFile.Save(segmentsManager);
+                    tmpName = manager.TemporaryName;
+                }
+                else
+                {
                 // save
                 var tmpFile = folder.CreateFileAsync(tmpName, CreationCollisionOption.ReplaceExisting).ExecuteSync();
+                tmpName = tmpFile.Path;
                 using (var tmpStream = tmpFile.OpenAsync(FileAccess.ReadAndWrite).ExecuteSync())
                 {
                     zipFile.Save(tmpStream);
+                }
                 }
 
                 // if it wasn't canceled
@@ -128,11 +142,12 @@ namespace Ionic.Zip
                     zipFile.SetUnderlyingZipStream(null);
                     // move the temporary file into position
                     zipFile.OnSaveEvent(ZipProgressEventType.Saving_BeforeRenameTempArchive);
-                    ZipEntryExtensions.MoveFileInPlace(fileExists, fullPath, tmpFile.Path);
+                    ZipEntryExtensions.MoveFileInPlace(fileExists, fullPath, tmpName);
                     zipFile.OnSaveEvent(ZipProgressEventType.Saving_AfterRenameTempArchive);
                     // and now set the read stream to be that of the new file
                     var targetFile = FileSystem.Current.GetFileFromPathAsync(fullPath).ExecuteSync();
                     var fileStream = targetFile.OpenAsync(FileAccess.Read).ExecuteSync();
+                    zipFile.SetUnderlyingZipSegmentedStreamManager(segmentsManager);
                     zipFile.SetUnderlyingZipStream(fileStream);
                     zipFile.SetShouldDisposeReadStream(true);
                     zipFile.Name = fullPath;

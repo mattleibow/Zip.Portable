@@ -154,7 +154,7 @@ namespace Ionic.Zip
 
                 _numberOfSegmentsForMostRecentSave = (zss!=null)
                     ? zss.CurrentSegment
-                    : 1;
+                    : 0;
 
                 bool directoryNeededZip64 =
                     ZipOutput.WriteCentralDirectoryStructure
@@ -183,6 +183,7 @@ namespace Ionic.Zip
             // workitem 5043
             finally
             {
+                CleanupAfterSaveOperation();
             }
 
             return;
@@ -199,6 +200,31 @@ namespace Ionic.Zip
         }
 
 
+
+
+        private void CleanupAfterSaveOperation()
+        {
+            if (_WriteStreamIsOurs)
+            {
+                // close the stream if there is a file behind it.
+                if (_writestream != null)
+                {
+                    try
+                    {
+                        // workitem 7704
+#if NETCF
+                        _writestream.Close();
+#else
+                        _writestream.Dispose();
+#endif
+                    }
+                    catch (System.IO.IOException) { }
+                }
+                _writestream = null;
+                _writeSegmentsManager = null;
+
+            }
+        }
 
 
         /// <summary>
@@ -300,12 +326,29 @@ namespace Ionic.Zip
             // if we had a filename to save to, we are now obliterating it.
             _name = null;
 
+            _writeSegmentsManager = null;
             _writestream = new CountingStream(outputStream);
 
             _contentsChanged = true;
+            _WriteStreamIsOurs = false;
             Save();
         }
 
+        public void Save(ZipSegmentedStreamManager segmentsManager)
+        {
+            if (segmentsManager == null)
+                throw new ArgumentNullException("segmentsManager");
+
+            // if we had a filename to save to, we are now obliterating it.
+            _name = null;
+
+            _writeSegmentsManager = segmentsManager;
+            _writestream = null;
+
+            _contentsChanged = true;
+            _WriteStreamIsOurs = false;
+            Save();
+        }
 
     }
 

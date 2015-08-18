@@ -83,10 +83,6 @@ namespace Ionic.Zip.PlatformSupport
             // we can close the streams
             if (zipFile._ReadStreamIsOurs)
             {
-                if (zipFile.WriteStream != null)
-                {
-                    zipFile.WriteStream.Dispose();
-                }
                 if (zipFile.ReadStream != null)
                 {
                     zipFile.ReadStream.Dispose();
@@ -104,6 +100,11 @@ namespace Ionic.Zip.PlatformSupport
             }
             // set the new stream
             zipFile.ReadStream = newZipStream;
+        }
+
+        public static void SetUnderlyingZipSegmentedStreamManager(this ZipFile zipFile, ZipSegmentedStreamManager manager)
+        {
+            zipFile._readSegmentsManager = manager;
         }
     }
 }

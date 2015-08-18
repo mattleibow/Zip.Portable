@@ -552,6 +552,17 @@ namespace Ionic.Zip
             }
             finally
             {
+                var zss = input as ZipSegmentedStream;
+                if (zss != null)
+                {
+#if NETCF
+                    zss.Close();
+#else
+                    // need to dispose it
+                    zss.Dispose();
+#endif
+                    _archiveStream = null;
+                }
             }
 
             return crcResult;

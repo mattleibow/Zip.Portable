@@ -60,6 +60,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AsyncHelpers.cs" />
+    <Compile Include="FileSystemZipSegmentedStreamManager.cs" />
     <Compile Include="Extensions.ZipEntry.cs" />
     <Compile Include="Extensions.ZipEntry.Extract.cs" />
     <Compile Include="Extensions.ZipFile.AddUpdate.cs" />

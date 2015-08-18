@@ -219,7 +219,7 @@ namespace Ionic.Zip
         ///
         public static ZipFile Read(Stream zipStream)
         {
-            return Read(zipStream, null, null, null, false);
+            return Read(zipStream, null, null, null, null, false);
         }
 
         /// <summary>
@@ -276,6 +276,7 @@ namespace Ionic.Zip
                 throw new ArgumentNullException("options");
 
             return Read(zipStream,
+                        null,
                         options.StatusMessageWriter,
                         options.Encoding,
                         options.ReadProgress,
@@ -283,6 +284,26 @@ namespace Ionic.Zip
         }
 
 
+        public static ZipFile Read(Stream zipStream, ZipSegmentedStreamManager segmentsManager)
+        {
+            if (segmentsManager == null)
+                throw new ArgumentNullException("segmentsManager");
+
+            return Read(zipStream, segmentsManager, null, null, null, false);
+        }
+
+        public static ZipFile Read(Stream zipStream, ZipSegmentedStreamManager segmentsManager, ReadOptions options)
+        {
+            if (segmentsManager == null)
+                throw new ArgumentNullException("segmentsManager");
+
+            return Read(zipStream,
+                        segmentsManager,
+                        options.StatusMessageWriter,
+                        options.Encoding,
+                        options.ReadProgress,
+                        options.FullScan);
+        }
 
         /// <summary>
         /// Reads a zip archive from a stream, using the specified text Encoding, the
@@ -330,6 +351,7 @@ namespace Ionic.Zip
         ///
         /// <returns>an instance of ZipFile</returns>
         private static ZipFile Read(Stream zipStream,
+                                   ZipSegmentedStreamManager segmentsManager,
                                    TextWriter statusMessageWriter,
                                    System.Text.Encoding encoding,
                                    EventHandler<ReadProgressEventArgs> readProgress,
@@ -347,6 +369,7 @@ namespace Ionic.Zip
             zf._readstream = (zipStream.Position == 0L)
                 ? zipStream
                 : new OffsetStream(zipStream);
+            zf._readSegmentsManager = segmentsManager;
             zf._ReadStreamIsOurs = false;
             if (zf.Verbose) zf._StatusMessageTextWriter.WriteLine("reading from stream...");
 
@@ -823,7 +846,7 @@ namespace Ionic.Zip
 
                 var bitBucket = Stream.Null;
 
-                using (ZipFile zip1 = ZipFile.Read(stream, null, null, null, false))
+                using (ZipFile zip1 = ZipFile.Read(stream, null, null, null, null, false))
                 {
                     if (testExtract)
                     {

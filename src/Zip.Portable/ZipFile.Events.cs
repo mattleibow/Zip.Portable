@@ -544,7 +544,7 @@ namespace Ionic.Zip
             }
         }
 
-        private void OnSaveEvent(ZipProgressEventType eventFlavor)
+        internal void OnSaveEvent(ZipProgressEventType eventFlavor)
         {
             EventHandler<SaveProgressEventArgs> sp = SaveProgress;
             if (sp != null)

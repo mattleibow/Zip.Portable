@@ -2122,5 +2122,138 @@ namespace Ionic.Zip.Tests.Basic
             }
         }
 
+        [TestMethod]
+        public void CreateZip_Resave_Resave()
+        {
+            TestContext.WriteLine("Creating fodder files...");
+
+            int entriesAdded = 0;
+            String filename = null;
+            string subdir = "A";
+            string extractDir = "extract";
+            Directory.CreateDirectory(subdir);
+            int fileCount = _rnd.Next(10) + 10;
+            for (int j = 0; j < fileCount; j++)
+            {
+                filename = Path.Combine(subdir, String.Format("file{0:D3}.txt", j));
+                TestUtilities.CreateAndFillFileText(filename, _rnd.Next(34000) + 5000);
+                entriesAdded++;
+            }
+
+            var filesToAdd = new List<String>(Directory.GetFiles(subdir));
+
+            string zipFile1 = "InitialSave.zip";
+            string zipFile2 = "Updated.zip";
+            string zipFile3 = "Again.zip";
+
+            TestContext.WriteLine("");
+            TestContext.WriteLine("Creating zip...");
+            using (var zip1 = new ZipFile())
+            {
+                zip1.AddFiles(filesToAdd, "");
+                zip1.Save(zipFile1);
+            }
+
+            TestContext.WriteLine("");
+            TestContext.WriteLine("Re-saving...");
+            using (var zip2 = ZipFileExtensions.Read(zipFile1))
+            {
+                zip2.Save(zipFile2);
+            }
+
+            TestContext.WriteLine("");
+            TestContext.WriteLine("Deleting initial archive...");
+            string[] filesToDelete = Directory.GetFiles(".", "InitialSave.*");
+            foreach (var file in filesToDelete)
+            {
+                File.Delete(file);
+            }
+
+            TestContext.WriteLine("");
+            TestContext.WriteLine("Re-saving again...");
+            using (var zip3 = ZipFileExtensions.Read(zipFile2))
+            {
+                zip3.Save(zipFile3);
+            }
+
+            TestContext.WriteLine("");
+            TestContext.WriteLine("Extracting...");
+            Directory.CreateDirectory(extractDir);
+            using (var zip4 = ZipFileExtensions.Read(zipFile3))
+            {
+                foreach (var e in zip4)
+                {
+                    TestContext.WriteLine(" {0}", e.FileName);
+                    e.Extract(extractDir);
+                }
+            }
+
+            string[] filesUnzipped = Directory.GetFiles(extractDir);
+            Assert.AreEqual<int>(filesToAdd.Count, filesUnzipped.Length,
+                                 "Incorrect number of files extracted.");
+        }
+
+        [TestMethod]
+        public void CreateZip_Resave_Extract()
+        {
+            TestContext.WriteLine("Creating fodder files...");
+
+            int entriesAdded = 0;
+            String filename = null;
+            string subdir = "A";
+            string extractDir = "extract";
+            Directory.CreateDirectory(subdir);
+            int fileCount = _rnd.Next(10) + 10;
+            for (int j = 0; j < fileCount; j++)
+            {
+                filename = Path.Combine(subdir, String.Format("file{0:D3}.txt", j));
+                TestUtilities.CreateAndFillFileText(filename, _rnd.Next(34000) + 5000);
+                entriesAdded++;
+            }
+
+            var filesToAdd = new List<String>(Directory.GetFiles(subdir));
+
+            string zipFile1 = "InitialSave.zip";
+            string zipFile2 = "Updated.zip";
+            string zipFile3 = "Again.zip";
+
+            TestContext.WriteLine("");
+            TestContext.WriteLine("Creating zip...");
+            using (var zip1 = new ZipFile())
+            {
+                zip1.AddFiles(filesToAdd, "");
+                zip1.Save(zipFile1);
+            }
+
+            TestContext.WriteLine("");
+            TestContext.WriteLine("Re-saving...");
+            using (var zip2 = ZipFileExtensions.Read(zipFile1))
+            {
+                zip2.Save(zipFile2);
+
+                // make sure we aren't accidentally using InitialSave.zip data
+                TestContext.WriteLine("");
+                TestContext.WriteLine("Deleting initial archive...");
+                string[] filesToDelete = Directory.GetFiles(".", "InitialSave.*");
+                foreach (var file in filesToDelete)
+                {
+                    File.Delete(file);
+                }
+                
+                // this should be using the Updated.zip file stream
+                TestContext.WriteLine("");
+                TestContext.WriteLine("Extracting...");
+                Directory.CreateDirectory(extractDir);
+                foreach (var e in zip2)
+                {
+                    TestContext.WriteLine(" {0}", e.FileName);
+                    e.Extract(extractDir);
+                }
+            }
+
+            string[] filesUnzipped = Directory.GetFiles(extractDir);
+            Assert.AreEqual<int>(filesToAdd.Count, filesUnzipped.Length,
+                                 "Incorrect number of files extracted.");
+        }
     }
 }

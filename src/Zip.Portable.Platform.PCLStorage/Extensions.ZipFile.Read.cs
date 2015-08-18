@@ -322,7 +322,9 @@ namespace Ionic.Zip
                 }
                 // don't close the stream, leave it up to the zip file
                 stream = file.OpenAsync(FileAccess.Read).ExecuteSync();
-                var zipFile = ZipFile.Read(stream, options);
+                // handle segmented archives
+                var segmentsManager = new FileSystemZipSegmentedStreamManager(fullPath);
+                var zipFile = ZipFile.Read(stream, segmentsManager, options);
                 zipFile.SetShouldDisposeReadStream(true);
                 zipFile.Name = fullPath;
                 return zipFile;

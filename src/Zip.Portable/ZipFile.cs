@@ -1863,6 +1863,122 @@ namespace Ionic.Zip
         }
 
 
+        /// <summary>
+        /// The maximum size of an output segment, when saving a split Zip file.
+        /// </summary>
+        /// <remarks>
+        ///   <para>
+        ///     Set this to a non-zero value before calling <see cref="Save()"/> or <see
+        ///     cref="Save(String)"/> to specify that the ZipFile should be saved as a
+        ///     split archive, also sometimes called a spanned archive. Some also
+        ///     call them multi-file archives.
+        ///   </para>
+        ///
+        ///   <para>
+        ///     A split zip archive is saved in a set of discrete filesystem files,
+        ///     rather than in a single file. This is handy when transmitting the
+        ///     archive in email or some other mechanism that has a limit to the size of
+        ///     each file.  The first file in a split archive will be named
+        ///     <c>basename.z01</c>, the second will be named <c>basename.z02</c>, and
+        ///     so on. The final file is named <c>basename.zip</c>. According to the zip
+        ///     specification from PKWare, the minimum value is 65536, for a 64k segment
+        ///     size. The maximum number of segments allows in a split archive is 99.
+        ///   </para>
+        ///
+        ///   <para>
+        ///     The value of this property determines the maximum size of a split
+        ///     segment when writing a split archive.  For example, suppose you have a
+        ///     <c>ZipFile</c> that would save to a single file of 200k. If you set the
+        ///     <c>MaxOutputSegmentSize</c> to 65536 before calling <c>Save()</c>, you
+        ///     will get four distinct output files. On the other hand if you set this
+        ///     property to 256k, then you will get a single-file archive for that
+        ///     <c>ZipFile</c>.
+        ///   </para>
+        ///
+        ///   <para>
+        ///     The size of each split output file will be as large as possible, up to
+        ///     the maximum size set here. The zip specification requires that some data
+        ///     fields in a zip archive may not span a split boundary, and an output
+        ///     segment may be smaller than the maximum if necessary to avoid that
+        ///     problem. Also, obviously the final segment of the archive may be smaller
+        ///     than the maximum segment size. Segments will never be larger than the
+        ///     value set with this property.
+        ///   </para>
+        ///
+        ///   <para>
+        ///     You can save a split Zip file only when saving to a regular filesystem
+        ///     file. It's not possible to save a split zip file as a self-extracting
+        ///     archive, nor is it possible to save a split zip file to a stream. When
+        ///     saving to a SFX or to a Stream, this property is ignored.
+        ///   </para>
+        ///
+        ///   <para>
+        ///     About interoperability: Split or spanned zip files produced by DotNetZip
+        ///     can be read by WinZip or PKZip, and vice-versa. Segmented zip files may
+        ///     not be readable by other tools, if those other tools don't support zip
+        ///     spanning or splitting.  When in doubt, test.  I don't believe Windows
+        ///     Explorer can extract a split archive.
+        ///   </para>
+        ///
+        ///   <para>
+        ///     This property has no effect when reading a split archive. You can read
+        ///     a split archive in the normal way with DotNetZip.
+        ///   </para>
+        ///
+        ///   <para>
+        ///     When saving a zip file, if you want a regular zip file rather than a
+        ///     split zip file, don't set this property, or set it to Zero.
+        ///   </para>
+        ///
+        ///   <para>
+        ///     If you read a split archive, with <see cref="ZipFile.Read(string)"/> and
+        ///     then subsequently call <c>ZipFile.Save()</c>, unless you set this
+        ///     property before calling <c>Save()</c>, you will get a normal,
+        ///     single-file archive.
+        ///   </para>
+        /// </remarks>
+        ///
+        /// <seealso cref="NumberOfSegmentsForMostRecentSave"/>
+        public Int32 MaxOutputSegmentSize
+        {
+            get
+            {
+                return _maxOutputSegmentSize;
+            }
+            set
+            {
+                if (value < 65536 && value != 0)
+                    throw new ZipException("The minimum acceptable segment size is 65536.");
+                _maxOutputSegmentSize = value;
+            }
+        }
+
+
+        /// <summary>
+        ///   Returns the number of segments used in the most recent Save() operation.
+        /// </summary>
+        /// <remarks>
+        ///   <para>
+        ///     This is normally zero, unless you have set the <see
+        ///     cref="MaxOutputSegmentSize"/> property.  If you have set <see
+        ///     cref="MaxOutputSegmentSize"/>, and then you save a file, after the call to
+        ///     Save() completes, you can read this value to learn the number of segments that
+        ///     were created.
+        ///   </para>
+        ///   <para>
+        ///     If you call Save("Archive.zip"), and it creates 5 segments, then you
+        ///     will have filesystem files named Archive.z01, Archive.z02, Archive.z03,
+        ///     Archive.z04, and Archive.zip, and the value of this property will be 5.
+        ///   </para>
+        /// </remarks>
+        /// <seealso cref="MaxOutputSegmentSize"/>
+        public Int32 NumberOfSegmentsForMostRecentSave
+        {
+            get
+            {
+                return unchecked((Int32)_numberOfSegmentsForMostRecentSave + 1);
+            }
+        }
 
 
 #if !NETCF
@@ -2069,6 +2185,22 @@ namespace Ionic.Zip
         }
 
 
+        internal Stream StreamForDiskNumber(uint diskNumber)
+        {
+            if (diskNumber + 1 == this._diskNumberWithCd ||
+                (diskNumber == 0 && this._diskNumberWithCd == 0))
+            {
+                //return (this.ReadStream as FileStream);
+                return this.ReadStream;
+            }
+            var manager = this._readSegmentsManager ?? this._writeSegmentsManager;
+            if (manager == null)
+            {
+                throw new ZipException("No ZipSegmentedStreamManager was specified.");
+            }
+            return ZipSegmentedStream.ForReading(manager,
+                                                 diskNumber, _diskNumberWithCd);
+        }
 
 
 
@@ -2888,6 +3020,26 @@ namespace Ionic.Zip
             // workitem 9763
             get
             {
+                if (_writestream != null) return _writestream;
+
+                if (_maxOutputSegmentSize != 0)
+                {
+                    if (this._writeSegmentsManager == null)
+                    {
+                        throw new ZipException("No ZipSegmentedStreamManager was specified.");
+                    }
+                    _writestream = ZipSegmentedStream.ForWriting(this._writeSegmentsManager, _maxOutputSegmentSize);
+                    _WriteStreamIsOurs = true;
+                    return _writestream;
+                }
+
+                if (this._writeSegmentsManager != null)
+                {
+                    _writestream = this._writeSegmentsManager.CreateTemporarySegment();
+                    _WriteStreamIsOurs = true;
+                    return _writestream;
+                }
+
                 return _writestream;
             }
             set
@@ -2907,6 +3059,10 @@ namespace Ionic.Zip
         private UInt16 _versionMadeBy;
         private UInt16 _versionNeededToExtract;
         private UInt32 _diskNumberWithCd;
+        private Int32 _maxOutputSegmentSize;
+        private UInt32 _numberOfSegmentsForMostRecentSave;
+        internal ZipSegmentedStreamManager _readSegmentsManager;
+        internal ZipSegmentedStreamManager _writeSegmentsManager;
         private ZipErrorAction _zipErrorAction;
         private bool _disposed;
         //private System.Collections.Generic.List<ZipEntry> _entries;
@@ -2921,6 +3077,7 @@ namespace Ionic.Zip
         private Ionic.Zip.CompressionMethod _compressionMethod = Ionic.Zip.CompressionMethod.Deflate;
         private bool _contentsChanged;
         private bool _hasBeenSaved;
+        internal bool _WriteStreamIsOurs = false;
         internal bool _ReadStreamIsOurs = false;
         private object LOCK = new object();
         internal bool _saveOperationCanceled;

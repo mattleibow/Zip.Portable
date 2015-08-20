@@ -160,7 +160,7 @@ namespace Ionic.Zip
                     ZipOutput.WriteCentralDirectoryStructure
                     (WriteStream,
                      c,
-                     _numberOfSegmentsForMostRecentSave,
+                     (zss != null) ? zss.CurrentSegment : 1,
                      _zip64,
                      Comment,
                      new ZipContainer(this));

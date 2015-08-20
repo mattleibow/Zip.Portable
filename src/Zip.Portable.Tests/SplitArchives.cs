@@ -523,7 +523,7 @@ namespace Ionic.Zip.Tests.Split
             string fodderDir;
 
             string pname = Path.GetFileName(TestUtilities.GenerateUniquePathname("SplitArchives"));
-            string cacheDir = Path.Combine(TopLevelDir, pname);
+            string cacheDir = pname;
             Directory.CreateDirectory(cacheDir);
             fodderDir = Path.Combine(cacheDir, "fodder");
             Directory.CreateDirectory(fodderDir);
@@ -787,6 +787,7 @@ namespace Ionic.Zip.Tests.Split
         }
 
 
+#if INFOZIP_UNZIP_SUPPORTS_SPLIT_ARCHIVES
 
         [TestMethod]
         [Timeout(5 * 60*1000)] // to protect against stuck file locks
@@ -832,6 +833,7 @@ namespace Ionic.Zip.Tests.Split
                                      "Incorrect number of files extracted, trail {0}", k);
             }
         }
+#endif
 
 
         [TestMethod]

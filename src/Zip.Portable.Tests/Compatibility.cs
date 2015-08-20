@@ -832,7 +832,7 @@ namespace Ionic.Zip.Tests
 
 
 
-#if NOT
+#if INFOZIP_UNZIP_SUPPORTS_SPLIT_ARCHIVES
         // warning [256k/256k.zip]: zipfile claims to be last disk of a
         // multi-part archive; attempting to process anyway, assuming
         // all parts have been concatenated together in order.  Expect

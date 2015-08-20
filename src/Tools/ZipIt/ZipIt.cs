@@ -140,7 +140,7 @@ namespace Ionic.Zip.Examples
         // Ask the user what he wants to do
         public static void ZipError(object sender, ZipErrorEventArgs e)
         {
-            Console.WriteLine("Error reading {0}...", "(stream)");
+            Console.WriteLine("Error reading {0}...", e.FileName);
             Console.WriteLine("   Exception: {0}...", e.Exception);
             ZipEntry entry = e.CurrentEntry;
             string response = null;
@@ -330,6 +330,17 @@ namespace Ionic.Zip.Examples
                                 //                                 }
                                 break;
                                 
+                            case "-split":
+                                i++;
+                                if (args.Length <= i) Usage();
+                                if (args[i].EndsWith("K") || args[i].EndsWith("k"))
+                                    zip.MaxOutputSegmentSize = Int32.Parse(args[i].Substring(0, args[i].Length - 1)) * 1024;
+                                else if (args[i].EndsWith("M") || args[i].EndsWith("m"))
+                                    zip.MaxOutputSegmentSize = Int32.Parse(args[i].Substring(0, args[i].Length - 1)) * 1024 * 1024;
+                                else
+                                    zip.MaxOutputSegmentSize = Int32.Parse(args[i]);
+                                break;
+
                             case "-Tw+":
                                 zip.EmitTimesInWindowsFormatWhenSaving = true;
                                 break;

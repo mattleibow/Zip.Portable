@@ -616,6 +616,7 @@ namespace Ionic.Zip.Forms
                     zip1.AlternateEncoding = System.Text.Encoding.GetEncoding(options.Encoding);
                     zip1.AlternateEncodingUsage = options.EncodingUsage;
                     zip1.Comment = options.Comment;
+                    zip1.MaxOutputSegmentSize = options.MaxSegmentSize;
                     zip1.Password = (options.Password != "") ? options.Password : null;
                     zip1.Encryption = options.Encryption;
                     zip1.EmitTimesInWindowsFormatWhenSaving = options.WindowsTimes;

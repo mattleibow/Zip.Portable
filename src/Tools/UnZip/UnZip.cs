@@ -277,7 +277,7 @@ namespace Ionic.Zip.Examples
                                 {
                                     if (header)
                                     {
-                                        System.Console.WriteLine("Zipfile: {0}", "(stream)");
+                                        System.Console.WriteLine("Zipfile: {0}", zip.Name);
                                         if ((zip.Comment != null) && (zip.Comment != ""))
                                             System.Console.WriteLine("Comment: {0}", zip.Comment);
 

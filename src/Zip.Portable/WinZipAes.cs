@@ -824,7 +824,7 @@ namespace Ionic.Zip
         /// <summary>
         ///   Close the stream.
         /// </summary>
-        public override void Close()
+        protected override void Dispose(bool disposing)
         {
             TraceOutput("Close {0:X8}", this.GetHashCode());
 
@@ -838,7 +838,7 @@ namespace Ionic.Zip
                 _totalBytesXferred += _pendingCount;
                 _pendingCount = 0;
             }
-            _s.Close();
+            _s.Dispose();
 
 #if WANT_TRACE
             untransformed.Close();
@@ -847,6 +847,8 @@ namespace Ionic.Zip
             Console.WriteLine("\ntransformed bytestream is in  {0}", traceFileTransformed);
 #endif
             TraceOutput("-------------------------------------------------------");
+
+            base.Dispose(disposing);
         }
 
 
@@ -927,11 +929,8 @@ namespace Ionic.Zip
         {
             lock(_outputLock)
             {
-                int tid = System.Threading.Thread.CurrentThread.GetHashCode();
-                Console.ForegroundColor = (ConsoleColor) (tid % 8 + 8);
-                Console.Write("{0:000} WZACS ", tid);
-                Console.WriteLine(format, varParams);
-                Console.ResetColor();
+                int tid = Environment.CurrentManagedThreadId;
+                System.Diagnostics.Debug.WriteLine("{0:000} WZACS {1}", tid, string.Format(format, varParams));
             }
         }
 

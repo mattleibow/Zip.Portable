@@ -733,7 +733,7 @@ namespace Ionic.Zip.Tests.WinZipAes
                     int entryToRemove = _rnd.Next(TextFiles.Length);
                     TestContext.WriteLine("Removing an entry...: {0}", Path.GetFileName(TextFiles[entryToRemove]));
                     zip2.RemoveEntry(Path.GetFileName(TextFiles[entryToRemove]));
-                    zip2.Save();
+                    zip2.Save(zipFileToCreate, true);
                 }
 
                 // Verify the files are in the zip
@@ -870,7 +870,7 @@ namespace Ionic.Zip.Tests.WinZipAes
                                              baseFileName);
 
             TestContext.WriteLine("Reading zip file: '{0}'", fqFileName);
-            using (ZipFile zip = ZipFile.Read(fqFileName))
+            using (ZipFile zip = ZipFileExtensions.Read(fqFileName))
             {
                 zip.Password = password;
                 foreach (ZipEntry e in zip)
@@ -954,7 +954,7 @@ namespace Ionic.Zip.Tests.WinZipAes
                     zip[j].Password = password;
                     zip[j].CompressionMethod = 0;
                 }
-                zip.Save(); // this should succeed
+                zip.Save(zipFileToCreate, true); // this should succeed
             }
 
         }

@@ -828,6 +828,71 @@ namespace Ionic.Zip.Tests
 
 
 
+        [TestMethod]
+        public void InfoZip_Zip_Split()
+        {
+            if (!InfoZipIsPresent)
+                throw new Exception("InfoZip is not present");
+
+            string dirToZip = "dirToZip";
+            int numFiles = _rnd.Next(17) + 12;
+            string[] filesToZip;
+            string msg;
+            Dictionary<string, byte[]> checksums;
+            int[] segmentSizes = { 256, 512, 1024, 4096, 8192 }; // in kb
+
+            _txrx = TestUtilities.StartProgressMonitor("InfoZip-compat",
+                                                       "InfoZip split archives",
+                                                       "Creating "+numFiles+" files");
+            _txrx.Send("pb 0 max 2");
+            _txrx.Send("pb 1 max " + numFiles);
+
+            var update = new Action<int,int,Int64>( (x,y,z) => {
+                    switch (x)
+                    {
+                        case 0:
+                        break;
+                        case 1:
+                        break;
+                        case 2:
+                        _txrx.Send("pb 1 step");
+                        msg = String.Format("status created {0}/{1} files",
+                                            y+1,
+                                            ((int)z));
+                        _txrx.Send(msg);
+                        break;
+                    }
+                });
+
+            CreateLargeFilesWithChecksums(dirToZip, numFiles, update,
+                                          out filesToZip, out checksums);
+
+            _txrx.Send("pb 0 step");
+            _txrx.Send("pb 1 max " + segmentSizes.Length);
+            _txrx.Send("pb 1 value 0");
+            for (int i=0; i < segmentSizes.Length; i++)
+            {
+                _txrx.Send("status zip with " + segmentSizes[i] + "k segments");
+                string trialDir = segmentSizes[i] + "k";
+                Directory.CreateDirectory(trialDir);
+                string zipFileToCreate = Path.Combine(trialDir, trialDir + ".zip");
+                // Create the zip archive via Infozip.exe
+                this.Exec(infoZip, String.Format("{0} -r -s {1}k -sv {2}",
+                                                 zipFileToCreate,
+                                                 segmentSizes[i],
+                                                 dirToZip));
+
+                string extractDir = segmentSizes[i] + "k.extract";
+                using (var zip = ZipFileExtensions.Read(zipFileToCreate))
+                {
+                    zip.ExtractAll(extractDir);
+                }
+
+                VerifyChecksums(Path.Combine(extractDir, dirToZip), filesToZip, checksums);
+
+                _txrx.Send("pb 1 step");
+            }
+        }
 
 
 

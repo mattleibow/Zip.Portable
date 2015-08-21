@@ -213,6 +213,23 @@ namespace Ionic.Zip.Tests.Error
         }
 
 
+        [TestMethod]
+        public void Error_EmptySplitZip()
+        {
+            string zipFileToCreate = "zftc.zip";
+            using (var zip = new ZipFile())
+            {
+                zip.MaxOutputSegmentSize = 1024*1024;
+                zip.Save(zipFileToCreate);
+            }
+
+            string extractDir = "extract";
+            using (var zip = ZipFileExtensions.Read(zipFileToCreate))
+            {
+                zip.ExtractAll(extractDir);
+                Assert.IsTrue(zip.Entries.Count == 0);
+            }
+        }
 
 
 

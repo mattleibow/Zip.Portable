@@ -3033,13 +3033,6 @@ namespace Ionic.Zip
                     return _writestream;
                 }
 
-                if (this._writeSegmentsManager != null)
-                {
-                    _writestream = this._writeSegmentsManager.CreateTemporarySegment();
-                    _WriteStreamIsOurs = true;
-                    return _writestream;
-                }
-
                 return _writestream;
             }
             set

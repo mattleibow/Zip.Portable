@@ -189,7 +189,6 @@ namespace Ionic.Zip
                                                           fileOrDirectoryName));
         }
 
-
         /// <summary>
         ///   Adds a File to a Zip file archive.
         /// </summary>
@@ -1224,7 +1223,7 @@ namespace Ionic.Zip
         }
     }
 
-    enum AddOrUpdateAction
+    internal enum AddOrUpdateAction
     {
         AddOnly = 0,
         AddOrUpdate

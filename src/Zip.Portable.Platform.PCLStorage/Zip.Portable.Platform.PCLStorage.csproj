@@ -36,7 +36,7 @@
   <PropertyGroup Condition=" '$(SignAssembly)' == 'true' ">
     <DefineConstants>$(DefineConstants);SIGNED</DefineConstants>
     <OutputPath>$(OutputPath)Signed\</OutputPath>
-	<AssemblyOriginatorKeyFile>..\Zlib.Portable.snk</AssemblyOriginatorKeyFile>
+    <AssemblyOriginatorKeyFile>..\Zlib.Portable.snk</AssemblyOriginatorKeyFile>
     <DocumentationFile>$(OutputPath)$(AssemblyName).xml</DocumentationFile>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(SignAssembly)' != 'true' ">
@@ -60,6 +60,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AsyncHelpers.cs" />
+    <Compile Include="FileSystemZip.cs" />
     <Compile Include="FileSystemZipSegmentedStreamManager.cs" />
     <Compile Include="Extensions.ZipEntry.cs" />
     <Compile Include="Extensions.ZipEntry.Extract.cs" />

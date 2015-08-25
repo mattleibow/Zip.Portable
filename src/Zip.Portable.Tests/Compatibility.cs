@@ -426,7 +426,7 @@ namespace Ionic.Zip.Tests
                                  "Incorrect number of entries in the zip file.");
 
             // unzip
-            using (ZipFile zip1 = ZipFileExtensions.Read(zipFileToCreate))
+            using (ZipFile zip1 = FileSystemZip.Read(zipFileToCreate))
             {
                 zip1.ExtractAll(extractDir);
             }
@@ -518,7 +518,7 @@ namespace Ionic.Zip.Tests
                 ListFiles(filesToZip, "selected Files");
 
                 IEnumerable<String> selection = null;
-                using (var zip = ZipFileExtensions.Read(zipFileToCreate))
+                using (var zip = FileSystemZip.Read(zipFileToCreate))
                 {
                     selection = from e in zip.Entries select e.FileName;
                 }
@@ -540,7 +540,7 @@ namespace Ionic.Zip.Tests
                                  "Incorrect number of entries in the zip file.");
 
             // unzip
-            using (ZipFile zip1 = ZipFileExtensions.Read(zipFileToCreate))
+            using (ZipFile zip1 = FileSystemZip.Read(zipFileToCreate))
             {
                 zip1.ExtractAll(extractDir);
             }
@@ -574,7 +574,7 @@ namespace Ionic.Zip.Tests
                                  "Incorrect number of entries in the zip file.");
 
             // unzip
-            using (ZipFile zip1 = ZipFileExtensions.Read(zipFileToCreate))
+            using (ZipFile zip1 = FileSystemZip.Read(zipFileToCreate))
             {
                 zip1.ExtractAll(extractDir);
             }
@@ -767,7 +767,7 @@ namespace Ionic.Zip.Tests
                                      "Incorrect number of entries in the zip file.");
 
                 // extract
-                using (var zip = ZipFileExtensions.Read(zipFileToCreate))
+                using (var zip = FileSystemZip.Read(zipFileToCreate))
                 {
                     zip.ExtractAll(extractDir);
                 }
@@ -815,7 +815,7 @@ namespace Ionic.Zip.Tests
                                  "Incorrect number of entries in the zip file.");
 
             // extract
-            using (var zip = ZipFileExtensions.Read(zipFileToCreate))
+            using (var zip = FileSystemZip.Read(zipFileToCreate))
             {
                 zip.Password = password;
                 zip.ExtractAll(extractDir);
@@ -883,7 +883,7 @@ namespace Ionic.Zip.Tests
                                                  dirToZip));
 
                 string extractDir = segmentSizes[i] + "k.extract";
-                using (var zip = ZipFileExtensions.Read(zipFileToCreate))
+                using (var zip = FileSystemZip.Read(zipFileToCreate))
                 {
                     zip.ExtractAll(extractDir);
                 }
@@ -1128,7 +1128,7 @@ namespace Ionic.Zip.Tests
             TestContext.WriteLine("");
             TestContext.WriteLine("Extracting that zip with DotNetZip...");
             string extractDir = "extract";
-            using (var zip = ZipFileExtensions.Read(zipFileToCreate))
+            using (var zip = FileSystemZip.Read(zipFileToCreate))
             {
                 zip.ExtractAll(extractDir);
             }
@@ -1164,7 +1164,7 @@ namespace Ionic.Zip.Tests
                                  "Incorrect number of entries in the zip file.");
             
             // extract
-            using (var zip = ZipFileExtensions.Read(zipFileToCreate))
+            using (var zip = FileSystemZip.Read(zipFileToCreate))
             {
                 zip.ExtractAll(extractDir);
             }
@@ -1203,7 +1203,7 @@ namespace Ionic.Zip.Tests
 
             // unzip
             //Directory.SetCurrentDirectory(TopLevelDir);
-            using (ZipFile zip1 = ZipFileExtensions.Read(zipFileToCreate))
+            using (ZipFile zip1 = FileSystemZip.Read(zipFileToCreate))
             {
                 zip1.ExtractAll(extractDir);
             }
@@ -1404,7 +1404,7 @@ namespace Ionic.Zip.Tests
 
             // unzip with DotNetZip
             //Directory.SetCurrentDirectory(TopLevelDir);
-            using (ZipFile zip1 = ZipFileExtensions.Read(zipfile))
+            using (ZipFile zip1 = FileSystemZip.Read(zipfile))
             {
                 zip1.Password = password;
                 zip1.ExtractAll(extractDir);
@@ -1516,7 +1516,7 @@ namespace Ionic.Zip.Tests
             {
                 // unzip with DotNetZip
                 string extractDir = "extract";
-                using (ZipFile zip1 = ZipFileExtensions.Read(zipFileToCreate))
+                using (ZipFile zip1 = FileSystemZip.Read(zipFileToCreate))
                 {
                     zip1.ExtractAll(extractDir);
                 }
@@ -2056,7 +2056,7 @@ namespace Ionic.Zip.Tests
             string fqFileName = Path.Combine(SourceDir, TestUtilities.GetBinDir("Zip.Portable.Tests"), "zips", fileName);
 
             TestContext.WriteLine("Reading zip file: '{0}'", fqFileName);
-            using (ZipFile zip = ZipFileExtensions.Read(fqFileName))
+            using (ZipFile zip = FileSystemZip.Read(fqFileName))
             {
                 string extractDir = "extract";
                 foreach (ZipEntry e in zip)

@@ -5,7 +5,7 @@ using System.Text.RegularExpressions;
 
 namespace Ionic.Zip
 {
-    public class FileSystemZipSegmentedStreamManager : ZipSegmentedStreamManager
+    internal class FileSystemZipSegmentedStreamManager : ZipSegmentedStreamManager
     {
         private readonly string _baseName;
         private readonly string _fullBaseName;
@@ -26,7 +26,7 @@ namespace Ionic.Zip
             }
         }
 
-        internal string TemporaryName
+        public string TemporaryName
         {
             get { return _temporaryName; }
         }

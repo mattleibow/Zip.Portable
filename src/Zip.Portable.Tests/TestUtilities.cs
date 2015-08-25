@@ -443,7 +443,7 @@ namespace Ionic.Zip.Tests.Utilities
         internal static int CountEntries(string zipfile)
         {
             int entries = 0;
-            using (ZipFile zip = ZipFileExtensions.Read(zipfile))
+            using (ZipFile zip = FileSystemZip.Read(zipfile))
             {
                 foreach (ZipEntry e in zip)
                     if (!e.IsDirectory) entries++;

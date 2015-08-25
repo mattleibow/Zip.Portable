@@ -90,7 +90,7 @@ namespace Ionic.Zip
         /// End Sub
         /// </code>
         /// </example>
-        public static ZipOutputStream Create(String fileName)
+        internal static ZipOutputStream Create(String fileName)
         {
             string fullPath = ZipFileExtensions.GetFullPath(fileName);
 

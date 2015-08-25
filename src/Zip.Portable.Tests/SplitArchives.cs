@@ -473,7 +473,7 @@ namespace Ionic.Zip.Tests.Split
             while (Directory.Exists(extractDir + c)) c++;
             extractDir += c;
 
-            using (ZipFile zip2 = ZipFileExtensions.Read(zipFileToCreate, options))
+            using (ZipFile zip2 = FileSystemZip.Read(zipFileToCreate, options))
             {
                 _numFilesToExtract = zip2.Entries.Count;
                 _numExtracted= 1;
@@ -577,7 +577,7 @@ namespace Ionic.Zip.Tests.Split
 
                     TestContext.WriteLine("");
                     TestContext.WriteLine("Re-saving...");
-                    using (var zip2 = ZipFileExtensions.Read(zipFile1))
+                    using (var zip2 = FileSystemZip.Read(zipFile1))
                     {
                         if (m==0)
                             zip2.MaxOutputSegmentSize = segSizes[k] * 1024;
@@ -591,7 +591,7 @@ namespace Ionic.Zip.Tests.Split
                     TestContext.WriteLine("Extracting...");
                     string extractDir = Path.Combine(trialDir,"extract");
                     Directory.CreateDirectory(extractDir);
-                    using (var zip3 = ZipFileExtensions.Read(zipFile2))
+                    using (var zip3 = FileSystemZip.Read(zipFile2))
                     {
                         foreach (var e in zip3)
                         {
@@ -638,7 +638,7 @@ namespace Ionic.Zip.Tests.Split
 
                 TestContext.WriteLine("");
                 TestContext.WriteLine("Re-saving...");
-                using (var zip2 = ZipFileExtensions.Read(zipFile1))
+                using (var zip2 = FileSystemZip.Read(zipFile1))
                 {
                     zip2.MaxOutputSegmentSize = segSizes[k] * 1024;
                     zip2.Save(zipFile2);
@@ -699,7 +699,7 @@ namespace Ionic.Zip.Tests.Split
 
                 TestContext.WriteLine("");
                 TestContext.WriteLine("Re-saving...");
-                using (var zip2 = ZipFileExtensions.Read(zipFile1))
+                using (var zip2 = FileSystemZip.Read(zipFile1))
                 {
                     zip2.MaxOutputSegmentSize = segSizes[k] * 1024;
                     zip2.Save(zipFile2);
@@ -715,7 +715,7 @@ namespace Ionic.Zip.Tests.Split
 
                 TestContext.WriteLine("");
                 TestContext.WriteLine("Re-saving again...");
-                using (var zip3 = ZipFileExtensions.Read(zipFile2))
+                using (var zip3 = FileSystemZip.Read(zipFile2))
                 {
                     zip3.MaxOutputSegmentSize = segSizes[k] * 1024;
                     zip3.Save(zipFile3);
@@ -725,7 +725,7 @@ namespace Ionic.Zip.Tests.Split
                 TestContext.WriteLine("Extracting...");
                 string extractDir = Path.Combine(trialDir, "extract");
                 Directory.CreateDirectory(extractDir);
-                using (var zip4 = ZipFileExtensions.Read(zipFile3))
+                using (var zip4 = FileSystemZip.Read(zipFile3))
                 {
                     foreach (var e in zip4)
                     {
@@ -880,7 +880,7 @@ namespace Ionic.Zip.Tests.Split
                 TestContext.WriteLine("Extracting...");
                 string extractDir = Path.Combine(trialDir,"extract");
                 Directory.CreateDirectory(extractDir);
-                using (var zip1 = ZipFileExtensions.Read(zipFile1))
+                using (var zip1 = FileSystemZip.Read(zipFile1))
                 {
                     foreach (var e in zip1)
                     {
@@ -931,7 +931,7 @@ namespace Ionic.Zip.Tests.Split
                 TestContext.WriteLine("Extracting...");
                 string extractDir = Path.Combine(trialDir,"extract");
                 Directory.CreateDirectory(extractDir);
-                using (var zip1 = ZipFileExtensions.Read(zipFile1))
+                using (var zip1 = FileSystemZip.Read(zipFile1))
                 {
                     foreach (var e in zip1)
                     {
@@ -1021,12 +1021,12 @@ namespace Ionic.Zip.Tests.Split
 
 
                 // Update those files in the zip file
-                using (ZipFile zip2 = ZipFileExtensions.Read(zipFileToCreate))
+                using (ZipFile zip2 = FileSystemZip.Read(zipFileToCreate))
                 {
                     zip2.UpdateDirectory(subdirB, "");
                     zip2.MaxOutputSegmentSize = maxSegSize;
                     zip2.Comment = "UpdateTests::UpdateZip_UpdateItem(): This archive has been updated.";
-                    zip2.Save(zipFileToCreate, true);
+                    zip2.Save(zipFileToCreate);
                     numSegs = zip2.NumberOfSegmentsForMostRecentSave;
                 }
 
@@ -1041,7 +1041,7 @@ namespace Ionic.Zip.Tests.Split
 
 
                 // now extract the files and verify their contents
-                using (ZipFile zip3 = ZipFileExtensions.Read(zipFileToCreate))
+                using (ZipFile zip3 = FileSystemZip.Read(zipFileToCreate))
                 {
                     foreach (string s in zip3.EntryFileNames)
                     {

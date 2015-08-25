@@ -7,7 +7,7 @@ namespace Ionic.Zip
 {
     public static partial class ZipEntryExtensions
     {
-        public static IFolder CreateDirectory(string dirName, bool throwIfError)
+        internal static IFolder CreateDirectory(string dirName, bool throwIfError)
         {
             var dir = CreateDirectory(dirName);
             if (dir == null && throwIfError)
@@ -17,7 +17,7 @@ namespace Ionic.Zip
             return dir;
         }
 
-        public static IFolder CreateDirectory(string dirName)
+        internal static IFolder CreateDirectory(string dirName)
         {
             // remove any trailing slashes for the file system
             dirName = dirName.TrimEnd('/', '\\');

@@ -95,7 +95,7 @@ namespace Ionic.Zip.Tests.Password
 
                     TestContext.WriteLine("\n---------------------verifying checksums...");
 
-                    using (ZipFile zip = ZipFileExtensions.Read(ZipFileToCreate))
+                    using (ZipFile zip = FileSystemZip.Read(ZipFileToCreate))
                     {
                         foreach (ZipEntry e in zip)
                             TestContext.WriteLine("found entry: {0}", e.FileName);
@@ -149,7 +149,7 @@ namespace Ionic.Zip.Tests.Password
                     zip1.Save(zipFileToCreate);
                 }
 
-                var r = ZipFileExtensions.CheckZipPassword(zipFileToCreate, passwords[j]);
+                var r = FileSystemZip.CheckZipPassword(zipFileToCreate, passwords[j]);
                 Assert.IsTrue(r, "Bad password in round {0}", j);
             }
         }
@@ -261,7 +261,7 @@ namespace Ionic.Zip.Tests.Password
             string fileName = _GetNameForZipContentFile("wi13668-bad-pwd-472713.zip");
             string password = "472713";
             TestContext.WriteLine("Reading zip file: '{0}'", fileName);
-            using (ZipFile zip = ZipFileExtensions.Read(fileName))
+            using (ZipFile zip = FileSystemZip.Read(fileName))
             {
                 foreach (ZipEntry e in zip)
                 {
@@ -322,7 +322,7 @@ namespace Ionic.Zip.Tests.Password
             Assert.AreEqual<int>(TestUtilities.CountEntries(ZipFileToCreate), filenames.Length,
                     "The zip file created has the wrong number of entries.");
 
-            using (ZipFile zip = ZipFileExtensions.Read(ZipFileToCreate))
+            using (ZipFile zip = FileSystemZip.Read(ZipFileToCreate))
             {
                 for (j = 0; j < filenames.Length; j++)
                 {
@@ -369,7 +369,7 @@ namespace Ionic.Zip.Tests.Password
             }
 
             // now try to extract
-            using (ZipFile zip = ZipFileExtensions.Read(ZipFileToCreate))
+            using (ZipFile zip = FileSystemZip.Read(ZipFileToCreate))
             {
                 for (j = 0; j < filenames.Length; j++)
                     zip[Path.GetFileName(filenames[j])].ExtractWithPassword("unpack", ExtractExistingFileAction.OverwriteSilently, "WrongPassword");
@@ -408,7 +408,7 @@ namespace Ionic.Zip.Tests.Password
             string fileX = Path.Combine(SourceDir, "Tools", TestUtilities.GetBinDir("Unzip"), "unzip.exe");
             string checksumX = TestUtilities.GetCheckSumString(fileX);
             string password = TestUtilities.GenerateRandomPassword() + "!";
-            using (ZipFile zip = ZipFileExtensions.Read(zipFileToCreate))
+            using (ZipFile zip = FileSystemZip.Read(zipFileToCreate))
             {
                 zip.Password = password;
                 zip.AddFile(fileX, "");
@@ -420,7 +420,7 @@ namespace Ionic.Zip.Tests.Password
 
             string unpackDir = "unpack";
             string newpath, chk, baseName;
-            using (ZipFile zip = ZipFileExtensions.Read(zipFileToCreate))
+            using (ZipFile zip = FileSystemZip.Read(zipFileToCreate))
             {
                 for (j = 0; j < filenames.Length; j++)
                 {
@@ -478,7 +478,7 @@ namespace Ionic.Zip.Tests.Password
             {
                 try
                 {
-                    using (var zip = ZipFileExtensions.Read(zipFileToCreate))
+                    using (var zip = FileSystemZip.Read(zipFileToCreate))
                     {
                         if (i==0)
                         {

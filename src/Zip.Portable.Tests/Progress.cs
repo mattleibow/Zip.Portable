@@ -105,7 +105,7 @@ namespace Ionic.Zip.Tests
                     StatusMessageWriter = new StringWriter(),
                     ReadProgress = ReadProgress1
             };
-            using (ZipFile zip = ZipFileExtensions.Read(zipFileToCreate, options))
+            using (ZipFile zip = FileSystemZip.Read(zipFileToCreate, options))
             {
                 // this should be fine
                 zip.RemoveEntry(zip[1]);

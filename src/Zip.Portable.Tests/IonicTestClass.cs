@@ -401,7 +401,7 @@ namespace Ionic.Zip.Tests.Utilities
                 while (Directory.Exists(extractDir + c)) c++;
                 extractDir += c;
 
-                using (ZipFile zip2 = ZipFileExtensions.Read(zipfile, options))
+                using (ZipFile zip2 = FileSystemZip.Read(zipfile, options))
                 {
                     zip2.Password = password;
                     if (extractProgress != null)

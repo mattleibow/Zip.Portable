@@ -171,7 +171,7 @@ namespace Ionic.Zip.Tests.Streams
                     };
 
                     // now extract the files and verify their contents
-                    using (ZipFile zip2 = ZipFileExtensions.Read(zipFileToCreate))
+                    using (ZipFile zip2 = FileSystemZip.Read(zipFileToCreate))
                     {
                         for (i = 0; i < 3; i++)
                         {
@@ -957,7 +957,7 @@ namespace Ionic.Zip.Tests.Streams
                 return new ZipOutputStream(raw);
             }
 
-            return ZipOutputStreamExtensions.Create(zipFileToCreate);
+            return FileSystemZip.CreateOutputStream(zipFileToCreate);
         }
 
 
@@ -1106,7 +1106,7 @@ namespace Ionic.Zip.Tests.Streams
                     TestContext.WriteLine("Updating zipfile {0}", zipFileToCreate);
                 }
 
-                using (var zip = j == 0 ? new ZipFile() : ZipFileExtensions.Read(zipFileToCreate))
+                using (var zip = j == 0 ? new ZipFile() : FileSystemZip.Read(zipFileToCreate))
                 {
                     foreach (var file in files)
                     {
@@ -1330,7 +1330,7 @@ namespace Ionic.Zip.Tests.Streams
 
                             sw.Reset();
                             sw.Start();
-                            using (var output = ZipOutputStreamExtensions.Create(zipFileToCreate))
+                            using (var output = FileSystemZip.CreateOutputStream(zipFileToCreate))
                             {
                                 if (k == 0)
                                     output.ParallelDeflateThreshold = -1L;   // never
@@ -1818,7 +1818,7 @@ namespace Ionic.Zip.Tests.Streams
                                     return new ZipInputStream(raw);
                                 }
 
-                                return ZipInputStreamExtensions.Create(zipFileToCreate);
+                                return FileSystemZip.CreateInputStream(zipFileToCreate);
                             }))();
 
                     using (input)
@@ -1911,7 +1911,7 @@ namespace Ionic.Zip.Tests.Streams
 
             string extractDir = "extract";
             // read/extract the generated zip
-            using (var zip = ZipFileExtensions.Read(zipFileToCreate))
+            using (var zip = FileSystemZip.Read(zipFileToCreate))
             {
                 foreach (var e in zip)
                 {

@@ -38,7 +38,7 @@ namespace Ionic.Zip
         ///
         /// <returns>The instance read from the zip archive.</returns>
         ///
-        public static ZipFile Read(string fileName)
+        internal static ZipFile Read(string fileName)
         {
             return Read(fileName, new ReadOptions());
         }
@@ -62,7 +62,7 @@ namespace Ionic.Zip
         ///
         /// <returns>The instance read from the zip archive.</returns>
         ///
-        public static ZipFile Read(string fileName, System.Text.Encoding encoding)
+        internal static ZipFile Read(string fileName, System.Text.Encoding encoding)
         {
             return Read(fileName, new ReadOptions { Encoding = encoding });
         }
@@ -87,7 +87,7 @@ namespace Ionic.Zip
         ///
         /// <returns>The instance read from the zip archive.</returns>
         ///
-        public static ZipFile Read(string fileName, TextWriter statusMessageWriter)
+        internal static ZipFile Read(string fileName, TextWriter statusMessageWriter)
         {
             return Read(fileName, new ReadOptions { StatusMessageWriter = statusMessageWriter });
         }
@@ -150,7 +150,7 @@ namespace Ionic.Zip
         /// The Encoding is used as the default alternate encoding for entries with
         /// filenames or comments that cannot be encoded with the IBM437 code page.
         /// </param>
-        public static ZipFile Read(string fileName, TextWriter statusMessageWriter, System.Text.Encoding encoding)
+        internal static ZipFile Read(string fileName, TextWriter statusMessageWriter, System.Text.Encoding encoding)
         {
             return Read(fileName, new ReadOptions { Encoding = encoding, StatusMessageWriter = statusMessageWriter });
         }
@@ -308,7 +308,7 @@ namespace Ionic.Zip
         ///
         /// <seealso cref="ZipFile.Read(Stream, ReadOptions)"/>
         ///
-        public static ZipFile Read(string fileName, ReadOptions options)
+        internal static ZipFile Read(string fileName, ReadOptions options)
         {
             Stream stream = null;
             try
@@ -352,7 +352,7 @@ namespace Ionic.Zip
         ///
         /// <param name="fileName">The file to check.</param>
         /// <returns>true if the file appears to be a zip file.</returns>
-        public static bool IsZipFile(string fileName)
+        internal static bool IsZipFile(string fileName)
         {
             return IsZipFile(fileName, false);
         }
@@ -393,7 +393,7 @@ namespace Ionic.Zip
         /// <param name="fileName">The zip file to check.</param>
         /// <param name="testExtract">true if the caller wants to extract each entry.</param>
         /// <returns>true if the file contains a valid zip file.</returns>
-        public static bool IsZipFile(string fileName, bool testExtract)
+        internal static bool IsZipFile(string fileName, bool testExtract)
         {
             bool result = false;
             try

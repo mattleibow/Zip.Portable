@@ -407,7 +407,7 @@ namespace Ionic.Zip.Tests.LongRunning
 
             _pb1Set = _pb2Set = false;
             maxBytesXferred = 0;
-            using (ZipFile zip2 = ZipFileExtensions.Read(zipFileToCreate))
+            using (ZipFile zip2 = FileSystemZip.Read(zipFileToCreate))
             {
                 _numFilesToExtract = zip2.Entries.Count;
                 zip2.ExtractProgress += LF_ExtractProgress;

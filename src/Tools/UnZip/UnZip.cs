@@ -208,7 +208,7 @@ namespace Ionic.Zip.Examples
             {
                 if (action == ActionDesired.Repair)
                 {
-                    ZipFileExtensions.FixZipDirectory(zipfile);
+                    FileSystemZip.FixZipDirectory(zipfile);
                 }
                 else
                 {
@@ -217,7 +217,7 @@ namespace Ionic.Zip.Examples
                                 ? System.Text.Encoding.GetEncoding(codePage)
                                 : null
                     };
-                    using (ZipFile zip =  ZipFileExtensions.Read(zipfile, options))
+                    using (ZipFile zip = FileSystemZip.Read(zipfile, options))
                     {
 
                         if (entriesToExtract.Count > 0)

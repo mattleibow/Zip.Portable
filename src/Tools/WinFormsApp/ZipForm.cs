@@ -1080,7 +1080,7 @@ namespace Ionic.Zip.Forms
                             : System.Text.Encoding.GetEncoding("IBM437")
                     };
 
-                using (ZipFile zip = ZipFileExtensions.Read(zipFile, readOptions))
+                using (ZipFile zip = FileSystemZip.Read(zipFile, readOptions))
                 {
                     foreach (ZipEntry entry in zip.EntriesSorted)
                     {
@@ -1263,7 +1263,7 @@ namespace Ionic.Zip.Forms
 
             try
             {
-                using (var zip = ZipFileExtensions.Read(_DisplayedZip))
+                using (var zip = FileSystemZip.Read(_DisplayedZip))
                 {
                     System.Collections.Generic.ICollection<ZipEntry> collection = null;
                     collection = zip.Entries;

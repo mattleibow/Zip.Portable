@@ -40,7 +40,7 @@ namespace Ionic.Zip
         ///
         /// <seealso cref="FixZipDirectory(string)"/>
         /// <seealso cref="CheckZip(string,bool,System.IO.TextWriter)"/>
-        public static bool CheckZip(string zipFileName)
+        internal static bool CheckZip(string zipFileName)
         {
             return CheckZip(zipFileName, false, null);
         }
@@ -85,7 +85,7 @@ namespace Ionic.Zip
         ///
         /// <seealso cref="CheckZip(string)"/>
         /// <seealso cref="FixZipDirectory(string)"/>
-        public static bool CheckZip(string zipFileName, bool fixIfNecessary, TextWriter writer)
+        internal static bool CheckZip(string zipFileName, bool fixIfNecessary, TextWriter writer)
         {
             bool isOk = true;
 
@@ -154,11 +154,11 @@ namespace Ionic.Zip
         ///
         /// <seealso cref="CheckZip(string)"/>
         /// <seealso cref="CheckZip(string,bool,System.IO.TextWriter)"/>
-        public static void FixZipDirectory(string zipFileName)
+        internal static void FixZipDirectory(string zipFileName)
         {
             using (var zip = ZipFileExtensions.Read(zipFileName, new ReadOptions { FullScan = true }))
             {
-                zip.Save(zipFileName, true);
+                zip.Save(zipFileName);
             }
         }
 
@@ -187,7 +187,7 @@ namespace Ionic.Zip
         /// <param name="password">The password to check.</param>
         ///
         /// <returns>a bool indicating whether the password matches.</returns>
-        public static bool CheckZipPassword(string zipFileName, string password)
+        internal static bool CheckZipPassword(string zipFileName, string password)
         {
             string fullPath = GetFullPath(zipFileName);
 

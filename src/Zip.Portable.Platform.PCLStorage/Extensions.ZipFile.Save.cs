@@ -85,11 +85,6 @@ namespace Ionic.Zip
         /// </example>
         public static void Save(this ZipFile zipFile, String fileName)
         {
-            Save(zipFile, fileName, false);
-        }
-
-        public static void Save(this ZipFile zipFile, String fileName, bool overwriteExisting)
-        {
             if (fileName == null)
             {
                 throw new ArgumentNullException("fileName");

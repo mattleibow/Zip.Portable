@@ -109,7 +109,7 @@ namespace Ionic.Zip.Tests.Unicode
                     var options = new ReadOptions {
                         Encoding = (j == 0) ? System.Text.Encoding.UTF8 : ZipFile.DefaultEncoding
                     };
-                    using (ZipFile zip2 = ZipFileExtensions.Read(zipFileToCreate, options))
+                    using (ZipFile zip2 = FileSystemZip.Read(zipFileToCreate, options))
                     {
                         foreach (ZipEntry e in zip2)
                         {
@@ -318,7 +318,7 @@ namespace Ionic.Zip.Tests.Unicode
             var options = new ReadOptions {
                 Encoding = System.Text.Encoding.UTF8
             };
-            using (ZipFile zip2 = ZipFileExtensions.Read(zipFileToCreate, options))
+            using (ZipFile zip2 = FileSystemZip.Read(zipFileToCreate, options))
             {
                 comment2 = zip2.Comment;
             }
@@ -371,14 +371,14 @@ namespace Ionic.Zip.Tests.Unicode
                 }
 
                 TestContext.WriteLine("====  update the zip");
-                using (ZipFile zip2 = ZipFileExtensions.Read(zipFileToCreate))
+                using (ZipFile zip2 = FileSystemZip.Read(zipFileToCreate))
                 {
                     zip2.AddDirectory(subdir);
                     zip2.Save(zipFileToCreate);
                 }
 
                 TestContext.WriteLine("==== check the original file in the zip");
-                using (ZipFile zip3 = ZipFileExtensions.Read(zipFileToCreate))
+                using (ZipFile zip3 = FileSystemZip.Read(zipFileToCreate))
                 {
                     var e = zip3[specialEntryName];
                     Assert.IsTrue(e!=null, "Entry not found");
@@ -398,7 +398,7 @@ namespace Ionic.Zip.Tests.Unicode
             // names that were added.  They will match if unicode
             // was used (j!=1) or if the filename used was the first
             // in the formats list (k==0).
-            using (ZipFile zip2 = ZipFileExtensions.Read(filename))
+            using (ZipFile zip2 = FileSystemZip.Read(filename))
             {
                 foreach (ZipEntry e in zip2)
                 {
@@ -514,7 +514,7 @@ namespace Ionic.Zip.Tests.Unicode
                         var options = new ReadOptions {
                             Encoding = System.Text.Encoding.GetEncoding(trials[k].codepage)
                         };
-                        using (ZipFile zip2 = ZipFileExtensions.Read(zipFileToCreate, options))
+                        using (ZipFile zip2 = FileSystemZip.Read(zipFileToCreate, options))
                         {
                             foreach (ZipEntry e in zip2)
                             {
@@ -584,7 +584,7 @@ namespace Ionic.Zip.Tests.Unicode
 
                 // pass 2 - read and update it
                 TestContext.WriteLine("Update zip...");
-                using (var zip0 = ZipFileExtensions.Read(zipFileToCreate, options))
+                using (var zip0 = FileSystemZip.Read(zipFileToCreate, options))
                 {
                     foreach (var e in zip0)
                     {
@@ -595,12 +595,12 @@ namespace Ionic.Zip.Tests.Unicode
                     }
                     zip0.AddEntry(filenames[1], "This is more content..." + System.DateTime.UtcNow.ToString("G"));
                     TestContext.WriteLine("adding file: {0}", filenames[1]);
-                    zip0.Save(zipFileToCreate, true);
+                    zip0.Save(zipFileToCreate);
                 }
 
                 // pass 3 - verify the filenames, again
                 TestContext.WriteLine("Verify zip...");
-                using (var zip0 = ZipFileExtensions.Read(zipFileToCreate, options))
+                using (var zip0 = FileSystemZip.Read(zipFileToCreate, options))
                 {
                     foreach (string f in filenames)
                     {
@@ -662,7 +662,7 @@ namespace Ionic.Zip.Tests.Unicode
 
                     string extractDir = String.Format("extract-{0}-{1:D3}", j, n);
                     int dirCount = 0;
-                    using (ZipFile zip2 = ZipFileExtensions.Read(zipFileToCreate))
+                    using (ZipFile zip2 = FileSystemZip.Read(zipFileToCreate))
                     {
                         foreach (var e in zip2)
                         {

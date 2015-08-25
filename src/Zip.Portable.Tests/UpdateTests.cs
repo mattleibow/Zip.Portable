@@ -92,7 +92,7 @@ namespace Ionic.Zip.Tests.Update
             TestUtilities.CreateAndFillFileText(filename, _rnd.Next(12000) + 5000);
             entries++;
 
-            using (ZipFile zip = ZipFileExtensions.Read(zipFileToCreate))
+            using (ZipFile zip = FileSystemZip.Read(zipFileToCreate))
             {
                 zip.AddDirectory(subdir);
                 zip.Comment = newComment;
@@ -103,7 +103,7 @@ namespace Ionic.Zip.Tests.Update
             Assert.AreEqual<int>(TestUtilities.CountEntries(zipFileToCreate), entries,
                     "The overwritten Zip file has the wrong number of entries.");
 
-            using (ZipFile readzip = ZipFileExtensions.Read(zipFileToCreate))
+            using (ZipFile readzip = FileSystemZip.Read(zipFileToCreate))
             {
                 Assert.AreEqual<string>(newComment,
                                         readzip.Comment,
@@ -152,7 +152,7 @@ namespace Ionic.Zip.Tests.Update
 
             byte[] buffer = new byte[_rnd.Next(10000) + 10000];
             _rnd.NextBytes(buffer);
-            using (var zip = ZipFileExtensions.Read(zipFileToCreate))
+            using (var zip = FileSystemZip.Read(zipFileToCreate))
             {
                 // modify the metadata for an entry
                 zip[0].LastModified = DateTime.Now - new TimeSpan(7 * 31, 0, 0);
@@ -177,7 +177,7 @@ namespace Ionic.Zip.Tests.Update
         {
             Stream bitBucket = Stream.Null;
             TestContext.WriteLine("Checking file {0}", zipfile);
-            using (ZipFile zip = ZipFileExtensions.Read(zipfile))
+            using (ZipFile zip = FileSystemZip.Read(zipfile))
             {
                 zip.Password = password;
                 zip.BufferSize = 65536;
@@ -237,7 +237,7 @@ namespace Ionic.Zip.Tests.Update
             // selectively remove a few files in the zip archive
             var threshold = new TimeSpan(24 * 31 * (2 + _rnd.Next(ix - 12)), 0, 0);
             int numRemoved = 0;
-            using (ZipFile zip2 = ZipFileExtensions.Read(zipFileToCreate))
+            using (ZipFile zip2 = FileSystemZip.Read(zipFileToCreate))
             {
                 // We cannot remove the entry from the list, within the context of
                 // an enumeration of said list.
@@ -267,7 +267,7 @@ namespace Ionic.Zip.Tests.Update
                 "Fie! The updated Zip file has the wrong number of entries.");
 
             // verify that all entries in the archive are within the threshold
-            using (ZipFile zip3 = ZipFileExtensions.Read(zipFileToCreate))
+            using (ZipFile zip3 = FileSystemZip.Read(zipFileToCreate))
             {
                 foreach (ZipEntry e in zip3)
                     Assert.IsTrue((e.LastModified >= origDate + threshold),
@@ -323,7 +323,7 @@ namespace Ionic.Zip.Tests.Update
             // selectively remove a few files in the zip archive
             var filesToRemove = new List<string>();
             int numToRemove = _rnd.Next(numFilesToCreate - 4) + 1;
-            using (ZipFile zip2 = ZipFileExtensions.Read(zipFileToCreate))
+            using (ZipFile zip2 = FileSystemZip.Read(zipFileToCreate))
             {
                 for (j = 0; j < numToRemove; j++)
                 {
@@ -344,7 +344,7 @@ namespace Ionic.Zip.Tests.Update
 
             // extract all files, verify none should have been removed,
             // and verify the contents of those that remain
-            using (ZipFile zip3 = ZipFileExtensions.Read(zipFileToCreate))
+            using (ZipFile zip3 = FileSystemZip.Read(zipFileToCreate))
             {
                 foreach (string s1 in zip3.EntryFileNames)
                 {
@@ -410,7 +410,7 @@ namespace Ionic.Zip.Tests.Update
 
                 // selectively rename a few files in the zip archive
                 int renameCount = 0;
-                using (ZipFile zip2 = ZipFileExtensions.Read(zipFileToCreate))
+                using (ZipFile zip2 = FileSystemZip.Read(zipFileToCreate))
                 {
                     var toRename = new List<ZipEntry>();
                     while (toRename.Count < 2)
@@ -442,7 +442,7 @@ namespace Ionic.Zip.Tests.Update
                 // Extract all the files, verify that none have been removed,
                 // and verify the names of the entries.
                 int renameCount2 = 0;
-                using (ZipFile zip3 = ZipFileExtensions.Read(zipFileToCreate))
+                using (ZipFile zip3 = FileSystemZip.Read(zipFileToCreate))
                 {
                     foreach (string s1 in zip3.EntryFileNames)
                     {
@@ -525,7 +525,7 @@ namespace Ionic.Zip.Tests.Update
 
                 // update the comments for a few files in the zip archive
                 int updateCount = 0;
-                using (ZipFile zip2 = ZipFileExtensions.Read(zipFileToCreate))
+                using (ZipFile zip2 = FileSystemZip.Read(zipFileToCreate))
                 {
                     do
                     {
@@ -549,7 +549,7 @@ namespace Ionic.Zip.Tests.Update
                 // Extract all files, verify that none have been removed,
                 // and verify the contents of those that remain.
                 int commentCount = 0;
-                using (ZipFile zip3 = ZipFileExtensions.Read(zipFileToCreate))
+                using (ZipFile zip3 = FileSystemZip.Read(zipFileToCreate))
                 {
                     foreach (string s1 in zip3.EntryFileNames)
                     {
@@ -645,7 +645,7 @@ namespace Ionic.Zip.Tests.Update
                     // selectively remove a few files in the zip archive
                     var filesToRemove = new List<string>();
                     int numToRemove = _rnd.Next(numFilesToCreate - 4) + 1;
-                    using (ZipFile zip2 = ZipFileExtensions.Read(zipFileToCreate))
+                    using (ZipFile zip2 = FileSystemZip.Read(zipFileToCreate))
                     {
                         for (j = 0; j < numToRemove; j++)
                         {
@@ -667,7 +667,7 @@ namespace Ionic.Zip.Tests.Update
 
                     // extract all files, verify none should have been removed,
                     // and verify the contents of those that remain
-                    using (ZipFile zip3 = ZipFileExtensions.Read(zipFileToCreate))
+                    using (ZipFile zip3 = FileSystemZip.Read(zipFileToCreate))
                     {
                         foreach (string s1 in zip3.EntryFileNames)
                         {
@@ -747,7 +747,7 @@ namespace Ionic.Zip.Tests.Update
             // selectively remove a few files in the zip archive
             var filesToRemove = new List<string>();
             int numToRemove = _rnd.Next(numFilesToCreate - 4);
-            using (ZipFile zip2 = ZipFileExtensions.Read(zipFileToCreate))
+            using (ZipFile zip2 = FileSystemZip.Read(zipFileToCreate))
             {
                 for (j = 0; j < numToRemove; j++)
                 {
@@ -769,7 +769,7 @@ namespace Ionic.Zip.Tests.Update
 
             // extract all files, verify none should have been removed,
             // and verify the contents of those that remain
-            using (ZipFile zip3 = ZipFileExtensions.Read(zipFileToCreate))
+            using (ZipFile zip3 = FileSystemZip.Read(zipFileToCreate))
             {
                 foreach (string s1 in zip3.EntryFileNames)
                 {
@@ -845,7 +845,7 @@ namespace Ionic.Zip.Tests.Update
                                  "The Zip file has the wrong number of entries.");
 
             // remove all the entries from the zip archive
-            using (ZipFile zip2 = ZipFileExtensions.Read(zipFileToCreate))
+            using (ZipFile zip2 = FileSystemZip.Read(zipFileToCreate))
             {
                 zip2.RemoveEntries(zip2.Entries);
                 zip2.Comment = "This archive has been modified. All the entries have been removed.";
@@ -919,7 +919,7 @@ namespace Ionic.Zip.Tests.Update
             }
 
             // add each one of those new files in the zip archive
-            using (ZipFile zip2 = ZipFileExtensions.Read(zipFileToCreate))
+            using (ZipFile zip2 = FileSystemZip.Read(zipFileToCreate))
             {
                 foreach (string s in addedFiles)
                     zip2.AddFile(Path.Combine(subdir, s), "");
@@ -934,7 +934,7 @@ namespace Ionic.Zip.Tests.Update
 
 
             // now extract the newly-added files and verify their contents
-            using (ZipFile zip3 = ZipFileExtensions.Read(zipFileToCreate))
+            using (ZipFile zip3 = FileSystemZip.Read(zipFileToCreate))
             {
                 foreach (string s in addedFiles)
                 {
@@ -954,7 +954,7 @@ namespace Ionic.Zip.Tests.Update
 
 
             // extract all the other files and verify their contents
-            using (ZipFile zip4 = ZipFileExtensions.Read(zipFileToCreate))
+            using (ZipFile zip4 = FileSystemZip.Read(zipFileToCreate))
             {
                 foreach (string s1 in zip4.EntryFileNames)
                 {
@@ -1042,13 +1042,13 @@ namespace Ionic.Zip.Tests.Update
 
             // Update those files in the zip file
             Directory.SetCurrentDirectory(TopLevelDir);
-            using (ZipFile zip1 = ZipFileExtensions.Read(zipFileToCreate))
+            using (ZipFile zip1 = FileSystemZip.Read(zipFileToCreate))
             {
                 String[] filenames = Directory.GetFiles("B");
                 foreach (String f in filenames)
                     zip1.UpdateItem(f, "");
                 zip1.Comment = "UpdateTests::UpdateZip_UpdateItem(): This archive has been updated.";
-                zip1.Save(zipFileToCreate, true);
+                zip1.Save(zipFileToCreate);
             }
 
             // Verify the number of files in the zip
@@ -1056,7 +1056,7 @@ namespace Ionic.Zip.Tests.Update
                 "The Zip file has the wrong number of entries.");
 
             // now extract the files and verify their contents
-            using (ZipFile zip3 = ZipFileExtensions.Read(zipFileToCreate))
+            using (ZipFile zip3 = FileSystemZip.Read(zipFileToCreate))
             {
                 foreach (string s in zip3.EntryFileNames)
                 {
@@ -1133,7 +1133,7 @@ namespace Ionic.Zip.Tests.Update
             }
 
             // add each one of those new files in the zip archive using a password
-            using (ZipFile zip2 = ZipFileExtensions.Read(zipFileToCreate))
+            using (ZipFile zip2 = FileSystemZip.Read(zipFileToCreate))
             {
                 zip2.Password = password;
                 foreach (string s in addedFiles)
@@ -1149,7 +1149,7 @@ namespace Ionic.Zip.Tests.Update
 
 
             // now extract the newly-added files and verify their contents
-            using (ZipFile zip3 = ZipFileExtensions.Read(zipFileToCreate))
+            using (ZipFile zip3 = FileSystemZip.Read(zipFileToCreate))
             {
                 foreach (string s in addedFiles)
                 {
@@ -1169,7 +1169,7 @@ namespace Ionic.Zip.Tests.Update
 
 
             // extract all the other files and verify their contents
-            using (ZipFile zip4 = ZipFileExtensions.Read(zipFileToCreate))
+            using (ZipFile zip4 = FileSystemZip.Read(zipFileToCreate))
             {
                 foreach (string s1 in zip4.EntryFileNames)
                 {
@@ -1257,7 +1257,7 @@ namespace Ionic.Zip.Tests.Update
             }
 
             // add each one of those new files in the zip archive using a password
-            using (ZipFile zip2 = ZipFileExtensions.Read(zipFileToCreate))
+            using (ZipFile zip2 = FileSystemZip.Read(zipFileToCreate))
             {
                 zip2.Password = password2;
                 foreach (string s in addedFiles)
@@ -1273,7 +1273,7 @@ namespace Ionic.Zip.Tests.Update
 
 
             // now extract the newly-added files and verify their contents
-            using (ZipFile zip3 = ZipFileExtensions.Read(zipFileToCreate))
+            using (ZipFile zip3 = FileSystemZip.Read(zipFileToCreate))
             {
                 foreach (string s in addedFiles)
                 {
@@ -1293,7 +1293,7 @@ namespace Ionic.Zip.Tests.Update
 
 
             // extract all the other files and verify their contents
-            using (ZipFile zip4 = ZipFileExtensions.Read(zipFileToCreate))
+            using (ZipFile zip4 = FileSystemZip.Read(zipFileToCreate))
             {
                 foreach (string s1 in zip4.EntryFileNames)
                 {
@@ -1388,7 +1388,7 @@ namespace Ionic.Zip.Tests.Update
             }
 
             // update those files in the zip archive
-            using (ZipFile zip2 = ZipFileExtensions.Read(zipFileToCreate))
+            using (ZipFile zip2 = FileSystemZip.Read(zipFileToCreate))
             {
                 foreach (string s in UpdatedFiles)
                     zip2.UpdateFile(Path.Combine(subdir, s), "");
@@ -1397,7 +1397,7 @@ namespace Ionic.Zip.Tests.Update
             }
 
             // extract those files and verify their contents
-            using (ZipFile zip3 = ZipFileExtensions.Read(zipFileToCreate))
+            using (ZipFile zip3 = FileSystemZip.Read(zipFileToCreate))
             {
                 foreach (string s in UpdatedFiles)
                 {
@@ -1416,7 +1416,7 @@ namespace Ionic.Zip.Tests.Update
             }
 
             // extract all the other files and verify their contents
-            using (ZipFile zip4 = ZipFileExtensions.Read(zipFileToCreate))
+            using (ZipFile zip4 = FileSystemZip.Read(zipFileToCreate))
             {
                 foreach (string s1 in zip4.EntryFileNames)
                 {
@@ -1508,7 +1508,7 @@ namespace Ionic.Zip.Tests.Update
             }
 
             // update those files in the zip archive
-            using (ZipFile zip2 = ZipFileExtensions.Read(zipFileToCreate))
+            using (ZipFile zip2 = FileSystemZip.Read(zipFileToCreate))
             {
                 foreach (string s in UpdatedFiles)
                     zip2.UpdateFile(Path.Combine(subdir, s), "");
@@ -1521,7 +1521,7 @@ namespace Ionic.Zip.Tests.Update
                 "Zoiks! The Zip file has the wrong number of entries.");
 
             // update those files AGAIN in the zip archive
-            using (ZipFile zip3 = ZipFileExtensions.Read(zipFileToCreate))
+            using (ZipFile zip3 = FileSystemZip.Read(zipFileToCreate))
             {
                 foreach (string s in UpdatedFiles)
                     zip3.UpdateFile(Path.Combine(subdir, s), "");
@@ -1530,7 +1530,7 @@ namespace Ionic.Zip.Tests.Update
             }
 
             // extract the updated files and verify their contents
-            using (ZipFile zip4 = ZipFileExtensions.Read(zipFileToCreate))
+            using (ZipFile zip4 = FileSystemZip.Read(zipFileToCreate))
             {
                 foreach (string s in UpdatedFiles)
                 {
@@ -1549,7 +1549,7 @@ namespace Ionic.Zip.Tests.Update
             }
 
             // extract all the other files and verify their contents
-            using (ZipFile zip5 = ZipFileExtensions.Read(zipFileToCreate))
+            using (ZipFile zip5 = FileSystemZip.Read(zipFileToCreate))
             {
                 foreach (string s1 in zip5.EntryFileNames)
                 {
@@ -1643,7 +1643,7 @@ namespace Ionic.Zip.Tests.Update
             }
 
             // update those files in the zip archive
-            using (ZipFile zip2 = ZipFileExtensions.Read(zipFileToCreate))
+            using (ZipFile zip2 = FileSystemZip.Read(zipFileToCreate))
             {
                 foreach (string s in UpdatedFiles)
                     zip2.UpdateFile(Path.Combine(subdir, s), "");
@@ -1652,7 +1652,7 @@ namespace Ionic.Zip.Tests.Update
             }
 
             // extract those files and verify their contents
-            using (ZipFile zip3 = ZipFileExtensions.Read(zipFileToCreate))
+            using (ZipFile zip3 = FileSystemZip.Read(zipFileToCreate))
             {
                 foreach (string s in UpdatedFiles)
                 {
@@ -1671,7 +1671,7 @@ namespace Ionic.Zip.Tests.Update
             }
 
             // extract all the other files and verify their contents
-            using (ZipFile zip4 = ZipFileExtensions.Read(zipFileToCreate))
+            using (ZipFile zip4 = FileSystemZip.Read(zipFileToCreate))
             {
                 foreach (string s1 in zip4.EntryFileNames)
                 {
@@ -1764,7 +1764,7 @@ namespace Ionic.Zip.Tests.Update
             }
 
             // update those files in the zip archive
-            using (ZipFile zip2 = ZipFileExtensions.Read(zipFileToCreate))
+            using (ZipFile zip2 = FileSystemZip.Read(zipFileToCreate))
             {
                 zip2.Password = Password;
                 foreach (string s in UpdatedFiles)
@@ -1774,7 +1774,7 @@ namespace Ionic.Zip.Tests.Update
             }
 
             // extract those files and verify their contents
-            using (ZipFile zip3 = ZipFileExtensions.Read(zipFileToCreate))
+            using (ZipFile zip3 = FileSystemZip.Read(zipFileToCreate))
             {
                 foreach (string s in UpdatedFiles)
                 {
@@ -1793,7 +1793,7 @@ namespace Ionic.Zip.Tests.Update
             }
 
             // extract all the other files and verify their contents
-            using (ZipFile zip4 = ZipFileExtensions.Read(zipFileToCreate))
+            using (ZipFile zip4 = FileSystemZip.Read(zipFileToCreate))
             {
                 foreach (string s1 in zip4.EntryFileNames)
                 {
@@ -1887,7 +1887,7 @@ namespace Ionic.Zip.Tests.Update
             }
 
             // update those files in the zip archive
-            using (ZipFile zip2 = ZipFileExtensions.Read(zipFileToCreate))
+            using (ZipFile zip2 = FileSystemZip.Read(zipFileToCreate))
             {
                 zip2.Password = Password2;
                 foreach (string s in UpdatedFiles)
@@ -1897,7 +1897,7 @@ namespace Ionic.Zip.Tests.Update
             }
 
             // extract those files and verify their contents
-            using (ZipFile zip3 = ZipFileExtensions.Read(zipFileToCreate))
+            using (ZipFile zip3 = FileSystemZip.Read(zipFileToCreate))
             {
                 foreach (string s in UpdatedFiles)
                 {
@@ -1916,7 +1916,7 @@ namespace Ionic.Zip.Tests.Update
             }
 
             // extract all the other files and verify their contents
-            using (ZipFile zip4 = ZipFileExtensions.Read(zipFileToCreate))
+            using (ZipFile zip4 = FileSystemZip.Read(zipFileToCreate))
             {
                 foreach (string s1 in zip4.EntryFileNames)
                 {
@@ -1987,7 +1987,7 @@ namespace Ionic.Zip.Tests.Update
 
             // Try to again add that file in the zip archive. This
             // should fail.
-            using (ZipFile z = ZipFileExtensions.Read(zipFileToCreate))
+            using (ZipFile z = FileSystemZip.Read(zipFileToCreate))
             {
                 // Try Adding a file again.  THIS SHOULD THROW.
                 ZipEntry e = z.AddFile(filename, "");
@@ -2022,7 +2022,7 @@ namespace Ionic.Zip.Tests.Update
                 }
             }
 
-            using (ZipFile _zipFile = ZipFileExtensions.Read(zipFileToCreate))
+            using (ZipFile _zipFile = FileSystemZip.Read(zipFileToCreate))
             {
                 using (MemoryStream data = new MemoryStream())
                 {
@@ -2066,7 +2066,7 @@ namespace Ionic.Zip.Tests.Update
             Assert.AreEqual<int>(TestUtilities.CountEntries(zipFileToCreate), 2 * filesToZip.Length,
                                  "Incorrect number of entries in the zip file.");
 
-            using (var zip2 = ZipFileExtensions.Read(zipFileToCreate))
+            using (var zip2 = FileSystemZip.Read(zipFileToCreate))
             {
                 var entries = zip2.Entries.Where(e => e.FileName.Contains("Download")).ToArray();
                 //PART1 - Add directory and save
@@ -2110,7 +2110,7 @@ namespace Ionic.Zip.Tests.Update
                 string tempZipFile = "AppendToEntry.zip.tmp" + i;
 
                 TestContext.WriteLine("Update cycle {0}... ", i);
-                using (var zip1 = ZipFileExtensions.Read(zipFileToCreate))
+                using (var zip1 = FileSystemZip.Read(zipFileToCreate))
                 {
                     using (var zip = new ZipFile())
                     {

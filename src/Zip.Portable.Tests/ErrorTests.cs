@@ -140,7 +140,7 @@ namespace Ionic.Zip.Tests.Error
             // Unless flavor==3, in which case we overwrite silently.
             for (int k = 0; k < 2; k++)
             {
-                using (ZipFile zip = ZipFileExtensions.Read(zipFileToCreate))
+                using (ZipFile zip = FileSystemZip.Read(zipFileToCreate))
                 {
                     if (flavor > 10)
                         zip.ExtractProgress += OverwriteDecider;
@@ -224,7 +224,7 @@ namespace Ionic.Zip.Tests.Error
             }
 
             string extractDir = "extract";
-            using (var zip = ZipFileExtensions.Read(zipFileToCreate))
+            using (var zip = FileSystemZip.Read(zipFileToCreate))
             {
                 zip.ExtractAll(extractDir);
                 Assert.IsTrue(zip.Entries.Count == 0);
@@ -239,7 +239,7 @@ namespace Ionic.Zip.Tests.Error
         {
             string filename = zipit;
             // try reading the invalid zipfile - this must fail.
-            using (ZipFile zip = ZipFileExtensions.Read(filename))
+            using (ZipFile zip = FileSystemZip.Read(filename))
             {
                 foreach (ZipEntry e in zip)
                 {
@@ -258,7 +258,7 @@ namespace Ionic.Zip.Tests.Error
             // try reading an empty, extant file as a zip file
             string zipFileToRead = Path.GetTempFileName();
             _FilesToRemove.Add(zipFileToRead);
-            using (ZipFile zip = ZipFileExtensions.Read(zipFileToRead))
+            using (ZipFile zip = FileSystemZip.Read(zipFileToRead))
             {
                 zip.AddEntry("EntryName1.txt", "This is the content");
                 zip.Save(zipFileToRead);
@@ -298,7 +298,7 @@ namespace Ionic.Zip.Tests.Error
             _FilesToRemove.Add(filePath);
             File.WriteAllText( filePath , "asdfasdf" );
             string outputDirectory = Path.GetTempPath();
-            using ( ZipFile zipFile = ZipFileExtensions.Read( filePath ) )
+            using ( ZipFile zipFile = FileSystemZip.Read( filePath ) )
             {
                 zipFile.ExtractAll( outputDirectory  );
             }
@@ -320,7 +320,7 @@ namespace Ionic.Zip.Tests.Error
             // Use ZipEntry.Extract with ZipInputStream.
             // This must fail.
             TestContext.WriteLine("Reading with ZipInputStream");
-            using (var zip = ZipInputStreamExtensions.Create(zipFileToCreate))
+            using (var zip = FileSystemZip.CreateInputStream(zipFileToCreate))
             {
                 ZipEntry entry;
                 while ((entry = zip.GetNextEntry()) != null)
@@ -347,7 +347,7 @@ namespace Ionic.Zip.Tests.Error
             // Use OpenReader with ZipInputStream.
             // This must fail.
             TestContext.WriteLine("Reading with ZipInputStream");
-            using (var zip = ZipInputStreamExtensions.Create(zipFileToCreate))
+            using (var zip = FileSystemZip.CreateInputStream(zipFileToCreate))
             {
                 ZipEntry entry;
                 while ((entry = zip.GetNextEntry()) != null)
@@ -617,7 +617,7 @@ namespace Ionic.Zip.Tests.Error
             try
             {
                 // read the corrupted zip - this should fail in some way
-                using (ZipFile zip = ZipFileExtensions.Read(zipFileToCreate))
+                using (ZipFile zip = FileSystemZip.Read(zipFileToCreate))
                 {
                     for (j = 0; j < filenames.Length; j++)
                     {
@@ -671,7 +671,7 @@ namespace Ionic.Zip.Tests.Error
             try
             {
                 // read the corrupted zip - this should fail in some way
-                using (ZipFile zip = ZipFileExtensions.Read(zipFileToCreate))
+                using (ZipFile zip = FileSystemZip.Read(zipFileToCreate))
                 {
                     foreach (var e in zip)
                     {
@@ -747,7 +747,7 @@ namespace Ionic.Zip.Tests.Error
 
             try
             {
-                using (ZipFile zip = ZipFileExtensions.Read(zipFileToRead))
+                using (ZipFile zip = FileSystemZip.Read(zipFileToRead))
                 {
                     zip.AddFile(fileToAdd, "");
                     zip.Save(zipFileToRead);
@@ -791,7 +791,7 @@ namespace Ionic.Zip.Tests.Error
 
 
             // this should fail - adding the same file twice
-            using (ZipFile zip2 = ZipFileExtensions.Read(zipFileToCreate))
+            using (ZipFile zip2 = FileSystemZip.Read(zipFileToCreate))
             {
                 zip2.StatusMessageTextWriter = System.Console.Out;
                 string[] files = Directory.GetFiles(subdir);
@@ -815,7 +815,7 @@ namespace Ionic.Zip.Tests.Error
             // open and lock
             using (new FileStream(zipFileToCreate, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.None))
             {
-                using (ZipFileExtensions.Read(zipFileToCreate)) { }
+                using (FileSystemZip.Read(zipFileToCreate)) { }
             }
         }
 
